@@ -13,12 +13,17 @@
 - **Create new job form** (/jobs/new) ✅
 - **UI improvements** (lighter colors, cleaner layout) ✅
 - **Due dates moved to tasks** (removed from jobs) ✅
+- **Task comments** - Add notes/discussions to tasks ✅
+
+## Version Control
+- Git repository initialized
+- Initial commit: `09e25e4` (Nov 14, 2025)
+- See `GIT_GUIDE.md` for Git basics and rollback instructions
 
 ## Next Feature Options
-1. **Comments on tasks** - Add notes/discussions to tasks (schema ready)
-2. **File uploads** - Upload PDF, DOCX, PNG, PPTX to jobs and tasks (schema ready)
-3. **Authentication** - User login system (needed for "My Tasks")
-4. **"My Tasks" dashboard** - View all tasks assigned to logged-in user
-5. **Notifications** - Email/UI alerts when tasks are completed
-6. **User invitations** - Invite users by email
-7. **Edit job brief** - Make the brief field editable
+1. **File uploads** - Upload PDF, DOCX, PNG, PPTX to jobs and tasks (schema ready)
+2. **Authentication** - User login system (needed for "My Tasks")
+3. **"My Tasks" dashboard** - View all tasks assigned to logged-in user
+4. **Notifications** - Email/UI alerts when tasks are completed
+5. **User invitations** - Invite users by email
+6. **Edit job brief** - Make the brief field editable
