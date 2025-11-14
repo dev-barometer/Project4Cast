@@ -1,0 +1,157 @@
+// SCHEMA FROZEN FOR NOW — don’t add/remove models until first UI is working.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ----- Enums -----
+
+enum UserRole {
+  ADMIN
+  USER
+}
+
+enum JobStatus {
+  PLANNING
+  IN_PROGRESS
+  ON_HOLD
+  DELIVERED
+  ARCHIVED
+}
+
+enum TaskStatus {
+  TODO
+  IN_PROGRESS
+  BLOCKED
+  DONE
+}
+
+enum TaskPriority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+enum JobRole {
+  OWNER
+  COLLABORATOR
+  VIEWER
+}
+
+// ----- Models -----
+
+model User {
+  id          String           @id @default(cuid())
+  email       String           @unique
+  name        String?
+  role        UserRole         @default(USER)
+
+  jobs        JobCollaborator[]
+  tasks       TaskAssignee[]
+  comments    Comment[]
+  attachments Attachment[]     @relation("UserAttachments")
+}
+
+model Client {
+  id      String  @id @default(cuid())
+  name    String
+  brands  Brand[]
+}
+
+model Brand {
+  id        String  @id @default(cuid())
+  name      String
+  clientId  String
+  client    Client  @relation(fields: [clientId], references: [id])
+  jobs      Job[]
+}
+
+model Job {
+  id            String           @id @default(cuid())
+  jobNumber     String           @unique
+  title         String
+  status        JobStatus        @default(PLANNING)
+  brief         String?
+
+  brandId       String
+  brand         Brand            @relation(fields: [brandId], references: [id])
+
+  collaborators JobCollaborator[]
+  tasks         Task[]
+  attachments   Attachment[]
+  comments      Comment[]
+}
+
+model JobCollaborator {
+  id       String   @id @default(cuid())
+  jobId    String
+  userId   String
+  role     JobRole  @default(COLLABORATOR)
+
+  job      Job      @relation(fields: [jobId], references: [id])
+  user     User     @relation(fields: [userId], references: [id])
+
+  @@unique([jobId, userId])
+}
+
+model Task {
+  id          String        @id @default(cuid())
+  title       String
+  description String?
+  status      TaskStatus    @default(TODO)
+  priority    TaskPriority  @default(MEDIUM)
+  dueDate     DateTime?
+
+  jobId       String
+  job         Job           @relation(fields: [jobId], references: [id])
+
+  assignees   TaskAssignee[]
+  attachments Attachment[]
+  comments    Comment[]
+}
+
+model TaskAssignee {
+  id      String @id @default(cuid())
+  taskId  String
+  userId  String
+
+  task    Task   @relation(fields: [taskId], references: [id])
+  user    User   @relation(fields: [userId], references: [id])
+
+  @@unique([taskId, userId])
+}
+
+model Attachment {
+  id           String   @id @default(cuid())
+  jobId        String?
+  taskId       String?
+  url          String
+  filename     String
+  mimeType     String
+  uploadedById String
+  uploadedAt   DateTime @default(now())
+
+  job         Job?      @relation(fields: [jobId], references: [id])
+  task        Task?     @relation(fields: [taskId], references: [id])
+  uploadedBy  User      @relation("UserAttachments", fields: [uploadedById], references: [id])
+}
+
+model Comment {
+  id        String   @id @default(cuid())
+  body      String
+  createdAt DateTime @default(now())
+
+  authorId  String
+  author    User     @relation(fields: [authorId], references: [id])
+
+  jobId     String?
+  taskId    String?
+  job       Job?     @relation(fields: [jobId], references: [id])
+  task      Task?    @relation(fields: [taskId], references: [id])
+}
