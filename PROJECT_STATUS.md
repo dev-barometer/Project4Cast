@@ -14,6 +14,12 @@
 - **UI improvements** (lighter colors, cleaner layout) ✅
 - **Due dates moved to tasks** (removed from jobs) ✅
 - **Task comments** - Add notes/discussions to tasks ✅
+- **File uploads** - Upload PDF, DOCX, PNG, PPTX to jobs and tasks ✅
+  - Using Cloudinary for cloud storage
+  - Files stored in cloud with organized folder structure
+  - Upload, view, and delete attachments for jobs and tasks
+  - File type validation (PDF, DOCX, PNG, PPTX)
+  - 10MB file size limit
 
 ## Version Control
 - Git repository initialized
@@ -21,9 +27,8 @@
 - See `GIT_GUIDE.md` for Git basics and rollback instructions
 
 ## Next Feature Options
-1. **File uploads** - Upload PDF, DOCX, PNG, PPTX to jobs and tasks (schema ready)
-2. **Authentication** - User login system (needed for "My Tasks")
-3. **"My Tasks" dashboard** - View all tasks assigned to logged-in user
-4. **Notifications** - Email/UI alerts when tasks are completed
-5. **User invitations** - Invite users by email
-6. **Edit job brief** - Make the brief field editable
+1. **Authentication** - User login system (needed for "My Tasks")
+2. **"My Tasks" dashboard** - View all tasks assigned to logged-in user
+3. **Notifications** - Email/UI alerts when tasks are completed
+4. **User invitations** - Invite users by email
+5. **Edit job brief** - Make the brief field editable

@@ -6,6 +6,7 @@ import { notFound } from 'next/navigation';
 import { revalidatePath } from 'next/cache';
 import TaskRow from './TaskRow';
 import CollaboratorManager from './CollaboratorManager';
+import AttachmentManager from './AttachmentManager';
 
 type JobPageProps = {
   params: { id: string };
@@ -35,44 +36,180 @@ async function addTask(formData: FormData) {
 
 export default async function JobDetailPage({ params }: JobPageProps) {
   // Fetch job and all users in parallel
-  const [job, allUsers] = await Promise.all([
-    prisma.job.findUnique({
-      where: { id: params.id },
-      include: {
-        brand: {
-          include: {
-            client: true,
+  type JobWithRelations = {
+    id: string;
+    jobNumber: string;
+    title: string;
+    status: string;
+    brief: string | null;
+    brand: {
+      name: string;
+      client: {
+        name: string;
+      } | null;
+    } | null;
+    tasks: Array<{
+      id: string;
+      title: string;
+      status: 'TODO' | 'IN_PROGRESS' | 'BLOCKED' | 'DONE';
+      priority: 'LOW' | 'MEDIUM' | 'HIGH' | 'URGENT';
+      dueDate: Date | null;
+      assignees: Array<{
+        id: string;
+        userId: string;
+        user: {
+          id: string;
+          name: string | null;
+          email: string;
+        } | null;
+      }>;
+      comments: Array<{
+        id: string;
+        body: string;
+        createdAt: Date;
+        author: {
+          id: string;
+          name: string | null;
+          email: string;
+        } | null;
+      }>;
+      attachments: Array<{
+        id: string;
+        filename: string;
+        url: string;
+        mimeType: string;
+        uploadedAt: Date;
+        uploadedBy: {
+          id: string;
+          name: string | null;
+          email: string;
+        } | null;
+      }>;
+    }>;
+    collaborators: Array<{
+      id: string;
+      userId: string;
+      role: 'OWNER' | 'COLLABORATOR' | 'VIEWER';
+      user: {
+        id: string;
+        name: string | null;
+        email: string;
+      } | null;
+    }>;
+    attachments: Array<{
+      id: string;
+      filename: string;
+      url: string;
+      mimeType: string;
+      uploadedAt: Date;
+      uploadedBy: {
+        id: string;
+        name: string | null;
+        email: string;
+      } | null;
+    }>;
+  };
+
+  type User = {
+    id: string;
+    email: string;
+    name: string | null;
+  };
+
+  let job: JobWithRelations | null = null;
+  let allUsers: User[] = [];
+  let dbError: string | null = null;
+
+  try {
+    const result = await Promise.all([
+      prisma.job.findUnique({
+        where: { id: params.id },
+        include: {
+          brand: {
+            include: {
+              client: true,
+            },
           },
-        },
-        tasks: {
-          include: {
-            assignees: {
-              include: {
-                user: true,
+          tasks: {
+            include: {
+              assignees: {
+                include: {
+                  user: true,
+                },
+              },
+              comments: {
+                include: {
+                  author: true,
+                },
+                orderBy: {
+                  createdAt: 'asc',
+                },
+              },
+              attachments: {
+                include: {
+                  uploadedBy: true,
+                },
+                orderBy: {
+                  uploadedAt: 'desc',
+                },
               },
             },
-            comments: {
-              include: {
-                author: true,
-              },
-              orderBy: {
-                createdAt: 'asc',
-              },
+          },
+          collaborators: {
+            include: {
+              user: true,
             },
           },
-        },
-        collaborators: {
-          include: {
-            user: true,
+          attachments: {
+            include: {
+              uploadedBy: true,
+            },
+            orderBy: {
+              uploadedAt: 'desc',
+            },
           },
+       //   orderBy: { createdAt: 'asc' }, // if this errors, remove it (no createdAt on Task)
         },
-     //   orderBy: { createdAt: 'asc' }, // if this errors, remove it (no createdAt on Task)
-      },
-    }),
-    prisma.user.findMany({
-      orderBy: { email: 'asc' },
-    }),
-  ]);
+      }),
+      prisma.user.findMany({
+        orderBy: { email: 'asc' },
+      }),
+    ]);
+    job = result[0];
+    allUsers = result[1];
+  } catch (error: any) {
+    console.error('Database error:', error);
+    dbError = error.message || 'Failed to connect to database';
+    job = null;
+    allUsers = [];
+  }
+
+  // Show database error if connection failed
+  if (dbError) {
+    return (
+      <main style={{ padding: 40, maxWidth: 1400, margin: '0 auto' }}>
+        <div
+          style={{
+            backgroundColor: '#fed7d7',
+            color: '#742a2a',
+            padding: '20px 24px',
+            borderRadius: 6,
+            fontSize: 14,
+          }}
+        >
+          <strong>Database Connection Error:</strong> {dbError}
+          <div style={{ marginTop: 12, fontSize: 13 }}>
+            Please check your DATABASE_URL in the .env file and ensure your database is running.
+          </div>
+          <div style={{ marginTop: 12 }}>
+            <Link href="/jobs" style={{ color: '#742a2a', textDecoration: 'underline' }}>
+              ← Back to Jobs
+            </Link>
+          </div>
+        </div>
+      </main>
+    );
+  }
 
   if (!job) {
     notFound();
@@ -225,11 +362,21 @@ export default async function JobDetailPage({ params }: JobPageProps) {
           </section>
 
           {/* Brief placeholder */}
-          <section style={{ backgroundColor: '#ffffff', padding: 20, borderRadius: 8, boxShadow: '0 1px 3px rgba(0, 0, 0, 0.05)' }}>
+          <section style={{ marginBottom: 24, backgroundColor: '#ffffff', padding: 20, borderRadius: 8, boxShadow: '0 1px 3px rgba(0, 0, 0, 0.05)' }}>
             <h3 style={{ fontSize: 16, fontWeight: 600, color: '#2d3748', marginBottom: 12 }}>Brief</h3>
             <p style={{ fontSize: 14, marginTop: 8, color: '#4a5568', lineHeight: 1.6 }}>
               {job.brief || <em style={{ color: '#a0aec0' }}>No brief added yet.</em>}
             </p>
+          </section>
+
+          {/* Job Attachments */}
+          <section style={{ marginBottom: 24, backgroundColor: '#ffffff', padding: 20, borderRadius: 8, boxShadow: '0 1px 3px rgba(0, 0, 0, 0.05)' }}>
+            <h3 style={{ fontSize: 16, fontWeight: 600, color: '#2d3748', marginBottom: 12 }}>Attachments</h3>
+            <AttachmentManager
+              jobId={job.id}
+              attachments={job.attachments}
+              currentUserId={allUsers[0]?.id || ''}
+            />
           </section>
         </div>
       </div>

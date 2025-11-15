@@ -4,17 +4,40 @@ import { prisma } from '@/lib/prisma';
 import Link from 'next/link';
 
 export default async function JobsPage() {
-  const jobs = await prisma.job.findMany({
-    orderBy: { jobNumber: 'asc' },
-    include: {
-      brand: {
-        include: {
-          client: true,
+  type JobWithRelations = {
+    id: string;
+    jobNumber: string;
+    title: string;
+    status: string;
+    brand: {
+      name: string;
+      client: {
+        name: string;
+      } | null;
+    } | null;
+    tasks: Array<{ id: string }>;
+  };
+
+  let jobs: JobWithRelations[] = [];
+  let dbError: string | null = null;
+
+  try {
+    jobs = await prisma.job.findMany({
+      orderBy: { jobNumber: 'asc' },
+      include: {
+        brand: {
+          include: {
+            client: true,
+          },
         },
+        tasks: true,
       },
-      tasks: true,
-    },
-  });
+    });
+  } catch (error: any) {
+    console.error('Database error:', error);
+    dbError = error.message || 'Failed to connect to database';
+    jobs = [];
+  }
 
   return (
     <main style={{ padding: 40, maxWidth: 1400, margin: '0 auto' }}>
@@ -50,9 +73,30 @@ export default async function JobsPage() {
         <Link href="/" style={{ color: '#4299e1' }}>Home</Link>
       </p>
 
+      {/* Database Error Message */}
+      {dbError && (
+        <div
+          style={{
+            backgroundColor: '#fed7d7',
+            color: '#742a2a',
+            padding: '16px 20px',
+            borderRadius: 6,
+            marginBottom: 24,
+            fontSize: 14,
+          }}
+        >
+          <strong>Database Connection Error:</strong> {dbError}
+          <div style={{ marginTop: 8, fontSize: 13 }}>
+            Please check your DATABASE_URL in the .env file and ensure your database is running.
+          </div>
+        </div>
+      )}
+
       <section style={{ marginTop: 32 }}>
-        {jobs.length === 0 ? (
+        {jobs.length === 0 && !dbError ? (
           <p style={{ color: '#718096', padding: 24 }}>No jobs found.</p>
+        ) : jobs.length === 0 && dbError ? (
+          <p style={{ color: '#718096', padding: 24 }}>Cannot load jobs - database connection failed.</p>
         ) : (
           <table
             style={{

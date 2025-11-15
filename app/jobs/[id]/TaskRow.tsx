@@ -5,6 +5,7 @@
 
 import { updateTask, addAssignee, removeAssignee } from './actions';
 import TaskComments from './TaskComments';
+import AttachmentManager from './AttachmentManager';
 
 type Task = {
   id: string;
@@ -26,6 +27,18 @@ type Task = {
     body: string;
     createdAt: Date | string;
     author: {
+      id: string;
+      name: string | null;
+      email: string;
+    } | null;
+  }>;
+  attachments: Array<{
+    id: string;
+    filename: string;
+    url: string;
+    mimeType: string;
+    uploadedAt: Date | string;
+    uploadedBy: {
       id: string;
       name: string | null;
       email: string;
@@ -270,18 +283,26 @@ export default function TaskRow({ task, jobId, allUsers, currentUserId }: TaskRo
           )}
         </div>
       </td>
-      </tr>
-      {/* Comments row - spans all columns */}
-      <tr>
-        <td colSpan={5} style={{ padding: '0 16px 12px 16px', borderBottom: '1px solid #f0f4f8' }}>
+    </tr>
+    {/* Comments and Attachments row - spans all columns */}
+    <tr>
+      <td colSpan={5} style={{ padding: '0 16px 12px 16px', borderBottom: '1px solid #f0f4f8' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
           <TaskComments
             taskId={task.id}
             jobId={jobId}
             comments={task.comments}
             currentUserId={currentUserId}
           />
-        </td>
-      </tr>
+          <AttachmentManager
+            jobId={jobId}
+            taskId={task.id}
+            attachments={task.attachments}
+            currentUserId={currentUserId}
+          />
+        </div>
+      </td>
+    </tr>
     </>
   );
 }
