@@ -4,9 +4,11 @@ import { prisma } from '@/lib/prisma';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { revalidatePath } from 'next/cache';
+import { auth } from '@/auth';
 import TaskRow from './TaskRow';
 import CollaboratorManager from './CollaboratorManager';
 import AttachmentManager from './AttachmentManager';
+import TaskForm from './TaskForm';
 
 type JobPageProps = {
   params: { id: string };
@@ -18,23 +20,65 @@ async function addTask(formData: FormData) {
 
   const title = formData.get('title')?.toString().trim();
   const jobId = formData.get('jobId')?.toString();
+  const priority = formData.get('priority')?.toString() || 'MEDIUM';
+  const dueDate = formData.get('dueDate')?.toString();
+  const assigneeIds = formData.getAll('assigneeIds').map(id => id.toString()).filter(Boolean);
 
-  if (!title || !jobId) return;
+  if (!title) return;
 
+  // Validate priority
+  const validPriority = ['LOW', 'MEDIUM', 'HIGH', 'URGENT'].includes(priority) 
+    ? priority as 'LOW' | 'MEDIUM' | 'HIGH' | 'URGENT'
+    : 'MEDIUM';
+
+  // Create task with optional jobId and assignees if provided
   await prisma.task.create({
     data: {
       title,
-      jobId,
-      status: 'TODO',    // TaskStatus enum
-      priority: 'MEDIUM' // TaskPriority enum
+      jobId: jobId || null, // null if no jobId (though this shouldn't happen on job page)
+      status: 'TODO',
+      priority: validPriority,
+      dueDate: dueDate ? new Date(dueDate) : null,
+      assignees: assigneeIds.length > 0 ? {
+        create: assigneeIds.map(userId => ({ userId })),
+      } : undefined,
     },
   });
 
-  revalidatePath(`/jobs/${jobId}`);
+  // Revalidate job page if jobId exists, otherwise revalidate task pages
+  if (jobId) {
+    revalidatePath(`/jobs/${jobId}`);
+  } else {
+    revalidatePath('/tasks');
+    revalidatePath('/my-tasks');
+  }
 }
 
 
 export default async function JobDetailPage({ params }: JobPageProps) {
+  // Get authenticated user
+  const session = await auth();
+  const currentUserId = session?.user?.id;
+
+  if (!currentUserId) {
+    // This shouldn't happen due to middleware, but handle it anyway
+    return (
+      <main style={{ padding: 40, maxWidth: 1400, margin: '0 auto' }}>
+        <div
+          style={{
+            backgroundColor: '#fed7d7',
+            color: '#742a2a',
+            padding: '20px 24px',
+            borderRadius: 6,
+            fontSize: 14,
+          }}
+        >
+          You must be logged in to view this page.
+        </div>
+      </main>
+    );
+  }
+
   // Fetch job and all users in parallel
   type JobWithRelations = {
     id: string;
@@ -245,40 +289,14 @@ export default async function JobDetailPage({ params }: JobPageProps) {
           <section>
             <h2 style={{ fontSize: 20, fontWeight: 600, color: '#2d3748', marginBottom: 16 }}>Tasks</h2>
 
-            {/* Add task form */}
-            <form
-              action={addTask}
-              style={{ marginTop: 12, marginBottom: 24, display: 'flex', gap: 8 }}
-            >
+            {/* Enhanced task creation form */}
+            <form action={addTask}>
               <input type="hidden" name="jobId" value={job.id} />
-              <input
-                name="title"
-                placeholder="New task title"
-                style={{
-                  flex: 1,
-                  padding: '10px 12px',
-                  borderRadius: 6,
-                  border: '1px solid #cbd5e0',
-                  fontSize: 14,
-                  backgroundColor: '#ffffff',
-                  color: '#2d3748',
-                }}
+              <TaskForm
+                jobId={job.id}
+                allUsers={allUsers}
+                currentUserId={currentUserId}
               />
-              <button
-                type="submit"
-                style={{
-                  padding: '10px 16px',
-                  borderRadius: 6,
-                  border: 'none',
-                  background: '#4299e1',
-                  color: 'white',
-                  fontSize: 14,
-                  cursor: 'pointer',
-                  fontWeight: 500,
-                }}
-              >
-                Add Task
-              </button>
             </form>
 
             {job.tasks.length === 0 ? (
@@ -321,7 +339,7 @@ export default async function JobDetailPage({ params }: JobPageProps) {
                       task={task}
                       jobId={job.id}
                       allUsers={allUsers}
-                      currentUserId={allUsers[0]?.id || ''}
+                      currentUserId={currentUserId}
                     />
                   ))}
                 </tbody>
@@ -375,7 +393,7 @@ export default async function JobDetailPage({ params }: JobPageProps) {
             <AttachmentManager
               jobId={job.id}
               attachments={job.attachments}
-              currentUserId={allUsers[0]?.id || ''}
+              currentUserId={currentUserId}
             />
           </section>
         </div>

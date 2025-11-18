@@ -1,9 +1,12 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import bcrypt from 'bcryptjs';
 
 export async function GET() {
   try {
-    // 1. Create test users if they don't exist
+    // 1. Create test users if they don't exist (with passwords)
+    const defaultPassword = await bcrypt.hash('password123', 10);
+    
     const users = await Promise.all([
       prisma.user.upsert({
         where: { email: 'alice@example.com' },
@@ -11,6 +14,8 @@ export async function GET() {
         create: {
           email: 'alice@example.com',
           name: 'Alice Johnson',
+          password: defaultPassword,
+          role: 'USER',
         },
       }),
       prisma.user.upsert({
@@ -19,6 +24,8 @@ export async function GET() {
         create: {
           email: 'bob@example.com',
           name: 'Bob Smith',
+          password: defaultPassword,
+          role: 'USER',
         },
       }),
       prisma.user.upsert({
@@ -27,6 +34,8 @@ export async function GET() {
         create: {
           email: 'charlie@example.com',
           name: 'Charlie Brown',
+          password: defaultPassword,
+          role: 'USER',
         },
       }),
     ]);

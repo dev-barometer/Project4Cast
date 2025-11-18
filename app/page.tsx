@@ -14,6 +14,27 @@ export default function Home() {
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 24, marginTop: 48 }}>
         <Link
+          href="/my-tasks"
+          className="card-link"
+          style={{
+            display: 'block',
+            backgroundColor: '#ffffff',
+            padding: 32,
+            borderRadius: 12,
+            boxShadow: '0 1px 3px rgba(0, 0, 0, 0.05)',
+            textDecoration: 'none',
+            border: '2px solid #4299e1',
+          }}
+        >
+          <h2 style={{ fontSize: 20, fontWeight: 600, color: '#2d3748', marginBottom: 8 }}>
+            My Tasks
+          </h2>
+          <p style={{ fontSize: 14, color: '#718096', margin: 0, lineHeight: 1.6 }}>
+            View and manage tasks assigned to you across all jobs.
+          </p>
+        </Link>
+
+        <Link
           href="/jobs"
           className="card-link"
           style={{

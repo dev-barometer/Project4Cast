@@ -20,6 +20,21 @@
   - Upload, view, and delete attachments for jobs and tasks
   - File type validation (PDF, DOCX, PNG, PPTX)
   - 10MB file size limit
+- **Authentication** - User login system ✅
+  - Email/password authentication with NextAuth.js v5
+  - User signup and login pages
+  - Protected routes (all routes except `/login`, `/signup`, `/dev`)
+  - Session management
+  - Logout functionality
+  - User header with name/email display
+  - See `AUTH_SETUP.md` for setup instructions
+- **"My Tasks" dashboard** - View all tasks assigned to logged-in user ✅
+  - Filtered view showing only tasks assigned to the current user
+  - Summary statistics (not done, done, overdue, urgent)
+  - Highlights overdue tasks
+  - Shows job, client, brand, priority, and due date
+  - Links to job detail pages
+  - Accessible from header navigation and home page
 
 ## Version Control
 - Git repository initialized
@@ -27,8 +42,8 @@
 - See `GIT_GUIDE.md` for Git basics and rollback instructions
 
 ## Next Feature Options
-1. **Authentication** - User login system (needed for "My Tasks")
-2. **"My Tasks" dashboard** - View all tasks assigned to logged-in user
-3. **Notifications** - Email/UI alerts when tasks are completed
-4. **User invitations** - Invite users by email
-5. **Edit job brief** - Make the brief field editable
+1. **Notifications** - Email/UI alerts when tasks are completed
+2. **User invitations** - Invite users by email
+3. **Edit job brief** - Make the brief field editable
+4. **Password reset** - Allow users to reset forgotten passwords
+5. **Email verification** - Verify user email addresses
