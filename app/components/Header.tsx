@@ -8,6 +8,7 @@ type HeaderProps = {
   user?: {
     name?: string | null;
     email?: string;
+    role?: string;
   } | null;
 };
 
@@ -75,6 +76,18 @@ export default function Header({ user }: HeaderProps) {
           >
             All Tasks
           </Link>
+          {user?.role === 'ADMIN' && (
+            <Link
+              href="/invitations"
+              style={{
+                fontSize: 14,
+                color: '#4a5568',
+                textDecoration: 'none',
+              }}
+            >
+              Invitations
+            </Link>
+          )}
         </nav>
       </div>
       <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>

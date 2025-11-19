@@ -16,6 +16,13 @@ enum UserRole {
   USER
 }
 
+enum InvitationStatus {
+  PENDING
+  ACCEPTED
+  EXPIRED
+  CANCELLED
+}
+
 enum JobStatus {
   PLANNING
   IN_PROGRESS
@@ -58,6 +65,24 @@ model User {
   tasks       TaskAssignee[]
   comments    Comment[]
   attachments Attachment[]     @relation("UserAttachments")
+  invitationsSent Invitation[] @relation("InvitedBy")
+}
+
+model Invitation {
+  id          String   @id @default(cuid())
+  email       String
+  token       String   @unique
+  role        UserRole @default(USER)
+  invitedById String
+  invitedBy   User     @relation("InvitedBy", fields: [invitedById], references: [id])
+  status      InvitationStatus @default(PENDING)
+  createdAt   DateTime @default(now())
+  expiresAt   DateTime
+  acceptedAt  DateTime?
+
+  @@index([token])
+  @@index([email])
+  @@index([status])
 }
 
 model Client {

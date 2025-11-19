@@ -10,9 +10,16 @@ export default auth((req) => {
   const isOnSignupPage = nextUrl.pathname.startsWith('/signup');
   const isOnApiAuth = nextUrl.pathname.startsWith('/api/auth');
   const isOnDevPage = nextUrl.pathname.startsWith('/dev');
+  const isOnInvitePage = nextUrl.pathname.startsWith('/invite');
+  const isOnAdminPage = nextUrl.pathname.startsWith('/admin');
 
-  // Allow access to login, signup, dev, and API auth pages when not logged in
-  if ((isOnLoginPage || isOnSignupPage || isOnApiAuth || isOnDevPage) && !isLoggedIn) {
+  // Allow access to login, signup, dev, API auth, and invitation pages when not logged in
+  if ((isOnLoginPage || isOnSignupPage || isOnApiAuth || isOnDevPage || isOnInvitePage) && !isLoggedIn) {
+    return NextResponse.next();
+  }
+
+  // Allow access to admin pages when logged in
+  if (isOnAdminPage && isLoggedIn) {
     return NextResponse.next();
   }
 
