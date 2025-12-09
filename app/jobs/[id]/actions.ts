@@ -551,3 +551,105 @@ export async function deleteAttachment(formData: FormData) {
   }
 }
 
+// Server action to update job brief
+export async function updateJobBrief(formData: FormData) {
+  const jobId = formData.get('jobId')?.toString();
+  const brief = formData.get('brief')?.toString().trim() || null;
+
+  if (!jobId) {
+    return { success: false, error: 'Job ID is required' };
+  }
+
+  // Check if user is authenticated
+  const session = await auth();
+  if (!session?.user?.id) {
+    return { success: false, error: 'You must be logged in' };
+  }
+
+  // Check if user has access to this job (must be a collaborator or admin)
+  const user = await prisma.user.findUnique({
+    where: { id: session.user.id },
+    select: { role: true },
+  });
+
+  const isAdmin = user?.role === 'ADMIN';
+
+  if (!isAdmin) {
+    // Check if user is a collaborator
+    const collaborator = await prisma.jobCollaborator.findFirst({
+      where: {
+        jobId,
+        userId: session.user.id,
+      },
+    });
+
+    if (!collaborator) {
+      return { success: false, error: 'You do not have permission to edit this job' };
+    }
+  }
+
+  try {
+    await prisma.job.update({
+      where: { id: jobId },
+      data: { brief },
+    });
+
+    revalidatePath(`/jobs/${jobId}`);
+    return { success: true, error: null };
+  } catch (error: any) {
+    console.error('Error updating job brief:', error);
+    return { success: false, error: error.message || 'Failed to update brief' };
+  }
+}
+
+// Server action to update job resources URL
+export async function updateJobResources(formData: FormData) {
+  const jobId = formData.get('jobId')?.toString();
+  const resourcesUrl = formData.get('resourcesUrl')?.toString().trim() || null;
+
+  if (!jobId) {
+    return { success: false, error: 'Job ID is required' };
+  }
+
+  // Check if user is authenticated
+  const session = await auth();
+  if (!session?.user?.id) {
+    return { success: false, error: 'You must be logged in' };
+  }
+
+  // Check if user has access to this job (must be a collaborator or admin)
+  const user = await prisma.user.findUnique({
+    where: { id: session.user.id },
+    select: { role: true },
+  });
+
+  const isAdmin = user?.role === 'ADMIN';
+
+  if (!isAdmin) {
+    // Check if user is a collaborator
+    const collaborator = await prisma.jobCollaborator.findFirst({
+      where: {
+        jobId,
+        userId: session.user.id,
+      },
+    });
+
+    if (!collaborator) {
+      return { success: false, error: 'You do not have permission to edit this job' };
+    }
+  }
+
+  try {
+    await prisma.job.update({
+      where: { id: jobId },
+      data: { resourcesUrl },
+    });
+
+    revalidatePath(`/jobs/${jobId}`);
+    return { success: true, error: null };
+  } catch (error: any) {
+    console.error('Error updating job resources URL:', error);
+    return { success: false, error: error.message || 'Failed to update resources link' };
+  }
+}
+

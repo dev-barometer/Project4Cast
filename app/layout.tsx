@@ -4,6 +4,7 @@ import "./globals.css";
 import { auth } from '@/auth';
 import Header from './components/Header';
 import { prisma } from '@/lib/prisma';
+import EmailVerificationWrapper from './components/EmailVerificationWrapper';
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -38,7 +39,9 @@ export default async function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         {session?.user && <Header user={session.user} unreadNotificationCount={unreadNotificationCount} />}
-        {children}
+        <EmailVerificationWrapper>
+          {children}
+        </EmailVerificationWrapper>
       </body>
     </html>
   );

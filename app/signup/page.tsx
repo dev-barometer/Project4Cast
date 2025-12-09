@@ -56,8 +56,8 @@ export default function SignupPage() {
         return;
       }
 
-      // Redirect to login page
-      router.push('/login?message=Account created successfully. Please sign in.');
+      // Redirect to login page with verification message
+      router.push('/login?message=Account created! Please check your email to verify your account before signing in.');
     } catch (error) {
       setError('Something went wrong. Please try again.');
     } finally {

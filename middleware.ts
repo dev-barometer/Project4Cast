@@ -10,13 +10,14 @@ export default auth((req) => {
   const isOnSignupPage = nextUrl.pathname.startsWith('/signup');
   const isOnForgotPasswordPage = nextUrl.pathname.startsWith('/forgot-password');
   const isOnResetPasswordPage = nextUrl.pathname.startsWith('/reset-password');
+  const isOnVerifyEmailPage = nextUrl.pathname.startsWith('/verify-email');
   const isOnApiAuth = nextUrl.pathname.startsWith('/api/auth');
   const isOnDevPage = nextUrl.pathname.startsWith('/dev');
   const isOnInvitePage = nextUrl.pathname.startsWith('/invite');
   const isOnAdminPage = nextUrl.pathname.startsWith('/admin');
 
-  // Allow access to login, signup, password reset, dev, API auth, and invitation pages when not logged in
-  if ((isOnLoginPage || isOnSignupPage || isOnForgotPasswordPage || isOnResetPasswordPage || isOnApiAuth || isOnDevPage || isOnInvitePage) && !isLoggedIn) {
+  // Allow access to login, signup, password reset, email verification, dev, API auth, and invitation pages when not logged in
+  if ((isOnLoginPage || isOnSignupPage || isOnForgotPasswordPage || isOnResetPasswordPage || isOnVerifyEmailPage || isOnApiAuth || isOnDevPage || isOnInvitePage) && !isLoggedIn) {
     return NextResponse.next();
   }
 

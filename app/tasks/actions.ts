@@ -8,6 +8,7 @@ import { Prisma } from '@prisma/client';
 import { auth } from '@/auth';
 import { notifyTaskAssignment } from '@/lib/notifications';
 import { sendTaskAssignmentEmail } from '@/lib/email';
+import { requireEmailVerification } from '@/lib/security';
 
 // Server action to create a standalone task (no job required)
 // When used with useFormState, the signature is (prevState, formData)
@@ -21,6 +22,19 @@ export async function createStandaloneTask(prevState: any, formData: FormData) {
   const jobId = formData.get('jobId')?.toString() || null; // Optional - null if not provided
 
   if (!title) return { success: false, error: 'Task title is required' };
+
+  // Require email verification to create tasks
+  const session = await auth();
+  if (session?.user?.id) {
+    try {
+      await requireEmailVerification(session.user.id);
+    } catch (error: any) {
+      if (error.message === 'EMAIL_NOT_VERIFIED') {
+        return { success: false, error: 'Please verify your email address before creating tasks' };
+      }
+      throw error;
+    }
+  }
 
   // Validate priority
   const validPriority = ['LOW', 'MEDIUM', 'HIGH', 'URGENT'].includes(priority) 

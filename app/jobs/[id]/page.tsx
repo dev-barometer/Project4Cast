@@ -9,6 +9,8 @@ import TaskRow from './TaskRow';
 import CollaboratorManager from './CollaboratorManager';
 import AttachmentManager from './AttachmentManager';
 import TaskForm from './TaskForm';
+import EditableJobBrief from './EditableJobBrief';
+import EditableResources from './EditableResources';
 import { notifyTaskAssignment } from '@/lib/notifications';
 import { sendTaskAssignmentEmail } from '@/lib/email';
 
@@ -185,6 +187,7 @@ export default async function JobDetailPage({ params }: JobPageProps) {
     title: string;
     status: string;
     brief: string | null;
+    resourcesUrl: string | null;
     brand: {
       name: string;
       client: {
@@ -318,7 +321,7 @@ export default async function JobDetailPage({ params }: JobPageProps) {
         orderBy: { email: 'asc' },
       }),
     ]);
-    job = result[0];
+    job = result[0] as JobWithRelations | null;
     allUsers = result[1];
   } catch (error: any) {
     console.error('Database error:', error);
@@ -511,12 +514,22 @@ export default async function JobDetailPage({ params }: JobPageProps) {
             />
           </section>
 
-          {/* Brief placeholder */}
+          {/* Brief - editable */}
           <section style={{ marginBottom: 24, backgroundColor: '#ffffff', padding: 20, borderRadius: 8, boxShadow: '0 1px 3px rgba(0, 0, 0, 0.05)' }}>
-            <h3 style={{ fontSize: 16, fontWeight: 600, color: '#2d3748', marginBottom: 12 }}>Brief</h3>
-            <p style={{ fontSize: 14, marginTop: 8, color: '#4a5568', lineHeight: 1.6 }}>
-              {job.brief || <em style={{ color: '#a0aec0' }}>No brief added yet.</em>}
-            </p>
+            <EditableJobBrief
+              jobId={job.id}
+              initialBrief={job.brief}
+              canEdit={isAdmin || job.collaborators.some(c => c.userId === currentUserId)}
+            />
+          </section>
+
+          {/* Files - editable */}
+          <section style={{ marginBottom: 24, backgroundColor: '#ffffff', padding: 20, borderRadius: 8, boxShadow: '0 1px 3px rgba(0, 0, 0, 0.05)' }}>
+            <EditableResources
+              jobId={job.id}
+              initialResourcesUrl={job.resourcesUrl}
+              canEdit={isAdmin || job.collaborators.some(c => c.userId === currentUserId)}
+            />
           </section>
 
           {/* Job Attachments */}

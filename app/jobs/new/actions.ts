@@ -3,6 +3,8 @@
 // Server Actions for creating new jobs
 
 import { prisma } from '@/lib/prisma';
+import { auth } from '@/auth';
+import { requireEmailVerification } from '@/lib/security';
 
 // Server action to create a new job
 // When used with useFormState, the signature is (prevState, formData)
@@ -21,6 +23,19 @@ export async function createJob(prevState: any, formData: FormData) {
   // Validate status
   if (!['PLANNING', 'IN_PROGRESS', 'ON_HOLD', 'DELIVERED', 'ARCHIVED'].includes(status)) {
     return { error: 'Invalid status' };
+  }
+
+  // Require email verification to create jobs
+  const session = await auth();
+  if (session?.user?.id) {
+    try {
+      await requireEmailVerification(session.user.id);
+    } catch (error: any) {
+      if (error.message === 'EMAIL_NOT_VERIFIED') {
+        return { error: 'Please verify your email address before creating jobs' };
+      }
+      throw error;
+    }
   }
 
   // Check if job number already exists

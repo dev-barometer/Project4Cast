@@ -5,6 +5,7 @@ import { sendInvitationEmail } from '@/lib/email';
 import { auth } from '@/auth';
 import { revalidatePath } from 'next/cache';
 import { randomBytes } from 'crypto';
+import { requireEmailVerification } from '@/lib/security';
 
 // Generate a secure random token for invitations
 function generateInvitationToken(): string {
@@ -27,6 +28,16 @@ export async function createInvitation(prevState: any, formData: FormData) {
 
   if (!user || user.role !== 'ADMIN') {
     return { success: false, error: 'Only administrators can send invitations' };
+  }
+
+  // Require email verification for admins
+  try {
+    await requireEmailVerification(session.user.id);
+  } catch (error: any) {
+    if (error.message === 'EMAIL_NOT_VERIFIED') {
+      return { success: false, error: 'Please verify your email address before sending invitations' };
+    }
+    throw error;
   }
 
   const email = formData.get('email')?.toString().trim().toLowerCase();

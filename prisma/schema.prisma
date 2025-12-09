@@ -76,6 +76,7 @@ model User {
   notifications Notification[]
   notificationsActed Notification[] @relation("NotificationActor")
   passwordResetTokens PasswordResetToken[]
+  emailVerificationTokens EmailVerificationToken[]
 }
 
 model Invitation {
@@ -115,6 +116,7 @@ model Job {
   title         String
   status        JobStatus        @default(PLANNING)
   brief         String?
+  resourcesUrl  String?          // Link to Dropbox or other resources
 
   brandId       String
   brand         Brand            @relation(fields: [brandId], references: [id])
@@ -230,6 +232,19 @@ model PasswordResetToken {
   user      User     @relation(fields: [userId], references: [id])
   expiresAt DateTime
   usedAt    DateTime?
+  createdAt DateTime @default(now())
+
+  @@index([token])
+  @@index([userId])
+  @@index([expiresAt])
+}
+
+model EmailVerificationToken {
+  id        String   @id @default(cuid())
+  token     String   @unique
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  expiresAt DateTime
   createdAt DateTime @default(now())
 
   @@index([token])
