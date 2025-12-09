@@ -2,8 +2,25 @@
 
 import { prisma } from '@/lib/prisma';
 import Link from 'next/link';
+import { auth } from '@/auth';
+import { redirect } from 'next/navigation';
 
 export default async function JobsPage() {
+  // Get authenticated user
+  const session = await auth();
+  const currentUserId = session?.user?.id;
+
+  if (!currentUserId) {
+    redirect('/login');
+  }
+
+  // Get user to check if they're an admin
+  const user = await prisma.user.findUnique({
+    where: { id: currentUserId },
+    select: { role: true },
+  });
+
+  const isAdmin = user?.role === 'ADMIN';
   type JobWithRelations = {
     id: string;
     jobNumber: string;
@@ -22,17 +39,40 @@ export default async function JobsPage() {
   let dbError: string | null = null;
 
   try {
-    jobs = await prisma.job.findMany({
-      orderBy: { jobNumber: 'asc' },
-      include: {
-        brand: {
-          include: {
-            client: true,
+    // If admin, show all jobs. Otherwise, only show jobs where user is a collaborator
+    if (isAdmin) {
+      jobs = await prisma.job.findMany({
+        orderBy: { jobNumber: 'asc' },
+        include: {
+          brand: {
+            include: {
+              client: true,
+            },
+          },
+          tasks: true,
+        },
+      });
+    } else {
+      // Only show jobs where the user is a collaborator
+      jobs = await prisma.job.findMany({
+        where: {
+          collaborators: {
+            some: {
+              userId: currentUserId,
+            },
           },
         },
-        tasks: true,
+    orderBy: { jobNumber: 'asc' },
+    include: {
+      brand: {
+        include: {
+          client: true,
+        },
       },
-    });
+      tasks: true,
+    },
+  });
+    }
   } catch (error: any) {
     console.error('Database error:', error);
     dbError = error.message || 'Failed to connect to database';
@@ -47,25 +87,29 @@ export default async function JobsPage() {
             Jobs
           </h1>
           <p style={{ marginTop: 8, color: '#718096', fontSize: 15 }}>
-            All jobs in the system, with client, brand, and task info.
+            {isAdmin 
+              ? 'All jobs in the system, with client, brand, and task info.'
+              : 'Jobs you are assigned to as a collaborator.'}
           </p>
         </div>
-        <Link
-          href="/jobs/new"
-          style={{
-            padding: '10px 20px',
-            borderRadius: 6,
-            border: 'none',
-            background: '#4299e1',
-            color: 'white',
-            fontSize: 14,
-            textDecoration: 'none',
-            fontWeight: 500,
-            display: 'inline-block',
-          }}
-        >
-          + Create New Job
-        </Link>
+        {isAdmin && (
+          <Link
+            href="/jobs/new"
+            style={{
+              padding: '10px 20px',
+              borderRadius: 6,
+              border: 'none',
+              background: '#4299e1',
+              color: 'white',
+              fontSize: 14,
+              textDecoration: 'none',
+              fontWeight: 500,
+              display: 'inline-block',
+            }}
+          >
+            + Create New Job
+          </Link>
+        )}
       </div>
 
       <p style={{ marginTop: 8, marginBottom: 32, fontSize: 14, color: '#718096' }}>

@@ -3,6 +3,7 @@
 import { signOut } from 'next-auth/react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import NotificationBadge from './NotificationBadge';
 
 type HeaderProps = {
   user?: {
@@ -10,9 +11,10 @@ type HeaderProps = {
     email?: string;
     role?: string;
   } | null;
+  unreadNotificationCount?: number;
 };
 
-export default function Header({ user }: HeaderProps) {
+export default function Header({ user, unreadNotificationCount = 0 }: HeaderProps) {
   const router = useRouter();
 
   const handleSignOut = async () => {
@@ -76,17 +78,30 @@ export default function Header({ user }: HeaderProps) {
           >
             All Tasks
           </Link>
+          <NotificationBadge initialCount={unreadNotificationCount} />
           {user?.role === 'ADMIN' && (
-            <Link
-              href="/invitations"
-              style={{
-                fontSize: 14,
-                color: '#4a5568',
-                textDecoration: 'none',
-              }}
-            >
-              Invitations
-            </Link>
+            <>
+              <Link
+                href="/invitations"
+                style={{
+                  fontSize: 14,
+                  color: '#4a5568',
+                  textDecoration: 'none',
+                }}
+              >
+                Invitations
+              </Link>
+              <Link
+                href="/admin/collaborators"
+                style={{
+                  fontSize: 14,
+                  color: '#4a5568',
+                  textDecoration: 'none',
+                }}
+              >
+                Collaborators
+              </Link>
+            </>
           )}
         </nav>
       </div>

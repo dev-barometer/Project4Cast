@@ -9,6 +9,8 @@ import TaskRow from './TaskRow';
 import CollaboratorManager from './CollaboratorManager';
 import AttachmentManager from './AttachmentManager';
 import TaskForm from './TaskForm';
+import { notifyTaskAssignment } from '@/lib/notifications';
+import { sendTaskAssignmentEmail } from '@/lib/email';
 
 type JobPageProps = {
   params: { id: string };
@@ -32,7 +34,7 @@ async function addTask(formData: FormData) {
     : 'MEDIUM';
 
   // Create task with optional jobId and assignees if provided
-  await prisma.task.create({
+  const task = await prisma.task.create({
     data: {
       title,
       jobId: jobId || null, // null if no jobId (though this shouldn't happen on job page)
@@ -44,6 +46,95 @@ async function addTask(formData: FormData) {
       } : undefined,
     },
   });
+
+  // If task has assignees and is associated with a job, automatically add assignees as collaborators
+  if (jobId && assigneeIds.length > 0) {
+    // Get existing collaborators for this job
+    const existingCollaborators = await prisma.jobCollaborator.findMany({
+      where: {
+        jobId,
+        userId: { in: assigneeIds },
+      },
+      select: { userId: true },
+    });
+
+    const existingUserIds = existingCollaborators.map(c => c.userId);
+    const newCollaboratorIds = assigneeIds.filter(id => !existingUserIds.includes(id));
+
+    // Add new collaborators
+    if (newCollaboratorIds.length > 0) {
+      await prisma.jobCollaborator.createMany({
+        data: newCollaboratorIds.map(userId => ({
+          jobId,
+          userId,
+          role: 'COLLABORATOR',
+        })),
+      });
+    }
+  }
+
+  // Send notifications to assignees
+  if (assigneeIds.length > 0) {
+    try {
+      const session = await auth();
+      const actorId = session?.user?.id;
+      const actor = actorId ? await prisma.user.findUnique({ where: { id: actorId } }) : null;
+
+      // Get task and job details
+      const createdTask = await prisma.task.findUnique({
+        where: { id: task.id },
+        include: {
+          job: {
+            include: {
+              brand: {
+                include: {
+                  client: true,
+                },
+              },
+            },
+          },
+        },
+      });
+
+      const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
+      const taskUrl = jobId ? `${baseUrl}/jobs/${jobId}` : `${baseUrl}/tasks`;
+
+      // Notify each assignee
+      for (const assigneeId of assigneeIds) {
+        const assignedUser = await prisma.user.findUnique({
+          where: { id: assigneeId },
+        });
+
+        if (assignedUser && createdTask) {
+          // Create in-app notification
+          await notifyTaskAssignment({
+            userId: assigneeId,
+            taskId: task.id,
+            taskTitle: createdTask.title,
+            jobId: createdTask.jobId,
+            jobTitle: createdTask.job?.title || null,
+            actorId: actorId || null,
+          });
+
+          // Send email notification
+          try {
+            await sendTaskAssignmentEmail({
+              email: assignedUser.email,
+              taskTitle: createdTask.title,
+              jobTitle: createdTask.job?.title || null,
+              assignerName: actor?.name || null,
+              assignerEmail: actor?.email || 'System',
+              taskUrl,
+            });
+          } catch (emailError) {
+            console.error('Error sending task assignment email:', emailError);
+          }
+        }
+      }
+    } catch (notificationError) {
+      console.error('Error creating notifications:', notificationError);
+    }
+  }
 
   // Revalidate job page if jobId exists, otherwise revalidate task pages
   if (jobId) {
@@ -78,6 +169,14 @@ export default async function JobDetailPage({ params }: JobPageProps) {
       </main>
     );
   }
+
+  // Get user to check if they're an admin
+  const user = await prisma.user.findUnique({
+    where: { id: currentUserId },
+    select: { role: true },
+  });
+
+  const isAdmin = user?.role === 'ADMIN';
 
   // Fetch job and all users in parallel
   type JobWithRelations = {
@@ -257,6 +356,39 @@ export default async function JobDetailPage({ params }: JobPageProps) {
 
   if (!job) {
     notFound();
+  }
+
+  // Check if user has access to this job (admin or collaborator)
+  if (!isAdmin) {
+    const isCollaborator = job.collaborators.some(
+      (collab) => collab.userId === currentUserId
+    );
+    
+    if (!isCollaborator) {
+      return (
+        <main style={{ padding: 40, maxWidth: 1400, margin: '0 auto' }}>
+          <div
+            style={{
+              backgroundColor: '#fed7d7',
+              color: '#742a2a',
+              padding: '20px 24px',
+              borderRadius: 6,
+              fontSize: 14,
+            }}
+          >
+            <strong>Access Denied</strong>
+            <p style={{ marginTop: 8, marginBottom: 0 }}>
+              You don't have access to this job. You must be assigned as a collaborator to view it.
+            </p>
+            <div style={{ marginTop: 12 }}>
+              <Link href="/jobs" style={{ color: '#742a2a', textDecoration: 'underline' }}>
+                ← Back to Jobs
+              </Link>
+            </div>
+          </div>
+        </main>
+      );
+    }
   }
 
   return (

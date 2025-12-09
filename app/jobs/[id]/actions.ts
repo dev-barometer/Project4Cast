@@ -8,6 +8,10 @@ import { prisma } from '@/lib/prisma';
 import { revalidatePath } from 'next/cache';
 import { saveFile, isValidFileType, getFileUrl, extractPublicIdFromUrl } from '@/lib/file-upload';
 import { v2 as cloudinary } from 'cloudinary';
+import { auth } from '@/auth';
+import { notifyJobAssignment } from '@/lib/notifications';
+import { sendJobAssignmentEmail } from '@/lib/email';
+import { parseMentions, findUsersByMention, notifyCommentMention } from '@/lib/notifications';
 
 // Configure Cloudinary (same logic as in file-upload.ts)
 // Parse CLOUDINARY_URL or use individual variables
@@ -50,6 +54,25 @@ export async function updateTask(formData: FormData) {
 
   if (!taskId || !jobId) return;
 
+  // Get current task to check if status is changing to DONE
+  const currentTask = await prisma.task.findUnique({
+    where: { id: taskId },
+    include: {
+      job: {
+        include: {
+          collaborators: {
+            include: {
+              user: true,
+            },
+          },
+        },
+      },
+    },
+  });
+
+  const wasCompleted = currentTask?.status === 'DONE';
+  const isCompleting = status === 'DONE' && !wasCompleted;
+
   // Build update object with only the fields that were provided
   const updateData: {
     title?: string;
@@ -74,6 +97,40 @@ export async function updateTask(formData: FormData) {
     where: { id: taskId },
     data: updateData,
   });
+
+  // If task was just completed, notify relevant users
+  if (isCompleting && currentTask) {
+    try {
+      const session = await auth();
+      const actorId = session?.user?.id;
+      const actor = actorId ? await prisma.user.findUnique({ where: { id: actorId } }) : null;
+
+      // Notify job admins and task creator (if we track that)
+      // For now, notify all job collaborators who are admins
+      if (currentTask.job) {
+        const adminCollaborators = currentTask.job.collaborators.filter(
+          (c) => c.user.role === 'ADMIN'
+        );
+
+        const { notifyTaskCompletion } = await import('@/lib/notifications');
+        for (const collaborator of adminCollaborators) {
+          if (collaborator.userId !== actorId) {
+            // Don't notify the person who completed it
+            await notifyTaskCompletion({
+              userId: collaborator.userId,
+              taskId,
+              taskTitle: currentTask.title,
+              jobId: currentTask.jobId,
+              jobTitle: currentTask.job.title,
+              actorId: actorId || null,
+            });
+          }
+        }
+      }
+    } catch (notificationError) {
+      console.error('Error creating task completion notification:', notificationError);
+    }
+  }
 
   revalidatePath(`/jobs/${jobId}`);
 }
@@ -102,6 +159,24 @@ export async function addAssignee(formData: FormData) {
         userId,
       },
     });
+
+    // Automatically add user as collaborator if they're not already one
+    const existingCollaborator = await prisma.jobCollaborator.findFirst({
+      where: {
+        jobId,
+        userId,
+      },
+    });
+
+    if (!existingCollaborator) {
+      await prisma.jobCollaborator.create({
+        data: {
+          jobId,
+          userId,
+          role: 'COLLABORATOR',
+        },
+      });
+    }
   }
 
   revalidatePath(`/jobs/${jobId}`);
@@ -136,6 +211,10 @@ export async function addCollaborator(formData: FormData) {
   // Validate role
   if (!['OWNER', 'COLLABORATOR', 'VIEWER'].includes(role)) return;
 
+  // Get current user (actor)
+  const session = await auth();
+  const actorId = session?.user?.id;
+
   // Check if collaborator already exists
   const existing = await prisma.jobCollaborator.findFirst({
     where: {
@@ -153,6 +232,48 @@ export async function addCollaborator(formData: FormData) {
         role: role as 'OWNER' | 'COLLABORATOR' | 'VIEWER',
       },
     });
+
+    // Create notification and send email
+    try {
+      const job = await prisma.job.findUnique({
+        where: { id: jobId },
+      });
+
+      const assignedUser = await prisma.user.findUnique({
+        where: { id: userId },
+      });
+
+      const actor = actorId ? await prisma.user.findUnique({ where: { id: actorId } }) : null;
+
+      if (job && assignedUser) {
+        const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
+        const jobUrl = `${baseUrl}/jobs/${jobId}`;
+
+        // Create in-app notification
+        await notifyJobAssignment({
+          userId,
+          jobId,
+          jobTitle: job.title,
+          actorId: actorId || null,
+        });
+
+        // Send email notification
+        try {
+          await sendJobAssignmentEmail({
+            email: assignedUser.email,
+            jobTitle: job.title,
+            jobNumber: job.jobNumber,
+            assignerName: actor?.name || null,
+            assignerEmail: actor?.email || 'System',
+            jobUrl,
+          });
+        } catch (emailError) {
+          console.error('Error sending job assignment email:', emailError);
+        }
+      }
+    } catch (notificationError) {
+      console.error('Error creating notification:', notificationError);
+    }
   }
 
   revalidatePath(`/jobs/${jobId}`);
@@ -165,14 +286,29 @@ export async function removeCollaborator(formData: FormData) {
 
   if (!jobId || !userId) return;
 
-  await prisma.jobCollaborator.deleteMany({
-    where: {
-      jobId,
-      userId,
-    },
-  });
+  // Remove collaborator and all their task assignments for this job in a transaction
+  await prisma.$transaction([
+    // Remove all task assignments for this user on tasks in this job
+    prisma.taskAssignee.deleteMany({
+      where: {
+        userId,
+        task: {
+          jobId,
+        },
+      },
+    }),
+    // Remove the collaborator
+    prisma.jobCollaborator.deleteMany({
+      where: {
+        jobId,
+        userId,
+      },
+    }),
+  ]);
 
   revalidatePath(`/jobs/${jobId}`);
+  revalidatePath('/tasks');
+  revalidatePath('/my-tasks');
 }
 
 // Server action to update a collaborator's role
@@ -212,13 +348,52 @@ export async function addTaskComment(prevState: any, formData: FormData) {
       return { error: 'Missing required fields', success: false };
     }
 
-    await prisma.comment.create({
+    const comment = await prisma.comment.create({
       data: {
         body,
         taskId,
         authorId,
       },
     });
+
+    // Parse @mentions and send notifications
+    try {
+      const mentions = parseMentions(body);
+      if (mentions.length > 0) {
+        const author = await prisma.user.findUnique({
+          where: { id: authorId },
+        });
+
+        const task = await prisma.task.findUnique({
+          where: { id: taskId },
+          include: {
+            job: true,
+          },
+        });
+
+        // Find users mentioned
+        for (const mention of mentions) {
+          const userIds = await findUsersByMention(mention);
+          for (const mentionedUserId of userIds) {
+            // Don't notify the author
+            if (mentionedUserId !== authorId) {
+              await notifyCommentMention({
+                userId: mentionedUserId,
+                commentId: comment.id,
+                taskId: task?.id || null,
+                taskTitle: task?.title || null,
+                jobId: task?.jobId || null,
+                jobTitle: task?.job?.title || null,
+                actorId: authorId,
+                actorName: author?.name || null,
+              });
+            }
+          }
+        }
+      }
+    } catch (mentionError) {
+      console.error('Error processing mentions:', mentionError);
+    }
 
     revalidatePath(`/jobs/${jobId}`);
     return { success: true, error: null };

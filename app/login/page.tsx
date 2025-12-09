@@ -183,6 +183,25 @@ export default function LoginPage() {
             textAlign: 'center',
             fontSize: 14,
             color: '#718096',
+            marginBottom: 12,
+          }}
+        >
+          <Link
+            href="/forgot-password"
+            style={{
+              color: '#4299e1',
+              textDecoration: 'none',
+              fontWeight: 500,
+            }}
+          >
+            Forgot password?
+          </Link>
+        </div>
+        <div
+          style={{
+            textAlign: 'center',
+            fontSize: 14,
+            color: '#718096',
           }}
         >
           Don't have an account?{' '}

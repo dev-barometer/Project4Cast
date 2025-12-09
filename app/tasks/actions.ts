@@ -5,6 +5,9 @@
 import { prisma } from '@/lib/prisma';
 import { revalidatePath } from 'next/cache';
 import { Prisma } from '@prisma/client';
+import { auth } from '@/auth';
+import { notifyTaskAssignment } from '@/lib/notifications';
+import { sendTaskAssignmentEmail } from '@/lib/email';
 
 // Server action to create a standalone task (no job required)
 // When used with useFormState, the signature is (prevState, formData)
@@ -32,12 +35,16 @@ export async function createStandaloneTask(prevState: any, formData: FormData) {
       status: 'TODO',
       priority: validPriority,
       dueDate: dueDate ? new Date(dueDate) : null,
-      // Set jobId directly (can be null for standalone tasks)
-      jobId: jobId || null,
       // Add assignees if provided
       ...(assigneeIds.length > 0 ? {
         assignees: {
           create: assigneeIds.map(userId => ({ userId })),
+        },
+      } : {}),
+      // Connect to job if jobId is provided
+      ...(jobId ? {
+        job: {
+          connect: { id: jobId },
         },
       } : {}),
     };
@@ -45,6 +52,95 @@ export async function createStandaloneTask(prevState: any, formData: FormData) {
     const task = await prisma.task.create({
       data: createData,
     });
+
+    // If task has assignees and is associated with a job, automatically add assignees as collaborators
+    if (jobId && assigneeIds.length > 0) {
+      // Get existing collaborators for this job
+      const existingCollaborators = await prisma.jobCollaborator.findMany({
+        where: {
+          jobId,
+          userId: { in: assigneeIds },
+        },
+        select: { userId: true },
+      });
+
+      const existingUserIds = existingCollaborators.map(c => c.userId);
+      const newCollaboratorIds = assigneeIds.filter(id => !existingUserIds.includes(id));
+
+      // Add new collaborators
+      if (newCollaboratorIds.length > 0) {
+        await prisma.jobCollaborator.createMany({
+          data: newCollaboratorIds.map(userId => ({
+            jobId,
+            userId,
+            role: 'COLLABORATOR',
+          })),
+        });
+      }
+    }
+
+    // Send notifications to assignees
+    if (assigneeIds.length > 0) {
+      try {
+        const session = await auth();
+        const actorId = session?.user?.id;
+        const actor = actorId ? await prisma.user.findUnique({ where: { id: actorId } }) : null;
+
+        // Get task and job details
+        const createdTask = await prisma.task.findUnique({
+          where: { id: task.id },
+          include: {
+            job: {
+              include: {
+                brand: {
+                  include: {
+                    client: true,
+                  },
+                },
+              },
+            },
+          },
+        });
+
+        const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
+        const taskUrl = jobId ? `${baseUrl}/jobs/${jobId}` : `${baseUrl}/tasks`;
+
+        // Notify each assignee
+        for (const assigneeId of assigneeIds) {
+          const assignedUser = await prisma.user.findUnique({
+            where: { id: assigneeId },
+          });
+
+          if (assignedUser && createdTask) {
+            // Create in-app notification
+            await notifyTaskAssignment({
+              userId: assigneeId,
+              taskId: task.id,
+              taskTitle: createdTask.title,
+              jobId: createdTask.jobId,
+              jobTitle: createdTask.job?.title || null,
+              actorId: actorId || null,
+            });
+
+            // Send email notification
+            try {
+              await sendTaskAssignmentEmail({
+                email: assignedUser.email,
+                taskTitle: createdTask.title,
+                jobTitle: createdTask.job?.title || null,
+                assignerName: actor?.name || null,
+                assignerEmail: actor?.email || 'System',
+                taskUrl,
+              });
+            } catch (emailError) {
+              console.error('Error sending task assignment email:', emailError);
+            }
+          }
+        }
+      } catch (notificationError) {
+        console.error('Error creating notifications:', notificationError);
+      }
+    }
 
     // Revalidate both task pages
     revalidatePath('/tasks');
@@ -73,6 +169,25 @@ export async function updateTask(formData: FormData) {
 
   if (!taskId) return;
 
+  // Get current task to check if status is changing to DONE
+  const currentTask = await prisma.task.findUnique({
+    where: { id: taskId },
+    include: {
+      job: {
+        include: {
+          collaborators: {
+            include: {
+              user: true,
+            },
+          },
+        },
+      },
+    },
+  });
+
+  const wasCompleted = currentTask?.status === 'DONE';
+  const isCompleting = status === 'DONE' && !wasCompleted;
+
   // Build update object with only the fields that were provided
   const updateData: {
     title?: string;
@@ -98,6 +213,40 @@ export async function updateTask(formData: FormData) {
     data: updateData,
   });
 
+  // If task was just completed, notify relevant users
+  if (isCompleting && currentTask) {
+    try {
+      const session = await auth();
+      const actorId = session?.user?.id;
+      const actor = actorId ? await prisma.user.findUnique({ where: { id: actorId } }) : null;
+
+      // Notify job admins and task creator (if we track that)
+      // For now, notify all job collaborators who are admins
+      if (currentTask.job) {
+        const adminCollaborators = currentTask.job.collaborators.filter(
+          (c) => c.user.role === 'ADMIN'
+        );
+
+        const { notifyTaskCompletion } = await import('@/lib/notifications');
+        for (const collaborator of adminCollaborators) {
+          if (collaborator.userId !== actorId) {
+            // Don't notify the person who completed it
+            await notifyTaskCompletion({
+              userId: collaborator.userId,
+              taskId,
+              taskTitle: currentTask.title,
+              jobId: currentTask.jobId,
+              jobTitle: currentTask.job.title,
+              actorId: actorId || null,
+            });
+          }
+        }
+      }
+    } catch (notificationError) {
+      console.error('Error creating task completion notification:', notificationError);
+    }
+  }
+
   // Revalidate appropriate paths
   if (jobId) {
     revalidatePath(`/jobs/${jobId}`);
@@ -116,6 +265,10 @@ export async function addAssignee(formData: FormData) {
 
   if (!taskId || !userId) return;
 
+  // Get current user (actor)
+  const session = await auth();
+  const actorId = session?.user?.id;
+
   // Check if assignee already exists (the unique constraint will prevent duplicates)
   const existing = await prisma.taskAssignee.findFirst({
     where: {
@@ -132,6 +285,84 @@ export async function addAssignee(formData: FormData) {
         userId,
       },
     });
+
+    // If task is associated with a job, automatically add user as collaborator
+    if (jobId) {
+      const existingCollaborator = await prisma.jobCollaborator.findFirst({
+        where: {
+          jobId,
+          userId,
+        },
+      });
+
+      if (!existingCollaborator) {
+        await prisma.jobCollaborator.create({
+          data: {
+            jobId,
+            userId,
+            role: 'COLLABORATOR',
+          },
+        });
+      }
+    }
+
+    // Create notification and send email
+    try {
+      // Get task and job details
+      const task = await prisma.task.findUnique({
+        where: { id: taskId },
+        include: {
+          job: {
+            include: {
+              brand: {
+                include: {
+                  client: true,
+                },
+              },
+            },
+          },
+        },
+      });
+
+      const assignedUser = await prisma.user.findUnique({
+        where: { id: userId },
+      });
+
+      const actor = actorId ? await prisma.user.findUnique({ where: { id: actorId } }) : null;
+
+      if (task && assignedUser) {
+        const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
+        const taskUrl = jobId ? `${baseUrl}/jobs/${jobId}` : `${baseUrl}/tasks`;
+
+        // Create in-app notification
+        await notifyTaskAssignment({
+          userId,
+          taskId,
+          taskTitle: task.title,
+          jobId: task.jobId,
+          jobTitle: task.job?.title || null,
+          actorId: actorId || null,
+        });
+
+        // Send email notification
+        try {
+          await sendTaskAssignmentEmail({
+            email: assignedUser.email,
+            taskTitle: task.title,
+            jobTitle: task.job?.title || null,
+            assignerName: actor?.name || null,
+            assignerEmail: actor?.email || 'System',
+            taskUrl,
+          });
+        } catch (emailError) {
+          // Don't fail the assignment if email fails
+          console.error('Error sending task assignment email:', emailError);
+        }
+      }
+    } catch (notificationError) {
+      // Don't fail the assignment if notification fails
+      console.error('Error creating notification:', notificationError);
+    }
   }
 
   // Revalidate appropriate paths
