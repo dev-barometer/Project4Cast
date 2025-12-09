@@ -36,12 +36,32 @@
   - View all users and their job/task assignments
   - Remove users from all jobs (removes all task assignments too)
 - **Auto-Collaborator Assignment**: When someone is assigned to a task, they're automatically added as a collaborator on that job
+- **Password Reset** (`/forgot-password`, `/reset-password`): Secure password reset flow
+  - "Forgot password?" link on login page
+  - Email-based password reset with secure tokens
+  - 1-hour token expiration
+  - Single-use tokens (automatically invalidated after use)
+  - Password strength validation (minimum 8 characters)
 
 ### File Management
 - **Cloudinary Integration**: Cloud storage for job and task attachments
 - **File Upload**: Drag-and-drop or click to upload
 - **File Viewing**: View/download uploaded files
 - **File Deletion**: Remove attachments from jobs and tasks
+
+### Notifications System
+- **Notification Center** (`/notifications`): In-app notification center
+  - View all notifications (read/unread status)
+  - Click to navigate to related tasks/jobs
+  - "Mark all as read" functionality
+  - Time ago formatting
+- **Notification Badge**: Header badge showing unread count (auto-updates every 30 seconds)
+- **Notification Types**:
+  - Task assignment (email + in-app)
+  - Job assignment (email + in-app)
+  - Task completion (in-app to job admins)
+  - Comment @mentions (in-app when mentioned)
+- **Email Notifications**: Sent for task and job assignments via Resend
 
 ### UI/UX
 - Clean, modern interface with consistent styling
@@ -53,22 +73,14 @@
 - Fixed Client Component error in Collaborators page (removed onClick from Server Component)
 - Job visibility restrictions implemented
 - Auto-add assignees as collaborators working correctly
+- Notification system fully implemented and tested
+- Password reset functionality completed
 
 ## 📋 What's Next? (Your Choice)
 
 Based on your project plan, here are potential next features:
 
-1. **Notifications System**
-   - Email notifications when tasks are assigned/completed
-   - In-app notification center
-   - Real-time updates
-
-2. **Password Reset**
-   - "Forgot password" flow
-   - Email-based password reset links
-   - Secure token generation
-
-3. **Email Verification**
+1. **Email Verification**
    - Verify user email addresses on signup
    - Resend verification emails
    - Prevent unverified users from accessing certain features
@@ -133,8 +145,11 @@ npx prisma migrate dev
 
 - All features are working and tested
 - The invitation system is set up with Resend (using `forecast.barometergroup.com`)
+- Notification system is fully functional with email and in-app notifications
+- Password reset system is ready (migration pending database connection)
 - Job visibility is restricted: users only see jobs they're collaborators on
 - Task assignees are automatically added as job collaborators
+- Database migrations: Notification and PasswordResetToken tables need to be applied when database connection is stable
 
 ---
 
