@@ -23,12 +23,6 @@ export default async function NewJobPage() {
         <h1 style={{ fontSize: 28, fontWeight: 600, color: '#2d3748', marginBottom: 8 }}>
           Create New Job
         </h1>
-        <p style={{ color: '#718096', fontSize: 15 }}>
-          Create a new job and assign it to a client and brand.
-        </p>
-        <p style={{ marginTop: 16, fontSize: 14, color: '#718096' }}>
-          <Link href="/jobs" style={{ color: '#4299e1', textDecoration: 'none' }}>← Back to Jobs</Link>
-        </p>
       </div>
 
       {/* Form Component */}

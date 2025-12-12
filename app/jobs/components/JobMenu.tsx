@@ -100,11 +100,12 @@ export default function JobMenu({ jobId, jobNumber, jobStatus, onMoveTo }: JobMe
                 formData.append('jobId', jobId);
                 const result = await markJobActive(formData);
                 if (result.success) {
-                  router.refresh();
+                  setIsOpen(false);
+                  window.location.reload();
                 } else {
                   alert(result.error || 'Failed to mark job as active');
+                  setIsOpen(false);
                 }
-                setIsOpen(false);
               }}
               style={{
                 width: '100%',
@@ -129,11 +130,12 @@ export default function JobMenu({ jobId, jobNumber, jobStatus, onMoveTo }: JobMe
                 formData.append('jobId', jobId);
                 const result = await markJobInactive(formData);
                 if (result.success) {
-                  router.refresh();
+                  setIsOpen(false);
+                  window.location.reload();
                 } else {
                   alert(result.error || 'Failed to mark job as inactive');
+                  setIsOpen(false);
                 }
-                setIsOpen(false);
               }}
               style={{
                 width: '100%',

@@ -12,18 +12,21 @@ export async function createJob(prevState: any, formData: FormData) {
   const jobNumber = formData.get('jobNumber')?.toString().trim();
   const title = formData.get('title')?.toString().trim();
   const brandId = formData.get('brandId')?.toString();
-  const status = formData.get('status')?.toString() || 'PLANNING';
-  const brief = formData.get('brief')?.toString().trim();
+  // All new jobs default to PLANNING (active status)
+  const status = 'PLANNING';
 
   // Validate required fields
   if (!jobNumber || !title || !brandId) {
     return { error: 'Job number, title, and brand are required' };
   }
 
-  // Validate status
-  if (!['PLANNING', 'IN_PROGRESS', 'ON_HOLD', 'DELIVERED', 'ARCHIVED'].includes(status)) {
-    return { error: 'Invalid status' };
+  // Validate job number format: XXX-000 (3 uppercase letters, hyphen, 3 numbers)
+  const jobNumberPattern = /^[A-Z]{3}-[0-9]{3}$/;
+  if (!jobNumberPattern.test(jobNumber)) {
+    return { error: 'Job number must be in format XXX-000 (3 uppercase letters, hyphen, 3 numbers)' };
   }
+
+  // Status is always PLANNING for new jobs (no validation needed)
 
   // Require email verification to create jobs
   const session = await auth();
@@ -54,8 +57,8 @@ export async function createJob(prevState: any, formData: FormData) {
         jobNumber,
         title,
         brandId,
-        status: status as 'PLANNING' | 'IN_PROGRESS' | 'ON_HOLD' | 'DELIVERED' | 'ARCHIVED',
-        brief: brief || null,
+        status: 'PLANNING',
+        brief: null,
       },
     });
 
