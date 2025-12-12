@@ -5,12 +5,8 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { revalidatePath } from 'next/cache';
 import { auth } from '@/auth';
-import TaskRow from './TaskRow';
-import CollaboratorManager from './CollaboratorManager';
-import AttachmentManager from './AttachmentManager';
-import TaskForm from './TaskForm';
-import EditableJobBrief from './EditableJobBrief';
-import EditableResources from './EditableResources';
+import JobSidebar from '../components/JobSidebar';
+import JobDetailView from './JobDetailView';
 import { notifyTaskAssignment } from '@/lib/notifications';
 import { sendTaskAssignmentEmail } from '@/lib/email';
 
@@ -197,6 +193,7 @@ export default async function JobDetailPage({ params }: JobPageProps) {
     tasks: Array<{
       id: string;
       title: string;
+      description: string | null;
       status: 'TODO' | 'IN_PROGRESS' | 'BLOCKED' | 'DONE';
       priority: 'LOW' | 'MEDIUM' | 'HIGH' | 'URGENT';
       dueDate: Date | null;
@@ -264,6 +261,23 @@ export default async function JobDetailPage({ params }: JobPageProps) {
 
   let job: JobWithRelations | null = null;
   let allUsers: User[] = [];
+  let allJobs: Array<{
+    id: string;
+    jobNumber: string;
+    title: string;
+    status: string;
+    brand: {
+      name: string;
+      client: {
+        name: string;
+      } | null;
+    } | null;
+    tasks: Array<{
+      id: string;
+      status: 'TODO' | 'IN_PROGRESS' | 'BLOCKED' | 'DONE';
+      dueDate: Date | string | null;
+    }>;
+  }> = [];
   let dbError: string | null = null;
 
   try {
@@ -314,20 +328,64 @@ export default async function JobDetailPage({ params }: JobPageProps) {
               uploadedAt: 'desc',
             },
           },
-       //   orderBy: { createdAt: 'asc' }, // if this errors, remove it (no createdAt on Task)
         },
       }),
       prisma.user.findMany({
         orderBy: { email: 'asc' },
       }),
+      // Fetch all jobs for sidebar
+      isAdmin
+        ? prisma.job.findMany({
+            orderBy: { jobNumber: 'asc' },
+            include: {
+              brand: {
+                include: {
+                  client: true,
+                },
+              },
+              tasks: {
+                select: {
+                  id: true,
+                  status: true,
+                  dueDate: true,
+                },
+              },
+            },
+          })
+        : prisma.job.findMany({
+            where: {
+              collaborators: {
+                some: {
+                  userId: currentUserId,
+                },
+              },
+            },
+            orderBy: { jobNumber: 'asc' },
+            include: {
+              brand: {
+                include: {
+                  client: true,
+                },
+              },
+              tasks: {
+                select: {
+                  id: true,
+                  status: true,
+                  dueDate: true,
+                },
+              },
+            },
+          }),
     ]);
     job = result[0] as JobWithRelations | null;
     allUsers = result[1];
+    allJobs = result[2] as typeof allJobs;
   } catch (error: any) {
     console.error('Database error:', error);
     dbError = error.message || 'Failed to connect to database';
     job = null;
     allUsers = [];
+    allJobs = [];
   }
 
   // Show database error if connection failed
@@ -395,155 +453,16 @@ export default async function JobDetailPage({ params }: JobPageProps) {
   }
 
   return (
-    <main style={{ padding: 40, maxWidth: 1400, margin: '0 auto' }}>
-      {/* Breadcrumbs */}
-      <p style={{ marginBottom: 20, fontSize: 14, color: '#718096' }}>
-        <Link href="/jobs" style={{ color: '#4299e1', textDecoration: 'none' }}>← Jobs</Link>
-      </p>
-
-      {/* Job header */}
-      <header style={{ marginBottom: 32 }}>
-        <h1 style={{ fontSize: 28, fontWeight: 600, color: '#2d3748', marginBottom: 8 }}>
-          {job.jobNumber} — {job.title}
-        </h1>
-        <p style={{ marginTop: 8, color: '#718096', fontSize: 15 }}>
-          Status: <strong style={{ color: '#4a5568' }}>{job.status}</strong>
-        </p>
-        <p style={{ marginTop: 4, fontSize: 14, color: '#a0aec0' }}>
-          {job.brand?.client?.name && job.brand?.name
-            ? `${job.brand.client.name} · ${job.brand.name}`
-            : null}
-        </p>
-      </header>
-
-      {/* Layout: left = job / tasks, right = meta */}
-      <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: 32 }}>
-        {/* LEFT COLUMN */}
-        <div>
-          {/* Tasks section */}
-          <section>
-            <h2 style={{ fontSize: 20, fontWeight: 600, color: '#2d3748', marginBottom: 16 }}>Tasks</h2>
-
-            {/* Enhanced task creation form */}
-            <form action={addTask}>
-              <input type="hidden" name="jobId" value={job.id} />
-              <TaskForm
-                jobId={job.id}
-                allUsers={allUsers}
-                currentUserId={currentUserId}
-              />
-            </form>
-
-            {job.tasks.length === 0 ? (
-              <p style={{ color: '#718096', padding: 24 }}>No tasks yet.</p>
-            ) : (
-              <table
-                style={{
-                  borderCollapse: 'collapse',
-                  width: '100%',
-                  fontSize: 14,
-                  backgroundColor: '#ffffff',
-                  borderRadius: 8,
-                  overflow: 'hidden',
-                  boxShadow: '0 1px 3px rgba(0, 0, 0, 0.05)',
-                }}
-              >
-                <thead>
-                  <tr style={{ backgroundColor: '#f7fafc' }}>
-                    <th style={{ textAlign: 'center', padding: '12px 16px', borderBottom: '1px solid #e2e8f0', color: '#4a5568', fontWeight: 600, fontSize: 13, width: 40 }}>
-                      {/* Checkbox column - no header */}
-                    </th>
-                    <th style={{ textAlign: 'left', padding: '12px 16px', borderBottom: '1px solid #e2e8f0', color: '#4a5568', fontWeight: 600, fontSize: 13 }}>
-                      Title
-                    </th>
-                    <th style={{ textAlign: 'left', padding: '12px 16px', borderBottom: '1px solid #e2e8f0', color: '#4a5568', fontWeight: 600, fontSize: 13 }}>
-                      Priority
-                    </th>
-                    <th style={{ textAlign: 'left', padding: '12px 16px', borderBottom: '1px solid #e2e8f0', color: '#4a5568', fontWeight: 600, fontSize: 13 }}>
-                      Due Date
-                    </th>
-                    <th style={{ textAlign: 'left', padding: '12px 16px', borderBottom: '1px solid #e2e8f0', color: '#4a5568', fontWeight: 600, fontSize: 13 }}>
-                      Assignees
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {job.tasks.map((task) => (
-                    <TaskRow
-                      key={task.id}
-                      task={task}
-                      jobId={job.id}
-                      allUsers={allUsers}
-                      currentUserId={currentUserId}
-                    />
-                  ))}
-                </tbody>
-              </table>
-            )}
-          </section>
-        </div>
-
-        {/* RIGHT COLUMN */}
-        <div>
-          {/* Job info section */}
-          <section style={{ marginBottom: 24, backgroundColor: '#ffffff', padding: 20, borderRadius: 8, boxShadow: '0 1px 3px rgba(0, 0, 0, 0.05)' }}>
-            <h3 style={{ fontSize: 16, fontWeight: 600, color: '#2d3748', marginBottom: 12 }}>Job Info</h3>
-            <dl style={{ fontSize: 14, marginTop: 8 }}>
-              <div style={{ marginBottom: 8 }}>
-                <dt style={{ fontWeight: 600, color: '#4a5568', marginBottom: 2 }}>Job #</dt>
-                <dd style={{ color: '#2d3748' }}>{job.jobNumber}</dd>
-              </div>
-              <div style={{ marginBottom: 8 }}>
-                <dt style={{ fontWeight: 600, color: '#4a5568', marginBottom: 2 }}>Client</dt>
-                <dd style={{ color: '#2d3748' }}>{job.brand?.client?.name ?? '—'}</dd>
-              </div>
-              <div style={{ marginBottom: 8 }}>
-                <dt style={{ fontWeight: 600, color: '#4a5568', marginBottom: 2 }}>Brand</dt>
-                <dd style={{ color: '#2d3748' }}>{job.brand?.name ?? '—'}</dd>
-              </div>
-            </dl>
-          </section>
-
-          {/* Collaborators - editable */}
-          <section style={{ marginBottom: 24, backgroundColor: '#ffffff', padding: 20, borderRadius: 8, boxShadow: '0 1px 3px rgba(0, 0, 0, 0.05)' }}>
-            <h3 style={{ fontSize: 16, fontWeight: 600, color: '#2d3748', marginBottom: 12 }}>Collaborators</h3>
-            <CollaboratorManager
-              collaborators={job.collaborators}
-              allUsers={allUsers}
-              jobId={job.id}
-            />
-          </section>
-
-          {/* Brief - editable */}
-          <section style={{ marginBottom: 24, backgroundColor: '#ffffff', padding: 20, borderRadius: 8, boxShadow: '0 1px 3px rgba(0, 0, 0, 0.05)' }}>
-            <EditableJobBrief
-              jobId={job.id}
-              initialBrief={job.brief}
-              canEdit={isAdmin || job.collaborators.some(c => c.userId === currentUserId)}
-            />
-          </section>
-
-          {/* Files - editable */}
-          <section style={{ marginBottom: 24, backgroundColor: '#ffffff', padding: 20, borderRadius: 8, boxShadow: '0 1px 3px rgba(0, 0, 0, 0.05)' }}>
-            <EditableResources
-              jobId={job.id}
-              initialResourcesUrl={job.resourcesUrl}
-              canEdit={isAdmin || job.collaborators.some(c => c.userId === currentUserId)}
-            />
-          </section>
-
-          {/* Job Attachments */}
-          <section style={{ marginBottom: 24, backgroundColor: '#ffffff', padding: 20, borderRadius: 8, boxShadow: '0 1px 3px rgba(0, 0, 0, 0.05)' }}>
-            <h3 style={{ fontSize: 16, fontWeight: 600, color: '#2d3748', marginBottom: 12 }}>Attachments</h3>
-            <AttachmentManager
-              jobId={job.id}
-              attachments={job.attachments}
-              currentUserId={currentUserId}
-            />
-          </section>
-        </div>
-      </div>
-    </main>
+    <>
+      <JobSidebar jobs={allJobs} isAdmin={isAdmin} currentJobId={job.id} />
+      <JobDetailView
+        job={job}
+        allUsers={allUsers}
+        currentUserId={currentUserId}
+        isAdmin={isAdmin}
+        addTask={addTask}
+      />
+    </>
   );
 }
 

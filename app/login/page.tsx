@@ -36,7 +36,7 @@ export default function LoginPage() {
       if (result?.error) {
         setError('Invalid email or password');
       } else {
-        router.push('/jobs');
+        router.push('/');
         router.refresh();
       }
     } catch (error) {

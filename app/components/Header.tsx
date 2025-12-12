@@ -1,9 +1,8 @@
 'use client';
 
-import { signOut } from 'next-auth/react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 import NotificationBadge from './NotificationBadge';
+import UserMenu from './UserMenu';
 
 type HeaderProps = {
   user?: {
@@ -15,14 +14,6 @@ type HeaderProps = {
 };
 
 export default function Header({ user, unreadNotificationCount = 0 }: HeaderProps) {
-  const router = useRouter();
-
-  const handleSignOut = async () => {
-    await signOut({ redirect: false });
-    router.push('/login');
-    router.refresh();
-  };
-
   return (
     <header
       style={{
@@ -34,102 +25,71 @@ export default function Header({ user, unreadNotificationCount = 0 }: HeaderProp
         alignItems: 'center',
       }}
     >
-      <div style={{ display: 'flex', alignItems: 'center', gap: 24 }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 24, paddingLeft: 16, width: 320 }}>
         <Link
-          href="/"
+          href="/dev"
           style={{
             fontSize: 18,
             fontWeight: 600,
             color: '#2d3748',
             textDecoration: 'none',
+            fontFamily: 'Inter, sans-serif',
           }}
         >
-          Project Management
+          Project4cast
         </Link>
-        <nav style={{ display: 'flex', gap: 16 }}>
-          <Link
-            href="/my-tasks"
-            style={{
-              fontSize: 14,
-              color: '#4a5568',
-              textDecoration: 'none',
-              fontWeight: 500,
-            }}
-          >
-            My Tasks
-          </Link>
-          <Link
-            href="/jobs"
-            style={{
-              fontSize: 14,
-              color: '#4a5568',
-              textDecoration: 'none',
-            }}
-          >
-            Jobs
-          </Link>
-          <Link
-            href="/tasks"
-            style={{
-              fontSize: 14,
-              color: '#4a5568',
-              textDecoration: 'none',
-            }}
-          >
-            All Tasks
-          </Link>
-          <NotificationBadge initialCount={unreadNotificationCount} />
-          {user?.role === 'ADMIN' && (
-            <>
-              <Link
-                href="/invitations"
-                style={{
-                  fontSize: 14,
-                  color: '#4a5568',
-                  textDecoration: 'none',
-                }}
-              >
-                Invitations
-              </Link>
-              <Link
-                href="/admin/collaborators"
-                style={{
-                  fontSize: 14,
-                  color: '#4a5568',
-                  textDecoration: 'none',
-                }}
-              >
-                Collaborators
-              </Link>
-            </>
-          )}
-        </nav>
       </div>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-        {user && (
+      <div style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
+        <div
+          style={{
+            maxWidth: 400,
+            width: 300,
+            position: 'relative',
+          }}
+        >
+          <input
+            type="text"
+            placeholder="Search..."
+            style={{
+              width: '100%',
+              padding: '8px 12px 8px 36px',
+              borderRadius: 12,
+              border: 'none',
+              backgroundColor: '#e7eef3',
+              fontSize: 14,
+              color: '#2d3748',
+              fontFamily: 'Inter, sans-serif',
+            }}
+          />
           <span
             style={{
-              fontSize: 14,
-              color: '#4a5568',
+              position: 'absolute',
+              left: 12,
+              top: '50%',
+              transform: 'translateY(-50%)',
+              color: '#5a6579',
+              fontSize: 16,
             }}
           >
-            {user.name || user.email}
+            🔍
           </span>
-        )}
-        <button
-          onClick={handleSignOut}
+        </div>
+        <Link
+          href="/my-tasks"
           style={{
-            padding: '6px 12px',
-            borderRadius: 6,
-            border: '1px solid #cbd5e0',
-            background: '#ffffff',
-            color: '#4a5568',
             fontSize: 14,
-            cursor: 'pointer',
+            color: '#5a6579',
+            textDecoration: 'none',
+            fontWeight: 500,
+            padding: '6px 12px',
+            borderRadius: 8,
+            fontFamily: 'Inter, sans-serif',
           }}
         >
-          Sign Out
-        </button>
+          My Tasks
+        </Link>
+        <NotificationBadge initialCount={unreadNotificationCount} />
+        {user && <UserMenu user={user} />}
       </div>
     </header>
   );

@@ -202,7 +202,7 @@ export default function JobForm({ clients }: JobFormProps) {
               <option value="IN_PROGRESS">IN_PROGRESS</option>
               <option value="ON_HOLD">ON_HOLD</option>
               <option value="DELIVERED">DELIVERED</option>
-              <option value="ARCHIVED">ARCHIVED</option>
+              <option value="ARCHIVED">Inactive</option>
             </select>
           </div>
 

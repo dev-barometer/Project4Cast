@@ -24,3 +24,5 @@ CREATE INDEX "EmailVerificationToken_expiresAt_idx" ON "EmailVerificationToken"(
 -- AddForeignKey
 ALTER TABLE "EmailVerificationToken" ADD CONSTRAINT "EmailVerificationToken_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
+
+

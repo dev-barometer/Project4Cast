@@ -4,8 +4,6 @@
 // Client Components can use event handlers like onChange, onBlur, etc.
 
 import { updateTask, addAssignee, removeAssignee } from './actions';
-import TaskComments from './TaskComments';
-import AttachmentManager from './AttachmentManager';
 
 type Task = {
   id: string;
@@ -56,10 +54,19 @@ type TaskRowProps = {
   task: Task;
   jobId: string;
   allUsers: User[];
-  currentUserId: string; // First user ID for now (until we have auth)
+  currentUserId: string;
+  isSelected?: boolean;
+  onSelect?: () => void;
 };
 
-export default function TaskRow({ task, jobId, allUsers, currentUserId }: TaskRowProps) {
+export default function TaskRow({
+  task,
+  jobId,
+  allUsers,
+  currentUserId,
+  isSelected = false,
+  onSelect,
+}: TaskRowProps) {
   // Get list of user IDs already assigned to this task
   const assignedUserIds = task.assignees.map((a) => a.userId);
   
@@ -68,8 +75,15 @@ export default function TaskRow({ task, jobId, allUsers, currentUserId }: TaskRo
   const isDone = task.status === 'DONE';
 
   return (
-    <>
-      <tr style={{ borderBottom: '1px solid #f0f4f8' }}>
+    <tr
+      onClick={onSelect}
+      style={{
+        borderBottom: '1px solid #f0f4f8',
+        cursor: onSelect ? 'pointer' : 'default',
+        backgroundColor: isSelected ? '#ebf8ff' : 'transparent',
+        transition: 'background-color 0.2s',
+      }}
+    >
       {/* Done checkbox - before title */}
       <td style={{ padding: '12px 16px', width: 40, textAlign: 'center' }}>
         <form action={updateTask} style={{ display: 'inline', margin: 0 }}>
@@ -284,26 +298,6 @@ export default function TaskRow({ task, jobId, allUsers, currentUserId }: TaskRo
         </div>
       </td>
     </tr>
-    {/* Comments and Attachments row - spans all columns */}
-    <tr>
-      <td colSpan={5} style={{ padding: '0 16px 12px 16px', borderBottom: '1px solid #f0f4f8' }}>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-          <TaskComments
-            taskId={task.id}
-            jobId={jobId}
-            comments={task.comments}
-            currentUserId={currentUserId}
-          />
-          <AttachmentManager
-            jobId={jobId}
-            taskId={task.id}
-            attachments={task.attachments}
-            currentUserId={currentUserId}
-          />
-        </div>
-      </td>
-    </tr>
-    </>
   );
 }
 

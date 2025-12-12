@@ -162,3 +162,5 @@ Check your `RESEND_API_KEY` and `RESEND_FROM_EMAIL` in `.env`. Make sure your Re
 
 After the migration runs successfully, the notification system will be fully functional!
 
+
+
