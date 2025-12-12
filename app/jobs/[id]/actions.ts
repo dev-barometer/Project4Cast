@@ -48,6 +48,7 @@ export async function updateTask(formData: FormData) {
   const taskId = formData.get('taskId')?.toString();
   const jobId = formData.get('jobId')?.toString();
   const title = formData.get('title')?.toString().trim();
+  const description = formData.get('description')?.toString();
   const status = formData.get('status')?.toString();
   const priority = formData.get('priority')?.toString();
   const dueDate = formData.get('dueDate')?.toString();
@@ -76,12 +77,17 @@ export async function updateTask(formData: FormData) {
   // Build update object with only the fields that were provided
   const updateData: {
     title?: string;
+    description?: string | null;
     status?: 'TODO' | 'IN_PROGRESS' | 'BLOCKED' | 'DONE';
     priority?: 'LOW' | 'MEDIUM' | 'HIGH' | 'URGENT';
     dueDate?: Date | null;
   } = {};
 
   if (title) updateData.title = title;
+  if (description !== undefined) {
+    // Allow empty string to clear description
+    updateData.description = description === '' ? null : description;
+  }
   if (status && ['TODO', 'IN_PROGRESS', 'BLOCKED', 'DONE'].includes(status)) {
     updateData.status = status as 'TODO' | 'IN_PROGRESS' | 'BLOCKED' | 'DONE';
   }
@@ -355,6 +361,46 @@ export async function addTaskComment(prevState: any, formData: FormData) {
         authorId,
       },
     });
+
+    // Handle file uploads if any
+    const files = formData.getAll('files') as File[];
+    if (files.length > 0 && files[0].size > 0) {
+      for (const file of files) {
+        if (file.size === 0) continue; // Skip empty files
+
+        // Validate file type
+        if (!isValidFileType(file.name, file.type)) {
+          return {
+            error: 'Invalid file type. Allowed: PDF, DOCX, PNG, PPTX',
+            success: false,
+          };
+        }
+
+        // Validate file size (10MB limit)
+        const maxSize = 10 * 1024 * 1024; // 10MB
+        if (file.size > maxSize) {
+          return { error: 'File size too large. Maximum: 10MB', success: false };
+        }
+
+        // Save file to disk
+        const { filename, path } = await saveFile(file, jobId, taskId);
+
+        // Get file URL
+        const url = getFileUrl(path);
+
+        // Save attachment to database (linked to task, will be matched to comment by timestamp)
+        await prisma.attachment.create({
+          data: {
+            taskId,
+            jobId,
+            filename,
+            url,
+            mimeType: file.type,
+            uploadedById: authorId,
+          },
+        });
+      }
+    }
 
     // Parse @mentions and send notifications
     try {

@@ -51,13 +51,6 @@ enum JobRole {
   VIEWER
 }
 
-enum NotificationType {
-  TASK_ASSIGNED
-  JOB_ASSIGNED
-  TASK_COMPLETED
-  COMMENT_MENTION
-}
-
 // ----- Models -----
 
 model User {
@@ -73,10 +66,6 @@ model User {
   comments    Comment[]
   attachments Attachment[]     @relation("UserAttachments")
   invitationsSent Invitation[] @relation("InvitedBy")
-  notifications Notification[]
-  notificationsActed Notification[] @relation("NotificationActor")
-  passwordResetTokens PasswordResetToken[]
-  emailVerificationTokens EmailVerificationToken[]
 }
 
 model Invitation {
@@ -116,7 +105,6 @@ model Job {
   title         String
   status        JobStatus        @default(PLANNING)
   brief         String?
-  resourcesUrl  String?          // Link to Dropbox or other resources
 
   brandId       String
   brand         Brand            @relation(fields: [brandId], references: [id])
@@ -125,7 +113,6 @@ model Job {
   tasks         Task[]
   attachments   Attachment[]
   comments      Comment[]
-  notifications Notification[]
 }
 
 model JobCollaborator {
@@ -154,7 +141,6 @@ model Task {
   assignees   TaskAssignee[]
   attachments Attachment[]
   comments    Comment[]
-  notifications Notification[]
 }
 
 model TaskAssignee {
@@ -195,59 +181,4 @@ model Comment {
   taskId    String?
   job       Job?     @relation(fields: [jobId], references: [id])
   task      Task?    @relation(fields: [taskId], references: [id])
-}
-
-model Notification {
-  id        String           @id @default(cuid())
-  type      NotificationType
-  read      Boolean          @default(false)
-  createdAt DateTime         @default(now())
-
-  userId    String
-  user      User             @relation(fields: [userId], references: [id])
-
-  // Optional references to related entities
-  taskId    String?
-  task      Task?            @relation(fields: [taskId], references: [id])
-  jobId     String?
-  job       Job?             @relation(fields: [jobId], references: [id])
-  commentId String?
-
-  // Metadata for display
-  title     String           // e.g., "You've been assigned to a task"
-  message   String           // e.g., "Task: Review design mockups"
-  actorId   String?          // User who triggered the notification (e.g., who assigned the task)
-  actor     User?            @relation("NotificationActor", fields: [actorId], references: [id])
-
-  @@index([userId, read])
-  @@index([userId, createdAt])
-  @@index([taskId])
-  @@index([jobId])
-}
-
-model PasswordResetToken {
-  id        String   @id @default(cuid())
-  token     String   @unique
-  userId    String
-  user      User     @relation(fields: [userId], references: [id])
-  expiresAt DateTime
-  usedAt    DateTime?
-  createdAt DateTime @default(now())
-
-  @@index([token])
-  @@index([userId])
-  @@index([expiresAt])
-}
-
-model EmailVerificationToken {
-  id        String   @id @default(cuid())
-  token     String   @unique
-  userId    String
-  user      User     @relation(fields: [userId], references: [id])
-  expiresAt DateTime
-  createdAt DateTime @default(now())
-
-  @@index([token])
-  @@index([userId])
-  @@index([expiresAt])
 }

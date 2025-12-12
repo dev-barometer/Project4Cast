@@ -9,7 +9,6 @@ type Task = {
   id: string;
   title: string;
   status: 'TODO' | 'IN_PROGRESS' | 'BLOCKED' | 'DONE';
-  priority: 'LOW' | 'MEDIUM' | 'HIGH' | 'URGENT';
   dueDate: Date | null;
   assignees: Array<{
     id: string;
@@ -76,7 +75,16 @@ export default function TaskRow({
 
   return (
     <tr
-      onClick={onSelect}
+      onClick={(e) => {
+        // Only select if clicking on the row itself, not on form elements
+        if ((e.target as HTMLElement).tagName !== 'INPUT' && 
+            (e.target as HTMLElement).tagName !== 'SELECT' && 
+            (e.target as HTMLElement).tagName !== 'BUTTON' &&
+            (e.target as HTMLElement).tagName !== 'TEXTAREA' &&
+            !(e.target as HTMLElement).closest('form')) {
+          onSelect?.();
+        }
+      }}
       style={{
         borderBottom: '1px solid #f0f4f8',
         cursor: onSelect ? 'pointer' : 'default',
@@ -152,36 +160,6 @@ export default function TaskRow({
               textDecoration: isDone ? 'line-through' : 'none',
             }}
           />
-        </form>
-      </td>
-
-      {/* Priority - editable dropdown */}
-      <td style={{ padding: '12px 16px', color: '#4a5568' }}>
-        <form action={updateTask} style={{ display: 'inline' }}>
-          <input type="hidden" name="taskId" value={task.id} />
-          <input type="hidden" name="jobId" value={jobId} />
-          <select
-            name="priority"
-            defaultValue={task.priority}
-            onChange={(e) => {
-              // Submit immediately when changed
-              e.currentTarget.form?.requestSubmit();
-            }}
-            style={{
-              border: '1px solid #cbd5e0',
-              borderRadius: 4,
-              padding: '4px 8px',
-              fontSize: 14,
-              color: '#4a5568',
-              backgroundColor: '#ffffff',
-              cursor: 'pointer',
-            }}
-          >
-            <option value="LOW">LOW</option>
-            <option value="MEDIUM">MEDIUM</option>
-            <option value="HIGH">HIGH</option>
-            <option value="URGENT">URGENT</option>
-          </select>
         </form>
       </td>
 

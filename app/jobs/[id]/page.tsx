@@ -128,6 +128,12 @@ async function addTask(formData: FormData) {
             console.error('Error sending task assignment email:', emailError);
           }
         }
+
+  // Revalidate paths so the new task appears without a manual refresh
+  if (jobId) {
+    revalidatePath(`/jobs/${jobId}`);
+  }
+  revalidatePath('/');
       }
     } catch (notificationError) {
       console.error('Error creating notifications:', notificationError);
