@@ -397,6 +397,7 @@ export default function JobSidebar({ jobs, isAdmin, currentJobId }: JobSidebarPr
                       <JobMenu
                         jobId={job.id}
                         jobNumber={job.jobNumber}
+                        jobStatus={job.status}
                         onMoveTo={() => {
                           // TODO: Implement move to brand/client
                           console.log('Move job', job.id);
@@ -524,6 +525,7 @@ export default function JobSidebar({ jobs, isAdmin, currentJobId }: JobSidebarPr
                         <JobMenu
                           jobId={job.id}
                           jobNumber={job.jobNumber}
+                          jobStatus={job.status}
                           onMoveTo={() => {
                             // TODO: Implement move to brand/client
                             console.log('Move job', job.id);

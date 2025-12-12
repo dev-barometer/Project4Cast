@@ -155,8 +155,6 @@ export default function JobDetailView({
           jobId={job.id}
           collaborators={job.collaborators}
           allUsers={allUsers}
-          currentUserId={currentUserId}
-          isAdmin={isAdmin}
         />
       </div>
 
@@ -166,7 +164,6 @@ export default function JobDetailView({
           jobId={job.id}
           attachments={job.attachments}
           currentUserId={currentUserId}
-          canEdit={canEdit}
         />
       </div>
 
@@ -176,9 +173,9 @@ export default function JobDetailView({
           Tasks
         </h2>
         {canEdit && (
-          <div style={{ marginBottom: 24 }}>
-            <TaskForm jobId={job.id} allUsers={allUsers} addTask={addTask} />
-          </div>
+          <form action={addTask} style={{ marginBottom: 24 }}>
+            <TaskForm jobId={job.id} allUsers={allUsers} currentUserId={currentUserId} />
+          </form>
         )}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
           {job.tasks.length === 0 ? (
@@ -188,9 +185,9 @@ export default function JobDetailView({
               <TaskRow
                 key={task.id}
                 task={task}
+                jobId={job.id}
                 allUsers={allUsers}
                 currentUserId={currentUserId}
-                canEdit={canEdit}
               />
             ))
           )}

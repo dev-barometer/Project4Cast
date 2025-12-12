@@ -3,15 +3,17 @@
 import { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { ThreeDotMenu } from '@/app/components/ThreeDotMenu';
-import { markJobInactive } from '../actions';
+import { markJobInactive, markJobActive } from '../actions';
 
 type JobMenuProps = {
   jobId: string;
   jobNumber: string;
+  jobStatus: string;
   onMoveTo: () => void;
 };
 
-export default function JobMenu({ jobId, jobNumber, onMoveTo }: JobMenuProps) {
+export default function JobMenu({ jobId, jobNumber, jobStatus, onMoveTo }: JobMenuProps) {
+  const isInactive = jobStatus === 'ARCHIVED';
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
@@ -89,34 +91,65 @@ export default function JobMenu({ jobId, jobNumber, onMoveTo }: JobMenuProps) {
           >
             Move it to...
           </button>
-          <button
-            onClick={async (e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              const formData = new FormData();
-              formData.append('jobId', jobId);
-              const result = await markJobInactive(formData);
-              if (result.success) {
-                router.refresh();
-              } else {
-                alert(result.error || 'Failed to mark job as inactive');
-              }
-              setIsOpen(false);
-            }}
-            style={{
-              width: '100%',
-              textAlign: 'left',
-              padding: '10px 16px',
-              background: 'none',
-              border: 'none',
-              color: '#5a6579',
-              fontSize: 14,
-              fontFamily: 'Inter, sans-serif',
-              cursor: 'pointer',
-            }}
-          >
-            Mark as inactive
-          </button>
+          {isInactive ? (
+            <button
+              onClick={async (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                const formData = new FormData();
+                formData.append('jobId', jobId);
+                const result = await markJobActive(formData);
+                if (result.success) {
+                  router.refresh();
+                } else {
+                  alert(result.error || 'Failed to mark job as active');
+                }
+                setIsOpen(false);
+              }}
+              style={{
+                width: '100%',
+                textAlign: 'left',
+                padding: '10px 16px',
+                background: 'none',
+                border: 'none',
+                color: '#5a6579',
+                fontSize: 14,
+                fontFamily: 'Inter, sans-serif',
+                cursor: 'pointer',
+              }}
+            >
+              Mark as active
+            </button>
+          ) : (
+            <button
+              onClick={async (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                const formData = new FormData();
+                formData.append('jobId', jobId);
+                const result = await markJobInactive(formData);
+                if (result.success) {
+                  router.refresh();
+                } else {
+                  alert(result.error || 'Failed to mark job as inactive');
+                }
+                setIsOpen(false);
+              }}
+              style={{
+                width: '100%',
+                textAlign: 'left',
+                padding: '10px 16px',
+                background: 'none',
+                border: 'none',
+                color: '#5a6579',
+                fontSize: 14,
+                fontFamily: 'Inter, sans-serif',
+                cursor: 'pointer',
+              }}
+            >
+              Mark as inactive
+            </button>
+          )}
         </div>
       )}
     </div>
