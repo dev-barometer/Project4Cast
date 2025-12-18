@@ -6,42 +6,11 @@
 
 import { prisma } from '@/lib/prisma';
 import { revalidatePath } from 'next/cache';
-import { saveFile, isValidFileType, getFileUrl, extractPublicIdFromUrl } from '@/lib/file-upload';
-import { v2 as cloudinary } from 'cloudinary';
+import { saveFile, isValidFileType, getFileUrl, deleteFile } from '@/lib/file-upload';
 import { auth } from '@/auth';
-import { notifyJobAssignment } from '@/lib/notifications';
-import { sendJobAssignmentEmail } from '@/lib/email';
+import { notifyJobAssignment, notifyTaskAssignment } from '@/lib/notifications';
+import { sendJobAssignmentEmail, sendTaskAssignmentEmail } from '@/lib/email';
 import { parseMentions, findUsersByMention, notifyCommentMention } from '@/lib/notifications';
-
-// Configure Cloudinary (same logic as in file-upload.ts)
-// Parse CLOUDINARY_URL or use individual variables
-let cloudinaryConfigured = false;
-
-if (process.env.CLOUDINARY_URL) {
-  try {
-    const url = process.env.CLOUDINARY_URL.trim();
-    const match = url.match(/^cloudinary:\/\/([^:]+):([^@]+)@(.+)$/);
-    if (match) {
-      const [, apiKey, apiSecret, cloudName] = match;
-      cloudinary.config({
-        cloud_name: cloudName.trim(),
-        api_key: apiKey.trim(),
-        api_secret: apiSecret.trim(),
-      });
-      cloudinaryConfigured = true;
-    }
-  } catch (error) {
-    console.error('Error parsing CLOUDINARY_URL:', error);
-  }
-}
-
-if (!cloudinaryConfigured && process.env.CLOUDINARY_CLOUD_NAME && process.env.CLOUDINARY_API_KEY && process.env.CLOUDINARY_API_SECRET) {
-  cloudinary.config({
-    cloud_name: process.env.CLOUDINARY_CLOUD_NAME.trim(),
-    api_key: process.env.CLOUDINARY_API_KEY.trim(),
-    api_secret: process.env.CLOUDINARY_API_SECRET.trim(),
-  });
-}
 
 // Server action to update a task
 export async function updateTask(formData: FormData) {
@@ -341,6 +310,149 @@ export async function updateCollaboratorRole(formData: FormData) {
   revalidatePath(`/jobs/${jobId}`);
 }
 
+// Server action to add a new task
+// When used with useFormState, the signature is (prevState, formData)
+export async function addTask(prevState: any, formData: FormData) {
+  const title = formData.get('title')?.toString().trim();
+  const jobId = formData.get('jobId')?.toString();
+  const priority = formData.get('priority')?.toString() || 'MEDIUM';
+  const dueDate = formData.get('dueDate')?.toString();
+  const assigneeIds = formData.getAll('assigneeIds').map(id => id.toString()).filter(Boolean);
+
+  if (!title) {
+    return { success: false, error: 'Task title is required' };
+  }
+
+  if (!jobId) {
+    return { success: false, error: 'Job ID is required' };
+  }
+
+  try {
+    // Validate priority
+    const validPriority = ['LOW', 'MEDIUM', 'HIGH', 'URGENT'].includes(priority) 
+      ? priority as 'LOW' | 'MEDIUM' | 'HIGH' | 'URGENT'
+      : 'MEDIUM';
+
+    // Create task with optional jobId and assignees if provided
+    const task = await prisma.task.create({
+      data: {
+        title,
+        jobId: jobId || null,
+        status: 'TODO',
+        priority: validPriority,
+        dueDate: dueDate ? new Date(dueDate) : null,
+        assignees: assigneeIds.length > 0 ? {
+          create: assigneeIds.map(userId => ({ userId })),
+        } : undefined,
+      },
+    });
+
+    // If task has assignees and is associated with a job, automatically add assignees as collaborators
+    if (jobId && assigneeIds.length > 0) {
+      // Get existing collaborators for this job
+      const existingCollaborators = await prisma.jobCollaborator.findMany({
+        where: {
+          jobId,
+          userId: { in: assigneeIds },
+        },
+        select: { userId: true },
+      });
+
+      const existingUserIds = existingCollaborators.map(c => c.userId);
+      const newCollaboratorIds = assigneeIds.filter(id => !existingUserIds.includes(id));
+
+      // Add new collaborators
+      if (newCollaboratorIds.length > 0) {
+        await prisma.jobCollaborator.createMany({
+          data: newCollaboratorIds.map(userId => ({
+            jobId,
+            userId,
+            role: 'COLLABORATOR',
+          })),
+        });
+      }
+    }
+
+    // Send notifications to assignees
+    if (assigneeIds.length > 0) {
+      try {
+        const session = await auth();
+        const actorId = session?.user?.id;
+        const actor = actorId ? await prisma.user.findUnique({ where: { id: actorId } }) : null;
+
+        // Get task and job details
+        const createdTask = await prisma.task.findUnique({
+          where: { id: task.id },
+          include: {
+            job: {
+              include: {
+                brand: {
+                  include: {
+                    client: true,
+                  },
+                },
+              },
+            },
+          },
+        });
+
+        const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
+        const taskUrl = jobId ? `${baseUrl}/jobs/${jobId}` : `${baseUrl}/tasks`;
+
+        // Notify each assignee
+        for (const assigneeId of assigneeIds) {
+          const assignedUser = await prisma.user.findUnique({
+            where: { id: assigneeId },
+          });
+
+          if (assignedUser && createdTask) {
+            // Create in-app notification
+            await notifyTaskAssignment({
+              userId: assigneeId,
+              taskId: task.id,
+              taskTitle: createdTask.title,
+              jobId: createdTask.jobId,
+              jobTitle: createdTask.job?.title || null,
+              actorId: actorId || null,
+            });
+
+            // Send email notification
+            try {
+              await sendTaskAssignmentEmail({
+                email: assignedUser.email,
+                taskTitle: createdTask.title,
+                jobTitle: createdTask.job?.title || null,
+                assignerName: actor?.name || null,
+                assignerEmail: actor?.email || 'System',
+                taskUrl,
+              });
+            } catch (emailError) {
+              console.error('Error sending task assignment email:', emailError);
+            }
+          }
+        }
+      } catch (notificationError) {
+        console.error('Error creating notifications:', notificationError);
+      }
+    }
+
+    // Revalidate job page if jobId exists, otherwise revalidate task pages
+    // This must be OUTSIDE the assignee notification block so it always runs
+    if (jobId) {
+      revalidatePath(`/jobs/${jobId}`);
+    } else {
+      revalidatePath('/tasks');
+      revalidatePath('/my-tasks');
+    }
+    revalidatePath('/');
+    
+    return { success: true, error: null };
+  } catch (error: any) {
+    console.error('Error creating task:', error);
+    return { success: false, error: error.message || 'Failed to create task' };
+  }
+}
+
 // Server action to add a comment to a task
 // When used with useFormState, the signature is (prevState, formData)
 export async function addTaskComment(prevState: any, formData: FormData) {
@@ -570,20 +682,12 @@ export async function deleteAttachment(formData: FormData) {
       return;
     }
 
-    // Delete file from Cloudinary
+    // Delete file from Vercel Blob
     try {
-      const publicId = extractPublicIdFromUrl(attachment.url);
-      if (publicId) {
-        // Delete from Cloudinary
-        await cloudinary.uploader.destroy(publicId, {
-          resource_type: 'auto', // Automatically detect resource type
-        });
-      } else {
-        console.warn('Could not extract public_id from URL:', attachment.url);
-      }
+      await deleteFile(attachment.url);
     } catch (fileError) {
       // File might not exist, that's okay
-      console.warn('Error deleting file from Cloudinary:', fileError);
+      console.warn('Error deleting file from Vercel Blob:', fileError);
     }
 
     // Delete attachment from database

@@ -1,8 +1,9 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { addTaskComment, uploadTaskAttachment } from '../actions';
+import { addTaskComment } from '../actions';
 import { useFormState } from 'react-dom';
+import { getFileUrl } from '@/lib/file-url-utils';
 
 type TaskDetailPanelProps = {
   task: {
@@ -47,6 +48,7 @@ export default function TaskDetailPanel({
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const commentsContainerRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
 
   // Scroll to bottom when new comment is added
   useEffect(() => {
@@ -55,10 +57,22 @@ export default function TaskDetailPanel({
       if (textareaRef.current) {
         textareaRef.current.value = '';
       }
+      // Clear selected files after successful submission
+      setSelectedFiles([]);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
     }
   }, [state?.success]);
+  
   const handlePaperclipClick = () => {
     fileInputRef.current?.click();
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      setSelectedFiles(Array.from(e.target.files));
+    }
   };
 
   // Scroll to bottom when task changes
@@ -100,9 +114,9 @@ export default function TaskDetailPanel({
     });
   };
 
-  // Get attachments for a comment (match by timestamp - within 5 seconds)
+  // Get attachments for a comment (match by timestamp - within 30 seconds)
   // TODO: Add commentId to Attachment model for proper linking
-  const getCommentAttachments = (commentCreatedAt: Date | string) => {
+  const getCommentAttachments = (commentCreatedAt: Date | string, commentAuthorId: string) => {
     const commentTime = typeof commentCreatedAt === 'string' 
       ? new Date(commentCreatedAt).getTime() 
       : commentCreatedAt.getTime();
@@ -111,8 +125,10 @@ export default function TaskDetailPanel({
       const attTime = typeof att.uploadedAt === 'string'
         ? new Date(att.uploadedAt).getTime()
         : att.uploadedAt.getTime();
-      // Match attachments uploaded within 5 seconds of comment
-      return Math.abs(attTime - commentTime) < 5000;
+      // Match attachments uploaded within 30 seconds of comment by the same user
+      const timeDiff = Math.abs(attTime - commentTime);
+      const sameUser = att.uploadedBy?.id === commentAuthorId;
+      return timeDiff < 30000 && sameUser; // 30 seconds window
     });
   };
 
@@ -183,7 +199,7 @@ export default function TaskDetailPanel({
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
               {task.comments.map((comment) => {
-                const commentAttachments = getCommentAttachments(comment.createdAt);
+                const commentAttachments = getCommentAttachments(comment.createdAt, comment.author?.id || '');
                 return (
                   <div
                     key={comment.id}
@@ -238,8 +254,12 @@ export default function TaskDetailPanel({
                         }}
                       >
                         {commentAttachments.map((att) => (
-                          <div
+                          <a
                             key={att.id}
+                            href={getFileUrl(att.url)}
+                            download={att.filename}
+                            target="_blank"
+                            rel="noopener noreferrer"
                             style={{
                               display: 'flex',
                               alignItems: 'center',
@@ -249,12 +269,24 @@ export default function TaskDetailPanel({
                               borderRadius: 6,
                               border: '1px solid #e2e8f0',
                               fontSize: 12,
-                              color: '#4a5568',
+                              color: '#4299e1',
+                              textDecoration: 'none',
+                              cursor: 'pointer',
+                              transition: 'all 0.2s',
                             }}
+                            onMouseEnter={(e) => {
+                              e.currentTarget.style.backgroundColor = '#ebf8ff';
+                              e.currentTarget.style.borderColor = '#4299e1';
+                            }}
+                            onMouseLeave={(e) => {
+                              e.currentTarget.style.backgroundColor = '#ffffff';
+                              e.currentTarget.style.borderColor = '#e2e8f0';
+                            }}
+                            title={`Open ${att.filename}`}
                           >
                             <span>📎</span>
                             <span>{att.filename}</span>
-                          </div>
+                          </a>
                         ))}
                       </div>
                     )}
@@ -298,29 +330,77 @@ export default function TaskDetailPanel({
             </div>
           )}
 
-          {/* Hidden attachment upload form */}
-          <form action={uploadTaskAttachment} style={{ display: 'none' }}>
-            <input type="hidden" name="taskId" value={task.id} />
-            <input type="hidden" name="jobId" value={jobId} />
-            <input type="hidden" name="uploadedById" value={currentUserId} />
-            <input
-              ref={fileInputRef}
-              type="file"
-              name="file"
-              accept=".pdf,.docx,.png,.pptx,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,image/png,application/vnd.openxmlformats-officedocument.presentationml.presentation"
-              style={{ display: 'none' }}
-              onChange={(e) => {
-                if (e.currentTarget.files && e.currentTarget.files.length > 0) {
-                  e.currentTarget.form?.requestSubmit();
-                }
+          {/* Show selected files */}
+          {selectedFiles.length > 0 && (
+            <div
+              style={{
+                display: 'flex',
+                flexWrap: 'wrap',
+                gap: 8,
+                marginBottom: 12,
+                padding: '8px 12px',
+                backgroundColor: '#f7fafc',
+                borderRadius: 6,
+                border: '1px solid #e2e8f0',
               }}
-            />
-          </form>
+            >
+              {selectedFiles.map((file, index) => (
+                <div
+                  key={index}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 6,
+                    fontSize: 12,
+                    color: '#4a5568',
+                  }}
+                >
+                  <span>📎</span>
+                  <span>{file.name}</span>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const newFiles = selectedFiles.filter((_, i) => i !== index);
+                      setSelectedFiles(newFiles);
+                      // Update file input
+                      if (fileInputRef.current) {
+                        const dt = new DataTransfer();
+                        newFiles.forEach(f => dt.items.add(f));
+                        fileInputRef.current.files = dt.files;
+                      }
+                    }}
+                    style={{
+                      background: 'none',
+                      border: 'none',
+                      cursor: 'pointer',
+                      color: '#e53e3e',
+                      fontSize: 14,
+                      padding: '0 4px',
+                    }}
+                    title="Remove file"
+                  >
+                    ×
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
 
-          <form action={formAction}>
+          <form action={formAction} encType="multipart/form-data">
             <input type="hidden" name="taskId" value={task.id} />
             <input type="hidden" name="jobId" value={jobId} />
             <input type="hidden" name="authorId" value={currentUserId} />
+            
+            {/* File input for attachments */}
+            <input
+              ref={fileInputRef}
+              type="file"
+              name="files"
+              multiple
+              accept=".pdf,.docx,.png,.pptx,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,image/png,application/vnd.openxmlformats-officedocument.presentationml.presentation"
+              style={{ display: 'none' }}
+              onChange={handleFileChange}
+            />
 
             <div
               style={{

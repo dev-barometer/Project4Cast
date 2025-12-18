@@ -2,6 +2,7 @@
 
 import { prisma } from '@/lib/prisma';
 import Link from 'next/link';
+import CleanupButton from './CleanupButton';
 
 export default async function DevPage() {
   const [clients, brands, jobs, tasks] = await Promise.all([
@@ -62,6 +63,16 @@ export default async function DevPage() {
             ))}
           </ul>
         )}
+      </section>
+
+      <section style={{ marginTop: 32, backgroundColor: '#fff5f5', padding: 24, borderRadius: 8, border: '1px solid #fed7d7' }}>
+        <h2 style={{ fontSize: 20, fontWeight: 600, color: '#742a2a', marginBottom: 16 }}>⚠️ Danger Zone</h2>
+        <p style={{ color: '#742a2a', fontSize: 14, marginBottom: 16 }}>
+          This will delete ALL jobs, tasks, attachments, comments, clients, brands, and invitations.
+          <br />
+          <strong>Users will be preserved.</strong>
+        </p>
+        <CleanupButton />
       </section>
 
       <p style={{ marginTop: 32 }}>

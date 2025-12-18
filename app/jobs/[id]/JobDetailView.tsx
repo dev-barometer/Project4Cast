@@ -1,10 +1,12 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
+import { useFormState } from 'react-dom';
 import TaskRow from './TaskRow';
 import TaskForm from './TaskForm';
 import JobDetailsSection from './components/JobDetailsSection';
 import TaskDetailPanel from './components/TaskDetailPanel';
+import { addTask } from './actions';
 
 type JobDetailViewProps = {
   job: {
@@ -89,7 +91,6 @@ type JobDetailViewProps = {
   }>;
   currentUserId: string;
   isAdmin: boolean;
-  addTask: (formData: FormData) => Promise<void>;
 };
 
 export default function JobDetailView({
@@ -97,11 +98,23 @@ export default function JobDetailView({
   allUsers,
   currentUserId,
   isAdmin,
-  addTask,
 }: JobDetailViewProps) {
   const canEdit = isAdmin || job.collaborators.some(c => c.userId === currentUserId && c.role !== 'VIEWER');
   const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
-  const [showTaskForm, setShowTaskForm] = useState(true);
+  const [showTaskForm, setShowTaskForm] = useState(false);
+  const formRef = useRef<HTMLFormElement>(null);
+  
+  // Use useFormState for better error handling
+  const [state, formAction] = useFormState(addTask, { success: false, error: null });
+  
+  // Hide form and refresh page when task is successfully created
+  useEffect(() => {
+    if (state?.success) {
+      setShowTaskForm(false);
+      // Refresh the page to show the new task
+      window.location.reload();
+    }
+  }, [state?.success]);
 
   // Get selected task
   const selectedTask = selectedTaskId
@@ -242,15 +255,36 @@ export default function JobDetailView({
             )}
           </div>
           {canEdit && showTaskForm && (
-            <form action={addTask} style={{ marginBottom: 24 }}>
-              <TaskForm
-                jobId={job.id}
-                allUsers={allUsers}
-                currentUserId={currentUserId}
-                forceExpanded
-                onSubmitted={() => setShowTaskForm(false)}
-              />
-            </form>
+            <div style={{ marginBottom: 24 }}>
+              {state?.error && (
+                <div
+                  style={{
+                    backgroundColor: '#fed7d7',
+                    color: '#742a2a',
+                    padding: '12px 16px',
+                    borderRadius: 6,
+                    marginBottom: 16,
+                    fontSize: 14,
+                  }}
+                >
+                  <strong>Error:</strong> {state.error}
+                </div>
+              )}
+              <form 
+                ref={formRef}
+                action={formAction}
+              >
+                <TaskForm
+                  jobId={job.id}
+                  allUsers={allUsers}
+                  currentUserId={currentUserId}
+                  forceExpanded
+                  onSubmitted={() => {
+                    setShowTaskForm(false);
+                  }}
+                />
+              </form>
+            </div>
           )}
           {job.tasks.length === 0 ? (
             <p style={{ color: '#a0aec0', fontSize: 14, fontStyle: 'italic' }}>

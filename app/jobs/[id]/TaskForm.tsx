@@ -206,16 +206,6 @@ export default function TaskForm({ jobId, allUsers, currentUserId, forceExpanded
                 <button
                   type="submit"
                   disabled={!title.trim()}
-                  onClick={() => {
-                    // Optimistically collapse/reset after submit
-                    if (!forceExpanded) {
-                      setIsExpanded(false);
-                    }
-                    setTitle('');
-                    setDueDate('');
-                    setSelectedAssignees([]);
-                    onSubmitted?.();
-                  }}
                   style={{
                     padding: '8px 16px',
                     borderRadius: 6,

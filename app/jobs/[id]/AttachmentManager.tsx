@@ -5,6 +5,7 @@
 import { uploadJobAttachment, uploadTaskAttachment, deleteAttachment } from './actions';
 import { useState, useRef, useEffect } from 'react';
 import { useFormState } from 'react-dom';
+import { getFileUrl } from '@/lib/file-url-utils';
 
 type Attachment = {
   id: string;
@@ -125,7 +126,8 @@ export default function AttachmentManager({
                     <span style={{ fontSize: 18 }}>{getFileIcon(attachment.mimeType)}</span>
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <a
-                        href={attachment.url}
+                        href={getFileUrl(attachment.url)}
+                        download={attachment.filename}
                         target="_blank"
                         rel="noopener noreferrer"
                         style={{

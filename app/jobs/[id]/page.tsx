@@ -3,152 +3,14 @@
 import { prisma } from '@/lib/prisma';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { revalidatePath } from 'next/cache';
 import { auth } from '@/auth';
 import JobSidebar from '../components/JobSidebar';
 import JobDetailView from './JobDetailView';
-import { notifyTaskAssignment } from '@/lib/notifications';
-import { sendTaskAssignmentEmail } from '@/lib/email';
+import { addTask } from './actions';
 
 type JobPageProps = {
   params: { id: string };
 };
-
-// server action to add a new task
-async function addTask(formData: FormData) {
-  'use server';
-
-  const title = formData.get('title')?.toString().trim();
-  const jobId = formData.get('jobId')?.toString();
-  const priority = formData.get('priority')?.toString() || 'MEDIUM';
-  const dueDate = formData.get('dueDate')?.toString();
-  const assigneeIds = formData.getAll('assigneeIds').map(id => id.toString()).filter(Boolean);
-
-  if (!title) return;
-
-  // Validate priority
-  const validPriority = ['LOW', 'MEDIUM', 'HIGH', 'URGENT'].includes(priority) 
-    ? priority as 'LOW' | 'MEDIUM' | 'HIGH' | 'URGENT'
-    : 'MEDIUM';
-
-  // Create task with optional jobId and assignees if provided
-  const task = await prisma.task.create({
-    data: {
-      title,
-      jobId: jobId || null, // null if no jobId (though this shouldn't happen on job page)
-      status: 'TODO',
-      priority: validPriority,
-      dueDate: dueDate ? new Date(dueDate) : null,
-      assignees: assigneeIds.length > 0 ? {
-        create: assigneeIds.map(userId => ({ userId })),
-      } : undefined,
-    },
-  });
-
-  // If task has assignees and is associated with a job, automatically add assignees as collaborators
-  if (jobId && assigneeIds.length > 0) {
-    // Get existing collaborators for this job
-    const existingCollaborators = await prisma.jobCollaborator.findMany({
-      where: {
-        jobId,
-        userId: { in: assigneeIds },
-      },
-      select: { userId: true },
-    });
-
-    const existingUserIds = existingCollaborators.map(c => c.userId);
-    const newCollaboratorIds = assigneeIds.filter(id => !existingUserIds.includes(id));
-
-    // Add new collaborators
-    if (newCollaboratorIds.length > 0) {
-      await prisma.jobCollaborator.createMany({
-        data: newCollaboratorIds.map(userId => ({
-          jobId,
-          userId,
-          role: 'COLLABORATOR',
-        })),
-      });
-    }
-  }
-
-  // Send notifications to assignees
-  if (assigneeIds.length > 0) {
-    try {
-      const session = await auth();
-      const actorId = session?.user?.id;
-      const actor = actorId ? await prisma.user.findUnique({ where: { id: actorId } }) : null;
-
-      // Get task and job details
-      const createdTask = await prisma.task.findUnique({
-        where: { id: task.id },
-        include: {
-          job: {
-            include: {
-              brand: {
-                include: {
-                  client: true,
-                },
-              },
-            },
-          },
-        },
-      });
-
-      const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
-      const taskUrl = jobId ? `${baseUrl}/jobs/${jobId}` : `${baseUrl}/tasks`;
-
-      // Notify each assignee
-      for (const assigneeId of assigneeIds) {
-        const assignedUser = await prisma.user.findUnique({
-          where: { id: assigneeId },
-        });
-
-        if (assignedUser && createdTask) {
-          // Create in-app notification
-          await notifyTaskAssignment({
-            userId: assigneeId,
-            taskId: task.id,
-            taskTitle: createdTask.title,
-            jobId: createdTask.jobId,
-            jobTitle: createdTask.job?.title || null,
-            actorId: actorId || null,
-          });
-
-          // Send email notification
-          try {
-            await sendTaskAssignmentEmail({
-              email: assignedUser.email,
-              taskTitle: createdTask.title,
-              jobTitle: createdTask.job?.title || null,
-              assignerName: actor?.name || null,
-              assignerEmail: actor?.email || 'System',
-              taskUrl,
-            });
-          } catch (emailError) {
-            console.error('Error sending task assignment email:', emailError);
-          }
-        }
-
-  // Revalidate paths so the new task appears without a manual refresh
-  if (jobId) {
-    revalidatePath(`/jobs/${jobId}`);
-  }
-  revalidatePath('/');
-      }
-    } catch (notificationError) {
-      console.error('Error creating notifications:', notificationError);
-    }
-  }
-
-  // Revalidate job page if jobId exists, otherwise revalidate task pages
-  if (jobId) {
-    revalidatePath(`/jobs/${jobId}`);
-  } else {
-    revalidatePath('/tasks');
-    revalidatePath('/my-tasks');
-  }
-}
-
 
 export default async function JobDetailPage({ params }: JobPageProps) {
   // Get authenticated user
@@ -466,7 +328,6 @@ export default async function JobDetailPage({ params }: JobPageProps) {
         allUsers={allUsers}
         currentUserId={currentUserId}
         isAdmin={isAdmin}
-        addTask={addTask}
       />
     </>
   );
