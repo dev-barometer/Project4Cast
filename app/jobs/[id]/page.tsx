@@ -307,7 +307,7 @@ export default async function JobDetailPage({ params }: JobPageProps) {
           >
             <strong>Access Denied</strong>
             <p style={{ marginTop: 8, marginBottom: 0 }}>
-              You don't have access to this job. You must be assigned as a collaborator to view it.
+              You don&apos;t have access to this job. You must be assigned as a collaborator to view it.
             </p>
             <div style={{ marginTop: 12 }}>
               <Link href="/jobs" style={{ color: '#742a2a', textDecoration: 'underline' }}>

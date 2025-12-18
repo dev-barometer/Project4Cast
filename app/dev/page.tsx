@@ -24,7 +24,7 @@ export default async function DevPage() {
   return (
     <main style={{ padding: 40, maxWidth: 1400, margin: '0 auto' }}>
       <h1 style={{ fontSize: 28, fontWeight: 600, color: '#2d3748', marginBottom: 8 }}>Dev Dashboard</h1>
-      <p style={{ color: '#718096', fontSize: 15 }}>Quick snapshot of what's in the database.</p>
+      <p style={{ color: '#718096', fontSize: 15 }}>Quick snapshot of what&apos;s in the database.</p>
 
       <section style={{ marginTop: 32, backgroundColor: '#ffffff', padding: 24, borderRadius: 8, boxShadow: '0 1px 3px rgba(0, 0, 0, 0.05)' }}>
         <h2 style={{ fontSize: 20, fontWeight: 600, color: '#2d3748', marginBottom: 16 }}>Counts</h2>

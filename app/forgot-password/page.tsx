@@ -47,7 +47,7 @@ export default function ForgotPasswordPage() {
             marginBottom: 32,
           }}
         >
-          Enter your email address and we'll send you a link to reset your password.
+          Enter your email address and we&apos;ll send you a link to reset your password.
         </p>
 
         {state?.success && (

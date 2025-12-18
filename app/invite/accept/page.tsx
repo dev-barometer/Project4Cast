@@ -116,7 +116,7 @@ export default async function AcceptInvitationPage({ searchParams }: PageProps) 
     <main style={{ padding: 40, maxWidth: 600, margin: '0 auto' }}>
       <div style={{ backgroundColor: '#ffffff', padding: 32, borderRadius: 8, boxShadow: '0 1px 3px rgba(0, 0, 0, 0.05)' }}>
         <h1 style={{ fontSize: 24, fontWeight: 600, color: '#2d3748', marginBottom: 8 }}>
-          You've been invited!
+          You&apos;ve been invited!
         </h1>
         <p style={{ color: '#718096', fontSize: 16, marginBottom: 24 }}>
           <strong>{invitation.invitedBy.name || invitation.invitedBy.email}</strong> has invited you to join{' '}

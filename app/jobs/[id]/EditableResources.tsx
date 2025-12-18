@@ -191,7 +191,7 @@ export default function EditableResources({ jobId, initialResourcesUrl, canEdit 
         </a>
       ) : (
         <p style={{ fontSize: 14, color: '#a0aec0', fontStyle: 'italic' }}>
-          No files link added. Click "Add Link" to add one.
+          No files link added. Click &quot;Add Link&quot; to add one.
         </p>
       )}
     </div>

@@ -58,7 +58,7 @@ export default async function MakeAdminPage() {
         <div style={{ marginTop: 32, padding: 16, backgroundColor: '#fff5f5', borderRadius: 6 }}>
           <p style={{ fontSize: 13, color: '#742a2a', margin: 0 }}>
             <strong>Note:</strong> Once you make someone an admin, they will have full access to invite users and manage the platform. 
-            Make sure you trust the person you're promoting.
+            Make sure you trust the person you&apos;re promoting.
           </p>
         </div>
       </div>
