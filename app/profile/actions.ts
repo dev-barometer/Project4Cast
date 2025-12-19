@@ -193,7 +193,7 @@ export async function updateNotificationPreferences(prevState: any, formData: Fo
 }
 
 // Delete account
-export async function deleteAccount(formData: FormData) {
+export async function deleteAccount(prevState: any, formData: FormData) {
   'use server';
 
   const session = await auth();
