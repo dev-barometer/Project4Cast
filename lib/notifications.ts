@@ -15,22 +15,20 @@ export async function findUsersByMention(mentionText: string): Promise<string[]>
   
   // If it's an email, search for exact match first, then contains
   // If it's not an email, search by name or email contains
-  const whereClause = isEmail
-    ? {
-        OR: [
-          { email: { equals: searchTerm, mode: 'insensitive' } },
-          { email: { contains: searchTerm, mode: 'insensitive' } },
-        ],
-      }
-    : {
-        OR: [
-          { email: { contains: searchTerm, mode: 'insensitive' } },
-          { name: { contains: searchTerm, mode: 'insensitive' } },
-        ],
-      };
-
   const users = await prisma.user.findMany({
-    where: whereClause,
+    where: isEmail
+      ? {
+          OR: [
+            { email: { equals: searchTerm, mode: 'insensitive' as const } },
+            { email: { contains: searchTerm, mode: 'insensitive' as const } },
+          ],
+        }
+      : {
+          OR: [
+            { email: { contains: searchTerm, mode: 'insensitive' as const } },
+            { name: { contains: searchTerm, mode: 'insensitive' as const } },
+          ],
+        },
     select: { id: true },
   });
 
