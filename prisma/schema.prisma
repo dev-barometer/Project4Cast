@@ -60,7 +60,15 @@ model User {
   password    String?          // Hashed password (null for OAuth users)
   role        UserRole         @default(USER)
   emailVerified DateTime?
-
+  
+  // Profile fields
+  phone       String?
+  website     String?
+  pronouns    String?          // e.g., "he/him", "she/her", "they/them"
+  timezone    String?          // e.g., "America/New_York"
+  avatar      String?          // URL to avatar image
+  
+  // Relationships
   jobs        JobCollaborator[]
   tasks       TaskAssignee[]
   comments    Comment[]
@@ -70,6 +78,9 @@ model User {
   passwordResetTokens PasswordResetToken[]
   notifications Notification[]
   notificationsAsActor Notification[] @relation("NotificationActor")
+  teamMemberships UserTeam[]
+  activityLogs UserActivity[]
+  notificationPreferences UserNotificationPreferences?
 }
 
 model Invitation {
@@ -122,6 +133,8 @@ model Job {
   comments      Comment[]
   notifications Notification[]
   invitations   Invitation[]
+  teamId        String?
+  team          Team?   @relation(fields: [teamId], references: [id])
 }
 
 model JobCollaborator {
@@ -229,6 +242,19 @@ enum NotificationType {
   COMMENT_MENTION
 }
 
+enum ActivityType {
+  SIGNED_IN
+  SIGNED_OUT
+  CREATED_TASK
+  MARKED_TASK_COMPLETE
+  UPLOADED_FILE
+  INVITED_COLLABORATOR
+  ASSIGNED_JOB
+  UPDATED_PROFILE
+  CHANGED_PASSWORD
+  DELETED_ACCOUNT
+}
+
 model Notification {
   id        String          @id @default(cuid())
   type      NotificationType
@@ -251,4 +277,75 @@ model Notification {
   @@index([userId, createdAt])
   @@index([taskId])
   @@index([jobId])
+}
+
+model Team {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  createdAt   DateTime @default(now())
+  
+  members     UserTeam[]
+  jobs        Job[]    // Jobs associated with this team
+  
+  @@unique([name])
+}
+
+model UserTeam {
+  id        String   @id @default(cuid())
+  userId    String
+  teamId    String
+  joinedAt  DateTime @default(now())
+  
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  team      Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  
+  @@unique([userId, teamId])
+  @@index([userId])
+  @@index([teamId])
+}
+
+model UserActivity {
+  id        String       @id @default(cuid())
+  userId    String
+  type      ActivityType
+  details   String?     // JSON string with additional details
+  createdAt DateTime     @default(now())
+  
+  user      User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@index([userId, createdAt])
+  @@index([type])
+}
+
+model UserNotificationPreferences {
+  id        String   @id @default(cuid())
+  userId    String   @unique
+  
+  // Job assignment notifications
+  jobAssignedInApp    Boolean @default(true)
+  jobAssignedEmail    Boolean @default(true)
+  
+  // Comment mention notifications
+  commentMentionInApp Boolean @default(true)
+  commentMentionEmail Boolean @default(true)
+  
+  // Job change notifications
+  jobChangeInApp      Boolean @default(true)
+  jobChangeEmail      Boolean @default(false)
+  
+  // Task completion notifications
+  taskCompleteInApp   Boolean @default(true)
+  taskCompleteEmail    Boolean @default(false)
+  
+  // Task overdue notifications
+  taskOverdueInApp    Boolean @default(true)
+  taskOverdueEmail    Boolean @default(false)
+  
+  // Frequency (null = immediate)
+  frequency           String? // "immediate", "daily", "weekly"
+  
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@index([userId])
 }
