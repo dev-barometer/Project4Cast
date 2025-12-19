@@ -297,7 +297,7 @@ export default function JobDetailView({
               }}
               title={isRightPanelOpen ? 'Hide job details' : 'Show job details'}
             >
-              {isRightPanelOpen ? '◀' : '▶'}
+              {isRightPanelOpen ? '▶' : '◀'}
             </button>
           </div>
           {canEdit && showTaskForm && (
