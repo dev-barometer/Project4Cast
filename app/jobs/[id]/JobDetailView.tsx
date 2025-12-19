@@ -425,38 +425,6 @@ export default function JobDetailView({
             boxShadow: isRightPanelOpen ? '-2px 0 8px rgba(0, 0, 0, 0.1)' : 'none',
           }}
         >
-          {/* Close Button on Panel */}
-          <button
-            type="button"
-            onClick={(e) => {
-              e.stopPropagation();
-              setIsRightPanelOpen(false);
-            }}
-            style={{
-              position: 'absolute',
-              top: 12,
-              right: 12,
-              width: 28,
-              height: 28,
-              borderRadius: 6,
-              border: '1px solid #e2e8f0',
-              background: '#f7fafc',
-              color: '#2d3748',
-              fontSize: 16,
-              lineHeight: 1,
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              padding: 0,
-              zIndex: 20,
-              transition: 'all 0.2s',
-            }}
-            title="Close panel"
-          >
-            ×
-          </button>
-
           {/* Top: Job Details (Collapsible) */}
           <div
             style={{
@@ -475,6 +443,7 @@ export default function JobDetailView({
               allUsers={allUsers}
               currentUserId={currentUserId}
               canEdit={canEdit}
+              showToggleInTopRight={true}
             />
           </div>
 

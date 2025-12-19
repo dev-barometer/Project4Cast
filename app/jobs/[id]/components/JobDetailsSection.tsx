@@ -39,6 +39,7 @@ type JobDetailsSectionProps = {
   }>;
   currentUserId: string;
   canEdit: boolean;
+  showToggleInTopRight?: boolean;
 };
 
 export default function JobDetailsSection({
@@ -50,8 +51,14 @@ export default function JobDetailsSection({
   allUsers,
   currentUserId,
   canEdit,
+  showToggleInTopRight = false,
 }: JobDetailsSectionProps) {
   const [isExpanded, setIsExpanded] = useState(false); // Collapsed by default
+
+  const toggleExpanded = (e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent event from bubbling up
+    setIsExpanded(!isExpanded);
+  };
 
   return (
     <div
@@ -60,20 +67,50 @@ export default function JobDetailsSection({
         borderRadius: 8,
         border: '1px solid #e2e8f0',
         overflow: 'hidden',
+        position: 'relative',
       }}
     >
+      {/* Toggle Button in Top Right (replaces × close button) */}
+      {showToggleInTopRight && (
+        <button
+          type="button"
+          onClick={toggleExpanded}
+          style={{
+            position: 'absolute',
+            top: 12,
+            right: 12,
+            width: 32,
+            height: 32,
+            borderRadius: 8,
+            border: '1px solid #e2e8f0',
+            background: isExpanded ? '#ebf8ff' : '#f7fafc',
+            color: '#2d3748',
+            fontSize: 16,
+            lineHeight: 1,
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: 0,
+            zIndex: 20,
+            transition: 'all 0.2s',
+          }}
+          title={isExpanded ? 'Collapse job details' : 'Expand job details'}
+        >
+          {isExpanded ? '◀' : '▶'}
+        </button>
+      )}
+
       {/* Header with toggle */}
       <button
-        onClick={(e) => {
-          e.stopPropagation(); // Prevent event from bubbling up
-          setIsExpanded(!isExpanded);
-        }}
+        onClick={toggleExpanded}
         style={{
           width: '100%',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
           padding: '16px 20px',
+          paddingRight: showToggleInTopRight ? '60px' : '20px', // Make room for top-right toggle
           background: 'none',
           border: 'none',
           cursor: 'pointer',
@@ -92,17 +129,19 @@ export default function JobDetailsSection({
         >
           Job Details
         </h3>
-        <span
-          style={{
-            fontSize: 14,
-            color: '#718096',
-            transform: isExpanded ? 'rotate(90deg)' : 'rotate(0deg)',
-            transition: 'transform 0.2s',
-            display: 'inline-block',
-          }}
-        >
-          ▶
-        </span>
+        {!showToggleInTopRight && (
+          <span
+            style={{
+              fontSize: 14,
+              color: '#718096',
+              transform: isExpanded ? 'rotate(90deg)' : 'rotate(0deg)',
+              transition: 'transform 0.2s',
+              display: 'inline-block',
+            }}
+          >
+            ▶
+          </span>
+        )}
       </button>
 
       {/* Content */}
