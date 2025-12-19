@@ -138,12 +138,6 @@ export default function ProfilePageClient({ user, allTeams, admins }: ProfilePag
     setExpandedDates(newExpanded);
   };
 
-  // Handle account deletion success
-  if (deleteState?.success) {
-    // Sign out and redirect
-    signOut({ redirect: true, callbackUrl: '/login' });
-  }
-
   const prefs = user.notificationPreferences || {
     jobAssignedInApp: true,
     jobAssignedEmail: true,
