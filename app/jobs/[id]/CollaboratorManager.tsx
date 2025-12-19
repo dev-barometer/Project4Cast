@@ -140,6 +140,12 @@ export default function CollaboratorManager({
               name="userId"
               defaultValue=""
               onChange={(e) => {
+                if (e.target.value === 'INVITE_EMAIL') {
+                  e.preventDefault();
+                  setShowInviteForm(true);
+                  e.target.value = ''; // Reset dropdown
+                  return;
+                }
                 if (e.target.value) {
                   e.currentTarget.form?.requestSubmit();
                 }
@@ -161,6 +167,9 @@ export default function CollaboratorManager({
                   {user.name || user.email}
                 </option>
               ))}
+              <option value="INVITE_EMAIL" style={{ fontStyle: 'italic', color: '#4299e1' }}>
+                ─ Invite via email ─
+              </option>
             </select>
           </form>
         )}
