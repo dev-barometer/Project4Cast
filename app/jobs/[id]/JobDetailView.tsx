@@ -226,8 +226,8 @@ export default function JobDetailView({
             flex: 1,
             overflowY: 'auto',
             padding: '32px 40px',
-            borderRight: isRightPanelOpen ? '1px solid #e2e8f0' : 'none',
             transition: 'margin-right 0.3s ease-in-out',
+            marginRight: isRightPanelOpen ? '400px' : '0',
           }}
         >
           <div
@@ -406,49 +406,82 @@ export default function JobDetailView({
           )}
         </div>
 
-        {/* Right: Job Details (Top) + Task Details (Bottom) - Collapsible */}
+        {/* Right: Job Details (Top) + Task Details (Bottom) - Accordion from Right */}
         <div
           style={{
+            position: 'absolute',
+            right: 0,
+            top: 0,
+            bottom: 0,
+            width: '400px',
             display: 'flex',
             flexDirection: 'column',
             overflow: 'hidden',
-            minHeight: 0,
-            width: isRightPanelOpen ? '400px' : '0',
-            opacity: isRightPanelOpen ? 1 : 0,
-            transition: 'width 0.3s ease-in-out, opacity 0.3s ease-in-out',
-            borderLeft: isRightPanelOpen ? '1px solid #e2e8f0' : 'none',
             backgroundColor: '#ffffff',
-            visibility: isRightPanelOpen ? 'visible' : 'hidden',
+            borderLeft: '1px solid #e2e8f0',
+            transform: isRightPanelOpen ? 'translateX(0)' : 'translateX(100%)',
+            transition: 'transform 0.3s ease-in-out',
+            zIndex: 10,
+            boxShadow: isRightPanelOpen ? '-2px 0 8px rgba(0, 0, 0, 0.1)' : 'none',
           }}
         >
-            {/* Top: Job Details (Collapsible) */}
-            <div
-              style={{
-                borderBottom: '1px solid #e2e8f0',
-              }}
-            >
-              <JobDetailsSection
-                jobId={job.id}
-                brief={job.brief}
-                resourcesUrl={job.resourcesUrl}
-                collaborators={job.collaborators}
-                allAttachments={allAttachments}
-                allUsers={allUsers}
-                currentUserId={currentUserId}
-                canEdit={canEdit}
-              />
-            </div>
+          {/* Close Button on Panel */}
+          <button
+            type="button"
+            onClick={() => setIsRightPanelOpen(false)}
+            style={{
+              position: 'absolute',
+              top: 12,
+              right: 12,
+              width: 28,
+              height: 28,
+              borderRadius: 6,
+              border: '1px solid #e2e8f0',
+              background: '#f7fafc',
+              color: '#2d3748',
+              fontSize: 16,
+              lineHeight: 1,
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              padding: 0,
+              zIndex: 20,
+              transition: 'all 0.2s',
+            }}
+            title="Close panel"
+          >
+            ×
+          </button>
 
-            {/* Bottom: Task Details Panel */}
-            <div style={{ flex: 1, overflow: 'hidden' }}>
-              <TaskDetailPanel
-                task={selectedTask}
-                jobId={job.id}
-                currentUserId={currentUserId}
-                canEdit={canEdit}
-              />
-            </div>
+          {/* Top: Job Details (Collapsible) */}
+          <div
+            style={{
+              borderBottom: '1px solid #e2e8f0',
+            }}
+          >
+            <JobDetailsSection
+              jobId={job.id}
+              brief={job.brief}
+              resourcesUrl={job.resourcesUrl}
+              collaborators={job.collaborators}
+              allAttachments={allAttachments}
+              allUsers={allUsers}
+              currentUserId={currentUserId}
+              canEdit={canEdit}
+            />
           </div>
+
+          {/* Bottom: Task Details Panel */}
+          <div style={{ flex: 1, overflow: 'hidden' }}>
+            <TaskDetailPanel
+              task={selectedTask}
+              jobId={job.id}
+              currentUserId={currentUserId}
+              canEdit={canEdit}
+            />
+          </div>
+        </div>
       </div>
     </div>
   );
