@@ -24,7 +24,7 @@ type JobFormProps = {
 };
 
 export default function JobForm({ clients }: JobFormProps) {
-  const [state, formAction] = useFormState(createJob, { error: null, success: false, jobId: null });
+  const [state, formAction] = useFormState(createJob, { error: null, success: false, jobId: undefined });
   const router = useRouter();
   const [jobNumber, setJobNumber] = useState('');
   const [selectedClientId, setSelectedClientId] = useState<string>('');
