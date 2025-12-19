@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react';
 import { useFormState } from 'react-dom';
 import { signOut } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
 import {
   updateProfile,
   changePassword,
@@ -94,7 +93,6 @@ const ACTIVITY_LABELS: Record<string, string> = {
 };
 
 export default function ProfilePageClient({ user, allTeams, admins }: ProfilePageClientProps) {
-  const router = useRouter();
   const [activeTab, setActiveTab] = useState<'profile' | 'notifications' | 'activity' | 'account'>('profile');
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [deleteConfirmText, setDeleteConfirmText] = useState('');
