@@ -124,6 +124,11 @@ model Job {
   brief         String?
   resourcesUrl  String?
 
+  // Financial tracking (admin-only)
+  estimate      Float?           // Estimated cost/project value
+  billedAmount  Float?           // Amount billed to client
+  paidAmount    Float?           // Amount received from client
+
   brandId       String
   brand         Brand            @relation(fields: [brandId], references: [id])
 
