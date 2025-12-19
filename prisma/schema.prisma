@@ -68,6 +68,8 @@ model User {
   invitationsSent Invitation[] @relation("InvitedBy")
   emailVerificationTokens EmailVerificationToken[]
   passwordResetTokens PasswordResetToken[]
+  notifications Notification[]
+  notificationsAsActor Notification[] @relation("NotificationActor")
 }
 
 model Invitation {
@@ -115,6 +117,7 @@ model Job {
   tasks         Task[]
   attachments   Attachment[]
   comments      Comment[]
+  notifications Notification[]
 }
 
 model JobCollaborator {
@@ -143,6 +146,7 @@ model Task {
   assignees   TaskAssignee[]
   attachments Attachment[]
   comments    Comment[]
+  notifications Notification[]
 }
 
 model TaskAssignee {
@@ -212,4 +216,35 @@ model PasswordResetToken {
   @@index([token])
   @@index([userId])
   @@index([expiresAt])
+}
+
+enum NotificationType {
+  TASK_ASSIGNED
+  JOB_ASSIGNED
+  TASK_COMPLETED
+  COMMENT_MENTION
+}
+
+model Notification {
+  id        String          @id @default(cuid())
+  type      NotificationType
+  read      Boolean         @default(false)
+  createdAt DateTime        @default(now())
+  userId    String
+  taskId    String?
+  jobId     String?
+  commentId String?
+  title     String
+  message   String
+  actorId   String?
+
+  user      User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  task      Task?           @relation(fields: [taskId], references: [id], onDelete: SetNull)
+  job       Job?            @relation(fields: [jobId], references: [id], onDelete: SetNull)
+  actor     User?           @relation("NotificationActor", fields: [actorId], references: [id], onDelete: SetNull)
+
+  @@index([userId, read])
+  @@index([userId, createdAt])
+  @@index([taskId])
+  @@index([jobId])
 }
