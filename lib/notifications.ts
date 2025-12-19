@@ -48,7 +48,7 @@ export function parseMentions(text: string): string[] {
   if (!matches) return [];
   
   // Return unique mentions
-  return [...new Set(matches)];
+  return Array.from(new Set(matches));
 }
 
 // Create task assignment notification
