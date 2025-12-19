@@ -64,7 +64,10 @@ export default function JobDetailsSection({
     >
       {/* Header with toggle */}
       <button
-        onClick={() => setIsExpanded(!isExpanded)}
+        onClick={(e) => {
+          e.stopPropagation(); // Prevent event from bubbling up
+          setIsExpanded(!isExpanded);
+        }}
         style={{
           width: '100%',
           display: 'flex',

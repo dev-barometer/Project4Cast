@@ -428,7 +428,10 @@ export default function JobDetailView({
           {/* Close Button on Panel */}
           <button
             type="button"
-            onClick={() => setIsRightPanelOpen(false)}
+            onClick={(e) => {
+              e.stopPropagation();
+              setIsRightPanelOpen(false);
+            }}
             style={{
               position: 'absolute',
               top: 12,
@@ -458,7 +461,10 @@ export default function JobDetailView({
           <div
             style={{
               borderBottom: '1px solid #e2e8f0',
+              position: 'relative',
+              zIndex: 1,
             }}
+            onClick={(e) => e.stopPropagation()}
           >
             <JobDetailsSection
               jobId={job.id}
