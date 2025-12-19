@@ -131,18 +131,11 @@ export default function ProfilePageClient({ user, allTeams, admins }: ProfilePag
     setExpandedDates(newExpanded);
   };
 
-  // Handle account deletion
-  const handleDeleteAccount = async () => {
-    if (deleteConfirmText !== 'DELETE') {
-      return;
-    }
-    const formData = new FormData();
-    formData.append('confirmText', deleteConfirmText);
-    const result = await deleteAction(formData);
-    if (result.success) {
-      await signOut({ redirect: true, callbackUrl: '/login' });
-    }
-  };
+  // Handle account deletion success
+  if (deleteState?.success) {
+    // Sign out and redirect
+    signOut({ redirect: true, callbackUrl: '/login' });
+  }
 
   const prefs = user.notificationPreferences || {
     jobAssignedInApp: true,
@@ -827,25 +820,27 @@ export default function ProfilePageClient({ user, allTeams, admins }: ProfilePag
                   >
                     Confirm Delete
                   </button>
-                  <button
-                    onClick={() => {
-                      setShowDeleteConfirm(false);
-                      setDeleteConfirmText('');
-                    }}
-                    style={{
-                      padding: '10px 20px',
-                      backgroundColor: '#ffffff',
-                      color: '#4a5568',
-                      border: '1px solid #cbd5e0',
-                      borderRadius: 6,
-                      fontSize: 14,
-                      fontWeight: 500,
-                      cursor: 'pointer',
-                    }}
-                  >
-                    Cancel
-                  </button>
-                </div>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setShowDeleteConfirm(false);
+                        setDeleteConfirmText('');
+                      }}
+                      style={{
+                        padding: '10px 20px',
+                        backgroundColor: '#ffffff',
+                        color: '#4a5568',
+                        border: '1px solid #cbd5e0',
+                        borderRadius: 6,
+                        fontSize: 14,
+                        fontWeight: 500,
+                        cursor: 'pointer',
+                      }}
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </form>
               </div>
             </div>
           )}
