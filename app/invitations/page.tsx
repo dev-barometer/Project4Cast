@@ -138,7 +138,10 @@ export default async function InvitationsPage() {
                     </td>
                     <td style={{ padding: '12px 16px', textAlign: 'right' }}>
                       <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
-                        <form action={resendInvitation} style={{ display: 'inline' }}>
+                        <form action={async (formData: FormData) => {
+                          'use server';
+                          await resendInvitation(formData);
+                        }} style={{ display: 'inline' }}>
                           <input type="hidden" name="invitationId" value={invitation.id} />
                           <button
                             type="submit"
