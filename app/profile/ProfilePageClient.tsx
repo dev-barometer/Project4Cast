@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useFormState } from 'react-dom';
 import { signOut } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
@@ -104,6 +104,13 @@ export default function ProfilePageClient({ user, allTeams, admins }: ProfilePag
   const [teamsState, teamsAction] = useFormState(updateTeams, { success: false, error: null });
   const [notificationsState, notificationsAction] = useFormState(updateNotificationPreferences, { success: false, error: null });
   const [deleteState, deleteAction] = useFormState(deleteAccount, { success: false, error: null });
+
+  // Handle account deletion success - sign out and redirect
+  useEffect(() => {
+    if (deleteState?.success) {
+      signOut({ redirect: true, callbackUrl: '/login' });
+    }
+  }, [deleteState?.success]);
 
   // Group activities by date
   const groupedActivities = user.activityLogs.reduce((acc, activity) => {
