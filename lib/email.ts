@@ -37,7 +37,7 @@ export async function sendInvitationEmail({
                 You've been invited!
               </h1>
               <p style="color: #4a5568; font-size: 16px; margin-bottom: 24px;">
-                <strong>${inviterDisplay}</strong> has invited you to join ${process.env.NEXT_PUBLIC_APP_NAME || 'our project management platform'}.
+                <strong>${inviterDisplay}</strong> has invited you to join ${process.env.NEXT_PUBLIC_APP_NAME || 'Project4Cast'}.
               </p>
               <p style="color: #4a5568; font-size: 16px; margin-bottom: 32px;">
                 Click the button below to accept the invitation and create your account:
@@ -61,7 +61,7 @@ export async function sendInvitationEmail({
       text: `
 You've been invited!
 
-${inviterDisplay} has invited you to join ${process.env.NEXT_PUBLIC_APP_NAME || 'our project management platform'}.
+${inviterDisplay} has invited you to join ${process.env.NEXT_PUBLIC_APP_NAME || 'Project4Cast'}.
 
 Click the link below to accept the invitation and create your account:
 
