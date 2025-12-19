@@ -32,7 +32,7 @@ export default function StandaloneTaskForm({ allUsers, allJobs, currentUserId }:
   const [dueDate, setDueDate] = useState('');
   const [selectedJobId, setSelectedJobId] = useState('');
   const [selectedAssignees, setSelectedAssignees] = useState<string[]>([]);
-  const formRef = useRef<HTMLDivElement>(null);
+  const formRef = useRef<HTMLFormElement>(null);
   const [state, formAction] = useFormState(createStandaloneTask, { success: false, error: null });
 
   // Reset form on successful submission
