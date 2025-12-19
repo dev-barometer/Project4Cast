@@ -102,6 +102,7 @@ export default function JobDetailView({
   const canEdit = isAdmin || job.collaborators.some(c => c.userId === currentUserId && c.role !== 'VIEWER');
   const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
   const [showTaskForm, setShowTaskForm] = useState(false);
+  const [isRightPanelOpen, setIsRightPanelOpen] = useState(false);
   const formRef = useRef<HTMLFormElement>(null);
   
   // Use useFormState for better error handling
@@ -120,6 +121,24 @@ export default function JobDetailView({
   const selectedTask = selectedTaskId
     ? job.tasks.find(t => t.id === selectedTaskId) || null
     : null;
+
+  // Auto-open right panel when a task is selected
+  useEffect(() => {
+    if (selectedTaskId) {
+      setIsRightPanelOpen(true);
+    }
+  }, [selectedTaskId]);
+
+  // Handle task selection - toggle selection if clicking same task
+  const handleTaskSelect = (taskId: string) => {
+    if (selectedTaskId === taskId) {
+      // Deselecting - keep panel open to show job details
+      setSelectedTaskId(null);
+    } else {
+      // Selecting new task - will auto-open panel via useEffect
+      setSelectedTaskId(taskId);
+    }
+  };
 
   // Combine all attachments (job + task attachments) for Job Details section
   const allAttachments = [
@@ -194,20 +213,21 @@ export default function JobDetailView({
       {/* Bottom Section: Left (Task Table) + Right (Job Details + Task Details) */}
       <div
         style={{
-          display: 'grid',
-          gridTemplateColumns: '1fr 400px',
-          gap: 0,
+          display: 'flex',
           flex: 1,
           overflow: 'hidden',
           minHeight: 0,
+          position: 'relative',
         }}
       >
         {/* Left: Task Table Area */}
         <div
           style={{
+            flex: 1,
             overflowY: 'auto',
             padding: '32px 40px',
-            borderRight: '1px solid #e2e8f0',
+            borderRight: isRightPanelOpen ? '1px solid #e2e8f0' : 'none',
+            transition: 'margin-right 0.3s ease-in-out',
           }}
         >
           <div
@@ -229,30 +249,56 @@ export default function JobDetailView({
             >
               Tasks
             </h2>
-            {canEdit && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              {/* Toggle Right Panel Button */}
               <button
                 type="button"
-                onClick={() => setShowTaskForm((prev) => !prev)}
+                onClick={() => setIsRightPanelOpen(!isRightPanelOpen)}
                 style={{
                   width: 32,
                   height: 32,
                   borderRadius: 8,
                   border: '1px solid #e2e8f0',
-                  background: '#f7fafc',
+                  background: isRightPanelOpen ? '#ebf8ff' : '#f7fafc',
                   color: '#2d3748',
-                  fontSize: 18,
+                  fontSize: 16,
                   lineHeight: 1,
                   cursor: 'pointer',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
                   padding: 0,
+                  transition: 'all 0.2s',
                 }}
-                title={showTaskForm ? 'Hide task form' : 'Add task'}
+                title={isRightPanelOpen ? 'Hide job details' : 'Show job details'}
               >
-                +
+                {isRightPanelOpen ? '◀' : '▶'}
               </button>
-            )}
+              {canEdit && (
+                <button
+                  type="button"
+                  onClick={() => setShowTaskForm((prev) => !prev)}
+                  style={{
+                    width: 32,
+                    height: 32,
+                    borderRadius: 8,
+                    border: '1px solid #e2e8f0',
+                    background: '#f7fafc',
+                    color: '#2d3748',
+                    fontSize: 18,
+                    lineHeight: 1,
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    padding: 0,
+                  }}
+                  title={showTaskForm ? 'Hide task form' : 'Add task'}
+                >
+                  +
+                </button>
+              )}
+            </div>
           </div>
           {canEdit && showTaskForm && (
             <div style={{ marginBottom: 24 }}>
@@ -352,7 +398,7 @@ export default function JobDetailView({
                     allUsers={allUsers}
                     currentUserId={currentUserId}
                     isSelected={selectedTaskId === task.id}
-                    onSelect={() => setSelectedTaskId(task.id === selectedTaskId ? null : task.id)}
+                    onSelect={() => handleTaskSelect(task.id)}
                   />
                 ))}
               </tbody>
@@ -360,43 +406,49 @@ export default function JobDetailView({
           )}
         </div>
 
-        {/* Right: Job Details (Top) + Task Details (Bottom) */}
+        {/* Right: Job Details (Top) + Task Details (Bottom) - Collapsible */}
         <div
           style={{
             display: 'flex',
             flexDirection: 'column',
             overflow: 'hidden',
             minHeight: 0,
+            width: isRightPanelOpen ? '400px' : '0',
+            opacity: isRightPanelOpen ? 1 : 0,
+            transition: 'width 0.3s ease-in-out, opacity 0.3s ease-in-out',
+            borderLeft: isRightPanelOpen ? '1px solid #e2e8f0' : 'none',
+            backgroundColor: '#ffffff',
+            visibility: isRightPanelOpen ? 'visible' : 'hidden',
           }}
         >
-          {/* Top: Job Details (Collapsible) */}
-          <div
-            style={{
-              borderBottom: '1px solid #e2e8f0',
-            }}
-          >
-            <JobDetailsSection
-              jobId={job.id}
-              brief={job.brief}
-              resourcesUrl={job.resourcesUrl}
-              collaborators={job.collaborators}
-              allAttachments={allAttachments}
-              allUsers={allUsers}
-              currentUserId={currentUserId}
-              canEdit={canEdit}
-            />
-          </div>
+            {/* Top: Job Details (Collapsible) */}
+            <div
+              style={{
+                borderBottom: '1px solid #e2e8f0',
+              }}
+            >
+              <JobDetailsSection
+                jobId={job.id}
+                brief={job.brief}
+                resourcesUrl={job.resourcesUrl}
+                collaborators={job.collaborators}
+                allAttachments={allAttachments}
+                allUsers={allUsers}
+                currentUserId={currentUserId}
+                canEdit={canEdit}
+              />
+            </div>
 
-          {/* Bottom: Task Details Panel */}
-          <div style={{ flex: 1, overflow: 'hidden' }}>
-            <TaskDetailPanel
-              task={selectedTask}
-              jobId={job.id}
-              currentUserId={currentUserId}
-              canEdit={canEdit}
-            />
+            {/* Bottom: Task Details Panel */}
+            <div style={{ flex: 1, overflow: 'hidden' }}>
+              <TaskDetailPanel
+                task={selectedTask}
+                jobId={job.id}
+                currentUserId={currentUserId}
+                canEdit={canEdit}
+              />
+            </div>
           </div>
-        </div>
       </div>
     </div>
   );
