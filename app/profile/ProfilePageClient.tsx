@@ -804,23 +804,25 @@ export default function ProfilePageClient({ user, allTeams, admins }: ProfilePag
                     marginBottom: 16,
                   }}
                 />
-                <div style={{ display: 'flex', gap: 8 }}>
-                  <button
-                    onClick={handleDeleteAccount}
-                    disabled={deleteConfirmText !== 'DELETE'}
-                    style={{
-                      padding: '10px 20px',
-                      backgroundColor: deleteConfirmText === 'DELETE' ? '#e53e3e' : '#cbd5e0',
-                      color: '#ffffff',
-                      border: 'none',
-                      borderRadius: 6,
-                      fontSize: 14,
-                      fontWeight: 500,
-                      cursor: deleteConfirmText === 'DELETE' ? 'pointer' : 'not-allowed',
-                    }}
-                  >
-                    Confirm Delete
-                  </button>
+                <form action={deleteAction}>
+                  <div style={{ display: 'flex', gap: 8 }}>
+                    <input type="hidden" name="confirmText" value={deleteConfirmText} />
+                    <button
+                      type="submit"
+                      disabled={deleteConfirmText !== 'DELETE'}
+                      style={{
+                        padding: '10px 20px',
+                        backgroundColor: deleteConfirmText === 'DELETE' ? '#e53e3e' : '#cbd5e0',
+                        color: '#ffffff',
+                        border: 'none',
+                        borderRadius: 6,
+                        fontSize: 14,
+                        fontWeight: 500,
+                        cursor: deleteConfirmText === 'DELETE' ? 'pointer' : 'not-allowed',
+                      }}
+                    >
+                      Confirm Delete
+                    </button>
                     <button
                       type="button"
                       onClick={() => {
