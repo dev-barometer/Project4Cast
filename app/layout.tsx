@@ -10,7 +10,7 @@ const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "Project Management",
-  description: "Asana replacement for project management",
+  description: "Project4Cast - Project management platform",
 };
 
 export default async function RootLayout({

@@ -23,7 +23,7 @@ export async function sendInvitationEmail({
     const { data, error } = await resend.emails.send({
       from: process.env.RESEND_FROM_EMAIL || 'onboarding@resend.dev',
       to: email,
-      subject: `You've been invited to join ${process.env.NEXT_PUBLIC_APP_NAME || 'Asana Replacement'}`,
+      subject: `You've been invited to join ${process.env.NEXT_PUBLIC_APP_NAME || 'Project4Cast'}`,
       html: `
         <!DOCTYPE html>
         <html>
