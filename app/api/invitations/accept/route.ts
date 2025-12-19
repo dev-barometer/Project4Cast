@@ -64,8 +64,8 @@ export async function POST(request: NextRequest) {
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Create user and mark invitation as accepted in a transaction
-    await prisma.$transaction([
+    // Create user, mark invitation as accepted, and add as collaborator if job-specific
+    const operations: any[] = [
       prisma.user.create({
         data: {
           email: invitation.email,
@@ -81,7 +81,63 @@ export async function POST(request: NextRequest) {
           acceptedAt: new Date(),
         },
       }),
-    ]);
+    ];
+
+    // If this is a job-specific invitation, add the user as a collaborator
+    if (invitation.jobId) {
+      operations.push(
+        prisma.jobCollaborator.create({
+          data: {
+            jobId: invitation.jobId,
+            userId: '', // Will be set after user creation
+            role: 'COLLABORATOR',
+          },
+        })
+      );
+    }
+
+    // Execute in transaction
+    const result = await prisma.$transaction(async (tx) => {
+      const newUser = await tx.user.create({
+        data: {
+          email: invitation.email,
+          name: name.trim(),
+          password: hashedPassword,
+          role: invitation.role,
+        },
+      });
+
+      await tx.invitation.update({
+        where: { id: invitation.id },
+        data: {
+          status: 'ACCEPTED',
+          acceptedAt: new Date(),
+        },
+      });
+
+      // If this is a job-specific invitation, add the user as a collaborator
+      if (invitation.jobId) {
+        // Check if collaborator already exists (shouldn't, but safety check)
+        const existingCollaborator = await tx.jobCollaborator.findFirst({
+          where: {
+            jobId: invitation.jobId,
+            userId: newUser.id,
+          },
+        });
+
+        if (!existingCollaborator) {
+          await tx.jobCollaborator.create({
+            data: {
+              jobId: invitation.jobId,
+              userId: newUser.id,
+              role: 'COLLABORATOR',
+            },
+          });
+        }
+      }
+
+      return newUser;
+    });
 
     return NextResponse.json({ success: true });
   } catch (error: any) {

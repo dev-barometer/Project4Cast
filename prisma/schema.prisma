@@ -79,6 +79,8 @@ model Invitation {
   role        UserRole @default(USER)
   invitedById String
   invitedBy   User     @relation("InvitedBy", fields: [invitedById], references: [id])
+  jobId       String?  // Optional: if set, user will be added as collaborator when accepting
+  job         Job?     @relation(fields: [jobId], references: [id])
   status      InvitationStatus @default(PENDING)
   createdAt   DateTime @default(now())
   expiresAt   DateTime
@@ -119,6 +121,7 @@ model Job {
   attachments   Attachment[]
   comments      Comment[]
   notifications Notification[]
+  invitations   Invitation[]
 }
 
 model JobCollaborator {

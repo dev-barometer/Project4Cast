@@ -254,6 +254,155 @@ export async function addCollaborator(formData: FormData) {
   revalidatePath(`/jobs/${jobId}`);
 }
 
+// Server action to invite a collaborator via email for a specific job
+export async function inviteCollaboratorByEmail(prevState: any, formData: FormData) {
+  'use server';
+
+  const jobId = formData.get('jobId')?.toString();
+  const email = formData.get('email')?.toString().trim().toLowerCase();
+
+  if (!jobId || !email) {
+    return { success: false, error: 'Job ID and email are required' };
+  }
+
+  // Validate email format
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email)) {
+    return { success: false, error: 'Invalid email address' };
+  }
+
+  // Get current user
+  const session = await auth();
+  if (!session?.user?.id) {
+    return { success: false, error: 'You must be logged in to send invitations' };
+  }
+
+  const user = await prisma.user.findUnique({
+    where: { id: session.user.id },
+  });
+
+  if (!user) {
+    return { success: false, error: 'User not found' };
+  }
+
+  // Check if user has permission to add collaborators to this job
+  const job = await prisma.job.findUnique({
+    where: { id: jobId },
+    include: {
+      collaborators: true,
+    },
+  });
+
+  if (!job) {
+    return { success: false, error: 'Job not found' };
+  }
+
+  const isOwner = job.collaborators.some(
+    (c) => c.userId === session.user.id && c.role === 'OWNER'
+  );
+  const isAdmin = user.role === 'ADMIN';
+
+  if (!isOwner && !isAdmin) {
+    return { success: false, error: 'You do not have permission to invite collaborators to this job' };
+  }
+
+  try {
+    // Check if user already exists
+    const existingUser = await prisma.user.findUnique({
+      where: { email },
+    });
+
+    if (existingUser) {
+      // User exists - check if they're already a collaborator
+      const existingCollaborator = await prisma.jobCollaborator.findFirst({
+        where: {
+          jobId,
+          userId: existingUser.id,
+        },
+      });
+
+      if (existingCollaborator) {
+        return { success: false, error: 'This user is already a collaborator on this job' };
+      }
+
+      // Add them as a collaborator directly
+      await prisma.jobCollaborator.create({
+        data: {
+          jobId,
+          userId: existingUser.id,
+          role: 'COLLABORATOR',
+        },
+      });
+
+      revalidatePath(`/jobs/${jobId}`);
+      return { success: true, error: null };
+    }
+
+    // Check if there's a pending invitation for this email and job
+    const existingInvitation = await prisma.invitation.findFirst({
+      where: {
+        email,
+        jobId,
+        status: 'PENDING',
+        expiresAt: {
+          gt: new Date(),
+        },
+      },
+    });
+
+    if (existingInvitation) {
+      return { success: false, error: 'A pending invitation already exists for this email' };
+    }
+
+    // Import invitation functions
+    const { randomBytes } = await import('crypto');
+    const { sendInvitationEmail } = await import('@/lib/email');
+
+    // Generate invitation token
+    const token = randomBytes(32).toString('hex');
+    const expiresAt = new Date();
+    expiresAt.setDate(expiresAt.getDate() + 7); // Expires in 7 days
+
+    // Create invitation linked to this job
+    const invitation = await prisma.invitation.create({
+      data: {
+        email,
+        token,
+        role: 'USER', // Default role for job invitations
+        invitedById: user.id,
+        jobId, // Link to the job
+        expiresAt,
+      },
+    });
+
+    // Send invitation email
+    try {
+      await sendInvitationEmail({
+        email,
+        invitationToken: token,
+        inviterName: user.name,
+        inviterEmail: user.email,
+      });
+    } catch (emailError: any) {
+      // If email fails, delete the invitation and return error
+      await prisma.invitation.delete({
+        where: { id: invitation.id },
+      });
+      console.error('Error sending invitation email:', emailError);
+      return {
+        success: false,
+        error: `Failed to send invitation email: ${emailError.message || 'Unknown error'}. Please check your email configuration.`,
+      };
+    }
+
+    revalidatePath(`/jobs/${jobId}`);
+    return { success: true, error: null };
+  } catch (error: any) {
+    console.error('Error inviting collaborator:', error);
+    return { success: false, error: error.message || 'Failed to send invitation' };
+  }
+}
+
 // Server action to remove a collaborator from a job
 export async function removeCollaborator(formData: FormData) {
   const jobId = formData.get('jobId')?.toString();

@@ -6,18 +6,31 @@ import { prisma } from '@/lib/prisma';
 // Helper to find users by email or name (for @mentions)
 export async function findUsersByMention(mentionText: string): Promise<string[]> {
   // Remove @ symbol and trim
-  const searchTerm = mentionText.replace('@', '').trim().toLowerCase();
+  let searchTerm = mentionText.replace('@', '').trim();
 
   if (!searchTerm) return [];
 
-  // Search by email or name
+  // Check if it looks like an email address
+  const isEmail = searchTerm.includes('@') && searchTerm.includes('.');
+  
+  // If it's an email, search for exact match first, then contains
+  // If it's not an email, search by name or email contains
+  const whereClause = isEmail
+    ? {
+        OR: [
+          { email: { equals: searchTerm, mode: 'insensitive' } },
+          { email: { contains: searchTerm, mode: 'insensitive' } },
+        ],
+      }
+    : {
+        OR: [
+          { email: { contains: searchTerm, mode: 'insensitive' } },
+          { name: { contains: searchTerm, mode: 'insensitive' } },
+        ],
+      };
+
   const users = await prisma.user.findMany({
-    where: {
-      OR: [
-        { email: { contains: searchTerm, mode: 'insensitive' } },
-        { name: { contains: searchTerm, mode: 'insensitive' } },
-      ],
-    },
+    where: whereClause,
     select: { id: true },
   });
 
@@ -26,10 +39,18 @@ export async function findUsersByMention(mentionText: string): Promise<string[]>
 
 // Parse @mentions from comment text
 export function parseMentions(text: string): string[] {
-  // Match @username or @email patterns
-  const mentionRegex = /@(\w+)/g;
+  // Match @mentions - supports:
+  // - @username (word characters, dots, hyphens)
+  // - @email@domain.com (full email addresses)
+  // - @First Last (names with spaces)
+  // Matches @ followed by word characters, dots, hyphens, @ (for emails), or spaces
+  const mentionRegex = /@([\w.@-]+(?:\s+[\w.@-]+)*)/g;
   const matches = text.match(mentionRegex);
-  return matches || [];
+  
+  if (!matches) return [];
+  
+  // Return unique mentions
+  return [...new Set(matches)];
 }
 
 // Create task assignment notification
