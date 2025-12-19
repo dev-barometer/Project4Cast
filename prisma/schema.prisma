@@ -109,6 +109,7 @@ model Job {
   title         String
   status        JobStatus        @default(PLANNING)
   brief         String?
+  resourcesUrl  String?
 
   brandId       String
   brand         Brand            @relation(fields: [brandId], references: [id])
