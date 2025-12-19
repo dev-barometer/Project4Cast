@@ -234,46 +234,22 @@ export default function JobDetailView({
             style={{
               display: 'flex',
               alignItems: 'center',
-              gap: 12,
+              justifyContent: 'space-between',
               marginBottom: 16,
             }}
           >
-            <h2
-              style={{
-                fontSize: 18,
-                fontWeight: 600,
-                color: '#2d3748',
-                margin: 0,
-                fontFamily: 'Inter, sans-serif',
-              }}
-            >
-              Tasks
-            </h2>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              {/* Toggle Right Panel Button */}
-              <button
-                type="button"
-                onClick={() => setIsRightPanelOpen(!isRightPanelOpen)}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+              <h2
                 style={{
-                  width: 32,
-                  height: 32,
-                  borderRadius: 8,
-                  border: '1px solid #e2e8f0',
-                  background: isRightPanelOpen ? '#ebf8ff' : '#f7fafc',
+                  fontSize: 18,
+                  fontWeight: 600,
                   color: '#2d3748',
-                  fontSize: 16,
-                  lineHeight: 1,
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  padding: 0,
-                  transition: 'all 0.2s',
+                  margin: 0,
+                  fontFamily: 'Inter, sans-serif',
                 }}
-                title={isRightPanelOpen ? 'Hide job details' : 'Show job details'}
               >
-                {isRightPanelOpen ? '◀' : '▶'}
-              </button>
+                Tasks
+              </h2>
               {canEdit && (
                 <button
                   type="button"
@@ -299,6 +275,30 @@ export default function JobDetailView({
                 </button>
               )}
             </div>
+            {/* Toggle Right Panel Button - All the way to the right */}
+            <button
+              type="button"
+              onClick={() => setIsRightPanelOpen(!isRightPanelOpen)}
+              style={{
+                width: 32,
+                height: 32,
+                borderRadius: 8,
+                border: '1px solid #e2e8f0',
+                background: isRightPanelOpen ? '#ebf8ff' : '#f7fafc',
+                color: '#2d3748',
+                fontSize: 16,
+                lineHeight: 1,
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                padding: 0,
+                transition: 'all 0.2s',
+              }}
+              title={isRightPanelOpen ? 'Hide job details' : 'Show job details'}
+            >
+              {isRightPanelOpen ? '◀' : '▶'}
+            </button>
           </div>
           {canEdit && showTaskForm && (
             <div style={{ marginBottom: 24 }}>
