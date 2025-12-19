@@ -14,6 +14,9 @@ export const ALLOWED_MIME_TYPES = [
 // Allowed file extensions
 export const ALLOWED_EXTENSIONS = ['.pdf', '.docx', '.png', '.pptx'];
 
+// Maximum file size (10MB)
+export const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB in bytes
+
 // Get file extension from filename
 export function getFileExtension(filename: string): string {
   return filename.substring(filename.lastIndexOf('.'));

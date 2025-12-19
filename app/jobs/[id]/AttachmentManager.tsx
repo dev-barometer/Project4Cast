@@ -6,6 +6,7 @@ import { uploadJobAttachment, uploadTaskAttachment, deleteAttachment } from './a
 import { useState, useRef, useEffect } from 'react';
 import { useFormState } from 'react-dom';
 import { getFileUrl } from '@/lib/file-url-utils';
+import { MAX_FILE_SIZE, isValidFileType } from '@/lib/file-upload';
 
 type Attachment = {
   id: string;
@@ -35,6 +36,7 @@ export default function AttachmentManager({
 }: AttachmentManagerProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [fileError, setFileError] = useState<string | null>(null);
   const [state, formAction] = useFormState(
     taskId ? uploadTaskAttachment : uploadJobAttachment,
     { success: false, error: null }
@@ -44,6 +46,7 @@ export default function AttachmentManager({
   useEffect(() => {
     if (state?.success && fileInputRef.current) {
       fileInputRef.current.value = '';
+      setFileError(null);
     }
   }, [state?.success]);
 
@@ -186,8 +189,27 @@ export default function AttachmentManager({
               name="file"
               accept=".pdf,.docx,.png,.pptx"
               onChange={(e) => {
-                // Submit form when file is selected
-                if (e.target.files?.[0]) {
+                const file = e.target.files?.[0];
+                if (file) {
+                  // Validate file type
+                  if (!isValidFileType(file.name, file.type)) {
+                    setFileError('Invalid file type. Allowed: PDF, DOCX, PNG, PPTX');
+                    e.target.value = ''; // Clear the input
+                    return;
+                  }
+                  
+                  // Validate file size
+                  if (file.size > MAX_FILE_SIZE) {
+                    const sizeMB = (file.size / (1024 * 1024)).toFixed(2);
+                    const maxMB = (MAX_FILE_SIZE / (1024 * 1024)).toFixed(0);
+                    setFileError(`File too large: ${sizeMB}MB. Maximum size: ${maxMB}MB`);
+                    e.target.value = ''; // Clear the input
+                    return;
+                  }
+                  
+                  // Clear any previous errors
+                  setFileError(null);
+                  // Submit form when file is selected
                   e.target.form?.requestSubmit();
                 }
               }}
@@ -195,12 +217,26 @@ export default function AttachmentManager({
                 width: '100%',
                 padding: '8px',
                 borderRadius: 4,
-                border: '1px solid #cbd5e0',
+                border: fileError ? '1px solid #e53e3e' : '1px solid #cbd5e0',
                 fontSize: 13,
                 backgroundColor: '#ffffff',
                 cursor: 'pointer',
               }}
             />
+            {fileError && (
+              <div
+                style={{
+                  fontSize: 11,
+                  color: '#e53e3e',
+                  marginTop: 4,
+                  padding: '4px 8px',
+                  backgroundColor: '#fed7d7',
+                  borderRadius: 4,
+                }}
+              >
+                {fileError}
+              </div>
+            )}
             <div style={{ fontSize: 11, color: '#718096', marginTop: 4 }}>
               Allowed: PDF, DOCX, PNG, PPTX (max 10MB)
             </div>

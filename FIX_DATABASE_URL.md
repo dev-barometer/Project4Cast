@@ -1,4 +1,4 @@
-# How to Fix Your DATABASE_URL in Vercel
+ # How to Fix Your DATABASE_URL in Vercel
 
 ## The Problem
 
@@ -80,3 +80,4 @@ Once you update the DATABASE_URL with the real password and redeploy, the build 
 
 - Can't find your password? Reset it in Supabase (Option 2 above)
 - Still having issues? Check that your Supabase project is active and the database is running
+

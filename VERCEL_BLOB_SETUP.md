@@ -81,3 +81,4 @@ Your files will now be stored in Vercel Blob instead of Cloudinary. Everything e
 ## Migration from Cloudinary
 
 Old Cloudinary URLs will still work (they're handled for backward compatibility), but all new uploads will use Vercel Blob.
+

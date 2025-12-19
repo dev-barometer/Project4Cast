@@ -70,3 +70,4 @@ cloudinary.uploader.explicit(publicId, {
   console.error('❌ Error:', err.message);
   process.exit(1);
 });
+

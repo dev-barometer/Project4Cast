@@ -27,7 +27,7 @@ export default function Header({ user, unreadNotificationCount = 0 }: HeaderProp
     >
       <div style={{ display: 'flex', alignItems: 'center', gap: 24, paddingLeft: 16, width: 320 }}>
         <Link
-          href="/dev"
+          href="/"
           style={{
             fontSize: 18,
             fontWeight: 600,

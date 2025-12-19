@@ -232,19 +232,19 @@ export default function SortableTaskTable({
       >
         <thead>
           <tr style={{ backgroundColor: '#f7fafc' }}>
-            <th style={{ textAlign: 'center', padding: '12px 16px', borderBottom: '1px solid #e2e8f0', color: '#4a5568', fontWeight: 600, fontSize: 13, width: 40 }}>
+            <th style={{ textAlign: 'center', padding: '8px 12px', borderBottom: '1px solid #e2e8f0', color: '#4a5568', fontWeight: 600, fontSize: 13, width: 40 }}>
               {/* Checkbox column - no header */}
             </th>
             <SortableHeader
               field="title"
-              style={{ textAlign: 'left', padding: '12px 16px', borderBottom: '1px solid #e2e8f0', color: '#4a5568', fontWeight: 600, fontSize: 13 }}
+              style={{ textAlign: 'left', padding: '8px 12px', borderBottom: '1px solid #e2e8f0', color: '#4a5568', fontWeight: 600, fontSize: 13 }}
             >
               Task
             </SortableHeader>
             {showJobColumn && (
               <SortableHeader
                 field="job"
-                style={{ textAlign: 'left', padding: '12px 16px', borderBottom: '1px solid #e2e8f0', color: '#4a5568', fontWeight: 600, fontSize: 13 }}
+                style={{ textAlign: 'left', padding: '8px 12px', borderBottom: '1px solid #e2e8f0', color: '#4a5568', fontWeight: 600, fontSize: 13 }}
               >
                 Job
               </SortableHeader>
@@ -252,26 +252,26 @@ export default function SortableTaskTable({
             {showClientBrandColumn && (
               <SortableHeader
                 field="clientBrand"
-                style={{ textAlign: 'left', padding: '12px 16px', borderBottom: '1px solid #e2e8f0', color: '#4a5568', fontWeight: 600, fontSize: 13 }}
+                style={{ textAlign: 'left', padding: '8px 12px', borderBottom: '1px solid #e2e8f0', color: '#4a5568', fontWeight: 600, fontSize: 13 }}
               >
                 Client / Brand
               </SortableHeader>
             )}
             <SortableHeader
               field="priority"
-              style={{ textAlign: 'left', padding: '12px 16px', borderBottom: '1px solid #e2e8f0', color: '#4a5568', fontWeight: 600, fontSize: 13 }}
+              style={{ textAlign: 'left', padding: '8px 12px', borderBottom: '1px solid #e2e8f0', color: '#4a5568', fontWeight: 600, fontSize: 13 }}
             >
               Priority
             </SortableHeader>
             <SortableHeader
               field="dueDate"
-              style={{ textAlign: 'left', padding: '12px 16px', borderBottom: '1px solid #e2e8f0', color: '#4a5568', fontWeight: 600, fontSize: 13 }}
+              style={{ textAlign: 'left', padding: '8px 12px', borderBottom: '1px solid #e2e8f0', color: '#4a5568', fontWeight: 600, fontSize: 13 }}
             >
               Due Date
             </SortableHeader>
             <SortableHeader
               field="assignees"
-              style={{ textAlign: 'left', padding: '12px 16px', borderBottom: '1px solid #e2e8f0', color: '#4a5568', fontWeight: 600, fontSize: 13 }}
+              style={{ textAlign: 'left', padding: '8px 12px', borderBottom: '1px solid #e2e8f0', color: '#4a5568', fontWeight: 600, fontSize: 13 }}
             >
               {filterCurrentUserFromAssignees ? 'Other Assignees' : 'Assignees'}
             </SortableHeader>

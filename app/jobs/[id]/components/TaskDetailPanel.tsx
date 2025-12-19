@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import { addTaskComment } from '../actions';
 import { useFormState } from 'react-dom';
 import { getFileUrl } from '@/lib/file-url-utils';
+import { MAX_FILE_SIZE, isValidFileType } from '@/lib/file-upload';
 
 type TaskDetailPanelProps = {
   task: {
@@ -49,6 +50,7 @@ export default function TaskDetailPanel({
   const commentsContainerRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+  const [fileError, setFileError] = useState<string | null>(null);
 
   // Scroll to bottom when new comment is added
   useEffect(() => {
@@ -59,6 +61,7 @@ export default function TaskDetailPanel({
       }
       // Clear selected files after successful submission
       setSelectedFiles([]);
+      setFileError(null);
       if (fileInputRef.current) {
         fileInputRef.current.value = '';
       }
@@ -71,7 +74,41 @@ export default function TaskDetailPanel({
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
-      setSelectedFiles(Array.from(e.target.files));
+      const files = Array.from(e.target.files);
+      const validFiles: File[] = [];
+      const errors: string[] = [];
+      
+      files.forEach((file) => {
+        // Validate file type
+        if (!isValidFileType(file.name, file.type)) {
+          errors.push(`${file.name}: Invalid file type. Allowed: PDF, DOCX, PNG, PPTX`);
+          return;
+        }
+        
+        // Validate file size
+        if (file.size > MAX_FILE_SIZE) {
+          const sizeMB = (file.size / (1024 * 1024)).toFixed(2);
+          const maxMB = (MAX_FILE_SIZE / (1024 * 1024)).toFixed(0);
+          errors.push(`${file.name}: File too large (${sizeMB}MB). Maximum: ${maxMB}MB`);
+          return;
+        }
+        
+        validFiles.push(file);
+      });
+      
+      if (errors.length > 0) {
+        setFileError(errors.join('; '));
+        // Clear invalid files from input
+        if (fileInputRef.current) {
+          const dt = new DataTransfer();
+          validFiles.forEach(f => dt.items.add(f));
+          fileInputRef.current.files = dt.files;
+        }
+      } else {
+        setFileError(null);
+      }
+      
+      setSelectedFiles(validFiles);
     }
   };
 
@@ -315,7 +352,7 @@ export default function TaskDetailPanel({
             backgroundColor: '#ffffff',
           }}
         >
-          {state?.error && (
+          {(state?.error || fileError) && (
             <div
               style={{
                 backgroundColor: '#fed7d7',
@@ -326,7 +363,7 @@ export default function TaskDetailPanel({
                 fontSize: 12,
               }}
             >
-              <strong>Error:</strong> {state.error}
+              <strong>Error:</strong> {fileError || state.error}
             </div>
           )}
 

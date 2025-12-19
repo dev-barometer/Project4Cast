@@ -69,3 +69,4 @@ You can verify RLS is enabled in your Supabase dashboard:
 
 The security linter warnings should now be resolved! ✅
 
+

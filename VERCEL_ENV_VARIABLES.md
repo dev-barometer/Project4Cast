@@ -145,3 +145,4 @@ NEXT_PUBLIC_APP_NAME=Asana Replacement
 - **Don't have Supabase?** You'll need to set up a database first
 - **Don't know your DATABASE_URL?** Check your Supabase dashboard
 - **Need to generate AUTH_SECRET?** Run `openssl rand -base64 32` or ask me!
+

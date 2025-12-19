@@ -93,7 +93,7 @@ export default function TaskRow({
       }}
     >
       {/* Done checkbox - before title */}
-      <td style={{ padding: '12px 16px', width: 40, textAlign: 'center' }}>
+      <td style={{ padding: '8px 12px', width: 40, textAlign: 'center' }}>
         <form action={updateTask} style={{ display: 'inline', margin: 0 }}>
           <input type="hidden" name="taskId" value={task.id} />
           <input type="hidden" name="jobId" value={jobId} />
@@ -127,7 +127,7 @@ export default function TaskRow({
       </td>
 
       {/* Title - editable input */}
-      <td style={{ padding: '12px 16px', color: '#2d3748' }}>
+      <td style={{ padding: '8px 12px', color: '#2d3748' }}>
         <form action={updateTask} style={{ display: 'inline' }}>
           <input type="hidden" name="taskId" value={task.id} />
           <input type="hidden" name="jobId" value={jobId} />
@@ -164,7 +164,7 @@ export default function TaskRow({
       </td>
 
       {/* Due Date - editable */}
-      <td style={{ padding: '12px 16px', color: '#4a5568' }}>
+      <td style={{ padding: '8px 12px', color: '#4a5568' }}>
         <form action={updateTask} style={{ display: 'inline' }}>
           <input type="hidden" name="taskId" value={task.id} />
           <input type="hidden" name="jobId" value={jobId} />
@@ -191,7 +191,7 @@ export default function TaskRow({
       </td>
 
       {/* Assignees - editable with add/remove */}
-      <td style={{ padding: '12px 16px', color: '#4a5568' }}>
+      <td style={{ padding: '8px 12px', color: '#4a5568' }}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
           {/* Show current assignees with remove buttons */}
           {task.assignees.length > 0 && (
