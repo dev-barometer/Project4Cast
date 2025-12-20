@@ -6,7 +6,7 @@
 import { useState, useMemo } from 'react';
 import EditableTaskRow from './EditableTaskRow';
 
-type SortField = 'title' | 'dueDate' | 'job' | 'clientBrand' | 'assignees' | 'priority';
+type SortField = 'title' | 'dueDate' | 'job' | 'clientBrand' | 'assignees';
 type SortDirection = 'asc' | 'desc';
 
 type Task = {
