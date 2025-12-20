@@ -5,6 +5,7 @@
 
 import { useState, useEffect } from 'react';
 import { useFormState } from 'react-dom';
+import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import {
@@ -73,7 +74,26 @@ export default function AdminDashboardClient({
   clients,
   teams,
 }: AdminDashboardClientProps) {
-  const [activeTab, setActiveTab] = useState<'users' | 'work' | 'financial'>('users');
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  
+  // Get initial tab from URL params, default to 'users'
+  const initialTab = (searchParams.get('tab') as 'users' | 'work' | 'financial') || 'users';
+  const [activeTab, setActiveTab] = useState<'users' | 'work' | 'financial'>(initialTab);
+
+  // Update URL when tab changes
+  const handleTabChange = (tab: 'users' | 'work' | 'financial') => {
+    setActiveTab(tab);
+    router.push(`/admin?tab=${tab}`, { scroll: false });
+  };
+
+  // Sync with URL params on mount/change
+  useEffect(() => {
+    const tabFromUrl = searchParams.get('tab') as 'users' | 'work' | 'financial';
+    if (tabFromUrl && ['users', 'work', 'financial'].includes(tabFromUrl)) {
+      setActiveTab(tabFromUrl);
+    }
+  }, [searchParams]);
 
   // Debug: Log data to console
   useEffect(() => {
@@ -132,7 +152,7 @@ export default function AdminDashboardClient({
         {(['users', 'work', 'financial'] as const).map((tab) => (
           <button
             key={tab}
-            onClick={() => setActiveTab(tab)}
+            onClick={() => handleTabChange(tab)}
             style={{
               padding: '12px 24px',
               background: 'none',
