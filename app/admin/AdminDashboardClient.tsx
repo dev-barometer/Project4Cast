@@ -6,6 +6,7 @@
 import { useState, useEffect } from 'react';
 import { useFormState } from 'react-dom';
 import Link from 'next/link';
+import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import {
   deleteUser,
   assignAdminRole,
@@ -275,65 +276,61 @@ export default function AdminDashboardClient({
           {financialData.length === 0 ? (
             <p style={{ color: '#718096', fontSize: 14 }}>No financial data available.</p>
           ) : (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
-              {financialData.map((clientData) => (
-                <div key={clientData.clientId} style={{ border: '1px solid #e2e8f0', borderRadius: 8, padding: 20 }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 32 }}>
+              {/* Pie Chart: Total Paid by Client */}
+              <div>
                 <h3 style={{ fontSize: 18, fontWeight: 600, color: '#2d3748', marginBottom: 16 }}>
-                  {clientData.clientName}
+                  Total Paid by Client
                 </h3>
-                <div style={{ marginLeft: 20 }}>
-                  {clientData.brands.map((brandData) => (
-                    <div key={brandData.brandId} style={{ marginBottom: 16, paddingBottom: 16, borderBottom: '1px solid #f0f4f8' }}>
-                      <h4 style={{ fontSize: 16, fontWeight: 500, color: '#4a5568', marginBottom: 8 }}>
-                        {brandData.brandName}
-                      </h4>
-                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }}>
-                        <div>
-                          <div style={{ fontSize: 12, color: '#718096', marginBottom: 4 }}>Estimate</div>
-                          <div style={{ fontSize: 18, fontWeight: 600, color: '#2d3748' }}>
-                            {formatCurrency(brandData.estimate)}
-                          </div>
-                        </div>
-                        <div>
-                          <div style={{ fontSize: 12, color: '#718096', marginBottom: 4 }}>Billed</div>
-                          <div style={{ fontSize: 18, fontWeight: 600, color: '#4299e1' }}>
-                            {formatCurrency(brandData.billed)}
-                          </div>
-                        </div>
-                        <div>
-                          <div style={{ fontSize: 12, color: '#718096', marginBottom: 4 }}>Paid</div>
-                          <div style={{ fontSize: 18, fontWeight: 600, color: '#38a169' }}>
-                            {formatCurrency(brandData.paid)}
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-                <div style={{ marginTop: 16, paddingTop: 16, borderTop: '2px solid #e2e8f0' }}>
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }}>
-                    <div>
-                      <div style={{ fontSize: 12, color: '#718096', marginBottom: 4 }}>Total Estimate</div>
-                      <div style={{ fontSize: 20, fontWeight: 600, color: '#2d3748' }}>
-                        {formatCurrency(clientData.estimate)}
-                      </div>
-                    </div>
-                    <div>
-                      <div style={{ fontSize: 12, color: '#718096', marginBottom: 4 }}>Total Billed</div>
-                      <div style={{ fontSize: 20, fontWeight: 600, color: '#4299e1' }}>
-                        {formatCurrency(clientData.billed)}
-                      </div>
-                    </div>
-                    <div>
-                      <div style={{ fontSize: 12, color: '#718096', marginBottom: 4 }}>Total Paid</div>
-                      <div style={{ fontSize: 20, fontWeight: 600, color: '#38a169' }}>
-                        {formatCurrency(clientData.paid)}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                </div>
-              ))}
+                <ResponsiveContainer width="100%" height={400}>
+                  <PieChart>
+                    <Pie
+                      data={financialData.map(client => ({
+                        name: client.clientName,
+                        value: client.paid || 0
+                      }))}
+                      cx="50%"
+                      cy="50%"
+                      labelLine={false}
+                      label={({ name, percent }) => `${name}: ${percent ? (percent * 100).toFixed(0) : 0}%`}
+                      outerRadius={120}
+                      fill="#8884d8"
+                      dataKey="value"
+                    >
+                      {financialData.map((entry, index) => {
+                        const colors = ['#38a169', '#4299e1', '#ed8936', '#9f7aea', '#f56565', '#48bb78', '#3182ce'];
+                        return <Cell key={`cell-${index}`} fill={colors[index % colors.length]} />;
+                      })}
+                    </Pie>
+                    <Tooltip formatter={(value: number | undefined) => formatCurrency(value)} />
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
+
+              {/* Bar Chart: Estimated vs Paid by Client */}
+              <div>
+                <h3 style={{ fontSize: 18, fontWeight: 600, color: '#2d3748', marginBottom: 16 }}>
+                  Estimated vs Paid by Client
+                </h3>
+                <ResponsiveContainer width="100%" height={400}>
+                  <BarChart
+                    data={financialData.map(client => ({
+                      name: client.clientName,
+                      Estimate: client.estimate || 0,
+                      Paid: client.paid || 0
+                    }))}
+                    margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+                  >
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="name" />
+                    <YAxis tickFormatter={(value) => `$${(value / 1000).toFixed(0)}k`} />
+                    <Tooltip formatter={(value: number | undefined) => formatCurrency(value)} />
+                    <Legend />
+                    <Bar dataKey="Estimate" fill="#2d3748" />
+                    <Bar dataKey="Paid" fill="#38a169" />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
             </div>
           )}
         </div>

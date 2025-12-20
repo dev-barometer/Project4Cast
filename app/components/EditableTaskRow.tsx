@@ -3,6 +3,7 @@
 // Editable task row component for use on All Tasks and My Tasks pages
 // Handles tasks with or without jobId (standalone tasks)
 
+import { useState, useRef, useEffect } from 'react';
 import { updateTask, addAssignee, removeAssignee } from '@/app/tasks/actions';
 
 import Link from 'next/link';
@@ -241,82 +242,55 @@ export default function EditableTaskRow({
 
       {/* Assignees - editable with add/remove */}
       <td style={{ padding: '8px 12px', color: '#4a5568' }}>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, alignItems: 'center' }}>
           {/* Show current assignees with remove buttons */}
-          {displayAssignees.length > 0 && (
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
-              {displayAssignees.map((assignee) => (
-                <span
-                  key={assignee.id}
+          {displayAssignees.map((assignee) => (
+            <span
+              key={assignee.id}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 4,
+                backgroundColor: '#e6f2ff',
+                color: '#2d3748',
+                padding: '4px 8px',
+                borderRadius: 4,
+                fontSize: 12,
+              }}
+            >
+              {assignee.user?.name || assignee.user?.email || 'User'}
+              <form action={removeAssignee} style={{ display: 'inline', margin: 0 }}>
+                <input type="hidden" name="taskId" value={task.id} />
+                <input type="hidden" name="userId" value={assignee.userId} />
+                {jobId && <input type="hidden" name="jobId" value={jobId} />}
+                <button
+                  type="submit"
                   style={{
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: 4,
-                    backgroundColor: '#e6f2ff',
-                    color: '#2d3748',
-                    padding: '4px 8px',
-                    borderRadius: 4,
-                    fontSize: 12,
+                    background: 'none',
+                    border: 'none',
+                    color: '#718096',
+                    cursor: 'pointer',
+                    padding: 0,
+                    marginLeft: 4,
+                    fontSize: 14,
+                    lineHeight: 1,
                   }}
+                  title="Remove assignee"
                 >
-                  {assignee.user?.name || assignee.user?.email || 'User'}
-                  <form action={removeAssignee} style={{ display: 'inline', margin: 0 }}>
-                    <input type="hidden" name="taskId" value={task.id} />
-                    <input type="hidden" name="userId" value={assignee.userId} />
-                    {jobId && <input type="hidden" name="jobId" value={jobId} />}
-                    <button
-                      type="submit"
-                      style={{
-                        background: 'none',
-                        border: 'none',
-                        color: '#718096',
-                        cursor: 'pointer',
-                        padding: 0,
-                        marginLeft: 4,
-                        fontSize: 14,
-                        lineHeight: 1,
-                      }}
-                      title="Remove assignee"
-                    >
-                      ×
-                    </button>
-                  </form>
-                </span>
-              ))}
-            </div>
-          )}
+                  ×
+                </button>
+              </form>
+            </span>
+          ))}
           
-          {/* Add new assignee dropdown */}
+          {/* Add new assignee button - circular with + */}
           {availableUsers.length > 0 && (
-            <form action={addAssignee} style={{ display: 'inline' }}>
-              <input type="hidden" name="taskId" value={task.id} />
-              {jobId && <input type="hidden" name="jobId" value={jobId} />}
-              <select
-                name="userId"
-                defaultValue=""
-                onChange={(e) => {
-                  if (e.target.value) {
-                    e.currentTarget.form?.requestSubmit();
-                  }
-                }}
-                style={{
-                  border: '1px solid #cbd5e0',
-                  borderRadius: 4,
-                  padding: '4px 8px',
-                  fontSize: 12,
-                  color: '#4a5568',
-                  backgroundColor: '#ffffff',
-                  cursor: 'pointer',
-                }}
-              >
-                <option value="">+ Add assignee</option>
-                {availableUsers.map((user) => (
-                  <option key={user.id} value={user.id}>
-                    {user.name || user.email}
-                  </option>
-                ))}
-              </select>
-            </form>
+            <AssigneeDropdown
+              taskId={task.id}
+              jobId={jobId}
+              availableUsers={availableUsers}
+              addAssignee={addAssignee}
+            />
           )}
           
           {displayAssignees.length === 0 && availableUsers.length === 0 && (
@@ -325,6 +299,120 @@ export default function EditableTaskRow({
         </div>
       </td>
     </tr>
+  );
+}
+
+// Assignee Dropdown Component
+function AssigneeDropdown({ 
+  taskId, 
+  jobId, 
+  availableUsers, 
+  addAssignee 
+}: { 
+  taskId: string; 
+  jobId: string | null; 
+  availableUsers: User[]; 
+  addAssignee: (formData: FormData) => Promise<any>;
+}) {
+  const [isOpen, setIsOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsOpen(false);
+      }
+    }
+
+    if (isOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isOpen]);
+
+  const handleSelectUser = (userId: string) => {
+    const formData = new FormData();
+    formData.append('taskId', taskId);
+    if (jobId) {
+      formData.append('jobId', jobId);
+    }
+    formData.append('userId', userId);
+    addAssignee(formData);
+    setIsOpen(false);
+  };
+
+  return (
+    <div ref={dropdownRef} style={{ position: 'relative', display: 'inline-block' }}>
+      <button
+        type="button"
+        onClick={() => setIsOpen(!isOpen)}
+        style={{
+          width: 24,
+          height: 24,
+          borderRadius: '50%',
+          border: '1px solid #cbd5e0',
+          backgroundColor: '#ffffff',
+          color: '#4a5568',
+          cursor: 'pointer',
+          fontSize: 16,
+          lineHeight: 1,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          padding: 0,
+        }}
+        title="Add assignee"
+      >
+        +
+      </button>
+      {isOpen && (
+        <div
+          style={{
+            position: 'absolute',
+            top: '100%',
+            left: 0,
+            marginTop: 4,
+            backgroundColor: '#ffffff',
+            border: '1px solid #e2e8f0',
+            borderRadius: 6,
+            boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+            zIndex: 1000,
+            minWidth: 200,
+            maxHeight: 200,
+            overflowY: 'auto',
+          }}
+        >
+          {availableUsers.map((user) => (
+            <button
+              key={user.id}
+              type="button"
+              onClick={() => handleSelectUser(user.id)}
+              style={{
+                width: '100%',
+                padding: '8px 12px',
+                textAlign: 'left',
+                border: 'none',
+                backgroundColor: 'transparent',
+                color: '#2d3748',
+                cursor: 'pointer',
+                fontSize: 13,
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = '#f7fafc';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = 'transparent';
+              }}
+            >
+              {user.name || user.email}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
   );
 }
 
