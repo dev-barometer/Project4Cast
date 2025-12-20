@@ -157,7 +157,7 @@ export default function JobSidebar({ jobs, isAdmin, currentJobId }: JobSidebarPr
     <div
       style={{
         width: 320,
-        backgroundColor: '#e7eef3',
+        backgroundColor: '#e5f8fa',
         display: 'flex',
         flexDirection: 'column',
         height: '100%',
@@ -168,7 +168,7 @@ export default function JobSidebar({ jobs, isAdmin, currentJobId }: JobSidebarPr
       <div
         style={{
           padding: '12px 16px',
-          backgroundColor: '#e7eef3',
+          backgroundColor: '#e5f8fa',
         }}
       >
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingLeft: 0 }}>
