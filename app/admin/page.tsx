@@ -27,14 +27,7 @@ export default async function AdminPage() {
   }
 
   // Fetch all data for admin dashboard
-  const [
-    allUsers,
-    allClients,
-    allBrands,
-    allJobs,
-    allAttachments,
-    allTasks,
-  ] = await Promise.all([
+  const [allUsers, allClients, allTeams] = await Promise.all([
     // Users
     prisma.user.findMany({
       select: {
@@ -42,108 +35,62 @@ export default async function AdminPage() {
         email: true,
         name: true,
         role: true,
-      },
-      orderBy: { email: 'asc' },
-    }),
-    // Clients
-    prisma.client.findMany({
-      include: {
-        brands: {
-          include: {
-            _count: {
-              select: { jobs: true },
-            },
-          },
-        },
-      },
-      orderBy: { name: 'asc' },
-    }),
-    // Brands
-    prisma.brand.findMany({
-      include: {
-        client: {
-          select: { id: true, name: true },
-        },
-        _count: {
-          select: { jobs: true },
-        },
-      },
-      orderBy: { name: 'asc' },
-    }),
-    // Jobs
-    prisma.job.findMany({
-      include: {
-        brand: {
-          include: {
-            client: {
+        isPaused: true,
+        teamMemberships: {
+          select: {
+            id: true,
+            team: {
               select: { id: true, name: true },
             },
           },
         },
-        _count: {
-          select: {
-            tasks: true,
-            collaborators: true,
-            attachments: true,
-            comments: true,
-          },
-        },
       },
-      orderBy: { jobNumber: 'desc' },
+      orderBy: { email: 'asc' },
     }),
-    // Attachments
-    prisma.attachment.findMany({
-      include: {
-        uploadedBy: {
-          select: { id: true, name: true, email: true },
-        },
-        job: {
-          select: { id: true, jobNumber: true, title: true },
-        },
-        task: {
-          select: { id: true, title: true },
-        },
-      },
-      orderBy: { uploadedAt: 'desc' },
-      take: 50, // Limit to most recent 50
-    }),
-    // Tasks summary
-    prisma.task.groupBy({
-      by: ['status'],
-      _count: {
+    // Clients with nested brands and jobs
+    prisma.client.findMany({
+      select: {
         id: true,
+        name: true,
+        isArchived: true,
+        brands: {
+          select: {
+            id: true,
+            name: true,
+            isArchived: true,
+            jobs: {
+              select: {
+                id: true,
+                jobNumber: true,
+                title: true,
+                isArchived: true,
+                estimate: true,
+                billedAmount: true,
+                paidAmount: true,
+              },
+              orderBy: { jobNumber: 'asc' },
+            },
+          },
+          orderBy: { name: 'asc' },
+        },
       },
+      orderBy: { name: 'asc' },
+    }),
+    // Teams
+    prisma.team.findMany({
+      select: {
+        id: true,
+        name: true,
+      },
+      orderBy: { name: 'asc' },
     }),
   ]);
 
-  // Calculate statistics
-  const stats = {
-    totalUsers: allUsers.length,
-    totalAdmins: allUsers.filter(u => u.role === 'ADMIN' || u.role === 'OWNER').length,
-    totalClients: allClients.length,
-    totalBrands: allBrands.length,
-    totalJobs: allJobs.length,
-    totalTasks: allTasks.reduce((sum, t) => sum + t._count.id, 0),
-    totalAttachments: allAttachments.length,
-    totalEstimate: allJobs.reduce((sum, j) => sum + (j.estimate || 0), 0),
-    totalBilled: allJobs.reduce((sum, j) => sum + (j.billedAmount || 0), 0),
-    totalPaid: allJobs.reduce((sum, j) => sum + (j.paidAmount || 0), 0),
-    tasksByStatus: {
-      TODO: allTasks.find(t => t.status === 'TODO')?._count.id || 0,
-      IN_PROGRESS: allTasks.find(t => t.status === 'IN_PROGRESS')?._count.id || 0,
-      BLOCKED: allTasks.find(t => t.status === 'BLOCKED')?._count.id || 0,
-      DONE: allTasks.find(t => t.status === 'DONE')?._count.id || 0,
-    },
-  };
-
   return (
     <AdminDashboardClient
-      stats={stats}
       users={allUsers}
       clients={allClients}
-      brands={allBrands}
-      jobs={allJobs}
-      attachments={allAttachments}
+      teams={allTeams}
     />
   );
 }

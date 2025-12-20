@@ -61,6 +61,7 @@ model User {
   password    String?          // Hashed password (null for OAuth users)
   role        UserRole         @default(USER)
   emailVerified DateTime?
+  isPaused    Boolean          @default(false) // Admin can pause accounts temporarily
   
   // Profile fields
   phone       String?
@@ -104,17 +105,19 @@ model Invitation {
 }
 
 model Client {
-  id      String  @id @default(cuid())
-  name    String
-  brands  Brand[]
+  id         String  @id @default(cuid())
+  name       String
+  isArchived Boolean @default(false) // Admin can archive clients
+  brands     Brand[]
 }
 
 model Brand {
-  id        String  @id @default(cuid())
-  name      String
-  clientId  String
-  client    Client  @relation(fields: [clientId], references: [id])
-  jobs      Job[]
+  id         String  @id @default(cuid())
+  name       String
+  clientId   String
+  isArchived Boolean @default(false) // Admin can archive brands
+  client     Client  @relation(fields: [clientId], references: [id])
+  jobs       Job[]
 }
 
 model Job {
@@ -124,6 +127,7 @@ model Job {
   status        JobStatus        @default(PLANNING)
   brief         String?
   resourcesUrl  String?
+  isArchived    Boolean          @default(false) // Admin can archive jobs
 
   // Financial tracking (admin-only)
   estimate      Float?           // Estimated cost/project value
