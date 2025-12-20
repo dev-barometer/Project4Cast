@@ -134,7 +134,58 @@ export async function deleteUser(prevState: any, formData: FormData) {
       where: { userId },
     });
 
-    // Delete the user (other relations like JobCollaborator, TaskAssignee, etc. should cascade)
+    // Delete all related records that might not cascade automatically
+    // Delete in order to avoid foreign key violations
+    
+    // Delete user activities
+    await prisma.userActivity.deleteMany({
+      where: { userId },
+    });
+    
+    // Delete notification preferences
+    await prisma.userNotificationPreferences.deleteMany({
+      where: { userId },
+    });
+    
+    // Delete team memberships
+    await prisma.userTeam.deleteMany({
+      where: { userId },
+    });
+    
+    // Delete notifications (both as recipient and actor)
+    await prisma.notification.deleteMany({
+      where: { userId },
+    });
+    await prisma.notification.deleteMany({
+      where: { actorId: userId },
+    });
+    
+    // Delete comments
+    await prisma.comment.deleteMany({
+      where: { authorId: userId },
+    });
+    
+    // Delete attachments
+    await prisma.attachment.deleteMany({
+      where: { uploadedById: userId },
+    });
+    
+    // Delete task assignees
+    await prisma.taskAssignee.deleteMany({
+      where: { userId },
+    });
+    
+    // Delete job collaborators
+    await prisma.jobCollaborator.deleteMany({
+      where: { userId },
+    });
+    
+    // Delete invitations sent by this user
+    await prisma.invitation.deleteMany({
+      where: { invitedById: userId },
+    });
+
+    // Delete the user (other relations should now be handled)
     await prisma.user.delete({
       where: { id: userId },
     });
@@ -149,6 +200,7 @@ export async function deleteUser(prevState: any, formData: FormData) {
     
     return { success: true, error: null };
   } catch (error: any) {
+    console.error('Error deleting user:', error);
     return { success: false, error: error.message || 'Failed to delete user' };
   }
 }
