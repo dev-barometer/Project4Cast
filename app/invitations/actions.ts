@@ -26,7 +26,7 @@ export async function createInvitation(prevState: any, formData: FormData) {
     where: { id: session.user.id },
   });
 
-  if (!user || user.role !== 'ADMIN') {
+  if (!user || (user.role !== 'ADMIN' && user.role !== 'OWNER')) {
     return { success: false, error: 'Only administrators can send invitations' };
   }
 
@@ -119,6 +119,7 @@ export async function createInvitation(prevState: any, formData: FormData) {
     }
 
     revalidatePath('/invitations');
+    revalidatePath('/admin');
     return { success: true, error: null };
   } catch (error: any) {
     console.error('Error creating invitation:', error);
@@ -218,6 +219,7 @@ export async function resendInvitation(formData: FormData) {
     }
 
     revalidatePath('/invitations');
+    revalidatePath('/admin');
     return { success: true, error: null };
   } catch (error: any) {
     console.error('Error resending invitation:', error);

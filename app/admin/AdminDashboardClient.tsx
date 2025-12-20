@@ -21,6 +21,7 @@ import {
   deleteClient,
   deleteBrand,
 } from './actions';
+import { createInvitation } from '@/app/invitations/actions';
 
 type User = {
   id: string;
@@ -165,7 +166,10 @@ export default function AdminDashboardClient({
       {/* Users Tab */}
       {activeTab === 'users' && (
         <div style={{ backgroundColor: '#ffffff', borderRadius: 8, padding: 24, boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
-          <h2 style={{ fontSize: 20, fontWeight: 600, color: '#2d3748', marginBottom: 24 }}>Users</h2>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 24 }}>
+            <h2 style={{ fontSize: 20, fontWeight: 600, color: '#2d3748', marginBottom: 0 }}>Users</h2>
+            <InviteUserButton />
+          </div>
           {users.length === 0 ? (
             <p style={{ color: '#718096', fontSize: 14 }}>No users found.</p>
           ) : (
@@ -894,6 +898,143 @@ function DeleteClientButton({ clientId, clientName }: { clientId: string; client
         </button>
       </div>
     </form>
+  );
+}
+
+// Invite User Button Component
+function InviteUserButton() {
+  const [showInviteForm, setShowInviteForm] = useState(false);
+  const [inviteState, inviteAction] = useFormState(createInvitation, { success: false, error: null });
+
+  useEffect(() => {
+    if (inviteState?.success) {
+      setShowInviteForm(false);
+      window.location.reload();
+    }
+  }, [inviteState?.success]);
+
+  if (!showInviteForm) {
+    return (
+      <button
+        type="button"
+        onClick={() => setShowInviteForm(true)}
+        style={{
+          width: 32,
+          height: 32,
+          borderRadius: '50%',
+          border: '1px solid #cbd5e0',
+          backgroundColor: '#ffffff',
+          color: '#4299e1',
+          cursor: 'pointer',
+          fontSize: 18,
+          lineHeight: 1,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          padding: 0,
+        }}
+        title="Invite user via email"
+      >
+        +
+      </button>
+    );
+  }
+
+  return (
+    <div style={{ position: 'relative', display: 'inline-block' }}>
+      <form action={inviteAction} style={{ display: 'flex', flexDirection: 'column', gap: 8, minWidth: 300 }}>
+        {inviteState?.error && (
+          <div
+            style={{
+              backgroundColor: '#fed7d7',
+              color: '#742a2a',
+              padding: '8px 12px',
+              borderRadius: 4,
+              fontSize: 12,
+            }}
+          >
+            {inviteState.error}
+          </div>
+        )}
+        {inviteState?.success && (
+          <div
+            style={{
+              backgroundColor: '#c6f6d5',
+              color: '#22543d',
+              padding: '8px 12px',
+              borderRadius: 4,
+              fontSize: 12,
+            }}
+          >
+            Invitation sent successfully!
+          </div>
+        )}
+        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+          <input
+            type="email"
+            name="email"
+            placeholder="Enter email address"
+            required
+            autoFocus
+            style={{
+              flex: 1,
+              border: '1px solid #cbd5e0',
+              borderRadius: 4,
+              padding: '6px 10px',
+              fontSize: 13,
+              color: '#4a5568',
+              backgroundColor: '#ffffff',
+            }}
+          />
+          <select
+            name="role"
+            defaultValue="USER"
+            style={{
+              border: '1px solid #cbd5e0',
+              borderRadius: 4,
+              padding: '6px 10px',
+              fontSize: 13,
+              color: '#4a5568',
+              backgroundColor: '#ffffff',
+              cursor: 'pointer',
+            }}
+          >
+            <option value="USER">User</option>
+            <option value="ADMIN">Admin</option>
+          </select>
+          <button
+            type="submit"
+            style={{
+              border: '1px solid #4299e1',
+              borderRadius: 4,
+              padding: '6px 12px',
+              fontSize: 13,
+              color: '#ffffff',
+              backgroundColor: '#4299e1',
+              cursor: 'pointer',
+              fontWeight: 500,
+            }}
+          >
+            Send
+          </button>
+          <button
+            type="button"
+            onClick={() => setShowInviteForm(false)}
+            style={{
+              border: '1px solid #cbd5e0',
+              borderRadius: 4,
+              padding: '6px 12px',
+              fontSize: 13,
+              color: '#4a5568',
+              backgroundColor: '#ffffff',
+              cursor: 'pointer',
+            }}
+          >
+            Cancel
+          </button>
+        </div>
+      </form>
+    </div>
   );
 }
 

@@ -28,10 +28,8 @@ type StandaloneTaskFormProps = {
 export default function StandaloneTaskForm({ allUsers, allJobs, currentUserId }: StandaloneTaskFormProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [title, setTitle] = useState('');
-  const [priority, setPriority] = useState('MEDIUM');
   const [dueDate, setDueDate] = useState('');
   const [selectedJobId, setSelectedJobId] = useState('');
-  const [selectedAssignees, setSelectedAssignees] = useState<string[]>([]);
   const formRef = useRef<HTMLFormElement>(null);
   const [state, formAction] = useFormState(createStandaloneTask, { success: false, error: null });
 
@@ -39,21 +37,11 @@ export default function StandaloneTaskForm({ allUsers, allJobs, currentUserId }:
   useEffect(() => {
     if (state?.success && isExpanded) {
       setTitle('');
-      setPriority('MEDIUM');
       setDueDate('');
       setSelectedJobId('');
-      setSelectedAssignees([]);
       setIsExpanded(false);
     }
   }, [state?.success, isExpanded]);
-
-  const toggleAssignee = (userId: string) => {
-    setSelectedAssignees(prev => 
-      prev.includes(userId)
-        ? prev.filter(id => id !== userId)
-        : [...prev, userId]
-    );
-  };
 
   return (
     <div style={{ display: 'inline-block' }}>
@@ -187,82 +175,10 @@ export default function StandaloneTaskForm({ allUsers, allJobs, currentUserId }:
                 </div>
               )}
 
-              {/* Priority and Due Date Row */}
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
-                {/* Priority */}
-                <div>
-                  <label
-                    htmlFor="standalone-task-priority"
-                    style={{
-                      display: 'block',
-                      fontSize: 13,
-                      fontWeight: 500,
-                      color: '#4a5568',
-                      marginBottom: 6,
-                    }}
-                  >
-                    Priority
-                  </label>
-                  <select
-                    id="standalone-task-priority"
-                    name="priority"
-                    value={priority}
-                    onChange={(e) => setPriority(e.target.value)}
-                    style={{
-                      width: '100%',
-                      padding: '10px 12px',
-                      borderRadius: 6,
-                      border: '1px solid #cbd5e0',
-                      fontSize: 14,
-                      backgroundColor: '#ffffff',
-                      color: '#4a5568',
-                      cursor: 'pointer',
-                    }}
-                  >
-                    <option value="LOW">LOW</option>
-                    <option value="MEDIUM">MEDIUM</option>
-                    <option value="HIGH">HIGH</option>
-                    <option value="URGENT">URGENT</option>
-                  </select>
-                </div>
-
-                {/* Due Date */}
-                <div>
-                  <label
-                    htmlFor="standalone-task-due-date"
-                    style={{
-                      display: 'block',
-                      fontSize: 13,
-                      fontWeight: 500,
-                      color: '#4a5568',
-                      marginBottom: 6,
-                    }}
-                  >
-                    Due Date
-                  </label>
-                  <input
-                    id="standalone-task-due-date"
-                    type="date"
-                    name="dueDate"
-                    value={dueDate}
-                    onChange={(e) => setDueDate(e.target.value)}
-                    style={{
-                      width: '100%',
-                      padding: '10px 12px',
-                      borderRadius: 6,
-                      border: '1px solid #cbd5e0',
-                      fontSize: 14,
-                      backgroundColor: '#ffffff',
-                      color: '#4a5568',
-                      cursor: 'text',
-                    }}
-                  />
-                </div>
-              </div>
-
-              {/* Assignees */}
+              {/* Due Date */}
               <div>
                 <label
+                  htmlFor="standalone-task-due-date"
                   style={{
                     display: 'block',
                     fontSize: 13,
@@ -271,57 +187,29 @@ export default function StandaloneTaskForm({ allUsers, allJobs, currentUserId }:
                     marginBottom: 6,
                   }}
                 >
-                  Assignees
+                  Due Date
                 </label>
-                <div
+                <input
+                  id="standalone-task-due-date"
+                  type="date"
+                  name="dueDate"
+                  value={dueDate}
+                  onChange={(e) => setDueDate(e.target.value)}
                   style={{
-                    display: 'flex',
-                    flexWrap: 'wrap',
-                    gap: 8,
-                    padding: '12px',
-                    backgroundColor: '#ffffff',
+                    width: '100%',
+                    padding: '10px 12px',
                     borderRadius: 6,
                     border: '1px solid #cbd5e0',
-                    minHeight: 44,
+                    fontSize: 14,
+                    backgroundColor: '#ffffff',
+                    color: '#4a5568',
+                    cursor: 'text',
                   }}
-                >
-                  {allUsers.length === 0 ? (
-                    <span style={{ color: '#a0aec0', fontSize: 13 }}>No users available</span>
-                  ) : (
-                    allUsers.map((user) => {
-                      const isSelected = selectedAssignees.includes(user.id);
-                      return (
-                        <button
-                          key={user.id}
-                          type="button"
-                          onClick={() => toggleAssignee(user.id)}
-                          style={{
-                            padding: '6px 12px',
-                            borderRadius: 4,
-                            border: `1px solid ${isSelected ? '#4299e1' : '#cbd5e0'}`,
-                            background: isSelected ? '#e6f2ff' : '#ffffff',
-                            color: isSelected ? '#2d3748' : '#4a5568',
-                            fontSize: 13,
-                            cursor: 'pointer',
-                            fontWeight: isSelected ? 500 : 'normal',
-                          }}
-                        >
-                          {user.name || user.email}
-                        </button>
-                      );
-                    })
-                  )}
-                </div>
-                {selectedAssignees.length > 0 && (
-                  <div style={{ fontSize: 12, color: '#718096', marginTop: 4 }}>
-                    {selectedAssignees.length} {selectedAssignees.length === 1 ? 'person' : 'people'} selected
-                  </div>
-                )}
-                {/* Hidden inputs for assignees */}
-                {selectedAssignees.map(userId => (
-                  <input key={userId} type="hidden" name="assigneeIds" value={userId} />
-                ))}
+                />
               </div>
+
+              {/* Hidden input: Automatically assign to current user (not shown in UI) */}
+              <input type="hidden" name="assigneeIds" value={currentUserId} />
 
               {/* Form Actions */}
               <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
@@ -330,10 +218,8 @@ export default function StandaloneTaskForm({ allUsers, allJobs, currentUserId }:
                   onClick={() => {
                     setIsExpanded(false);
                     setTitle('');
-                    setPriority('MEDIUM');
                     setDueDate('');
                     setSelectedJobId('');
-                    setSelectedAssignees([]);
                   }}
                   style={{
                     padding: '8px 16px',
