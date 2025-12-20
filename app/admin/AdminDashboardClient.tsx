@@ -134,17 +134,9 @@ export default function AdminDashboardClient({
     <div style={{ padding: '40px', maxWidth: 1600, margin: '0 auto' }}>
       {/* Header */}
       <div style={{ marginBottom: 32 }}>
-        <h1 style={{ fontSize: 32, fontWeight: 600, color: '#2d3748', marginBottom: 8 }}>
+        <h1 style={{ fontSize: 32, fontWeight: 600, color: '#2d3748', marginBottom: 0 }}>
           Admin Dashboard
         </h1>
-        <div style={{ marginTop: 16, fontSize: 12, color: '#718096' }}>
-          <Link href="/" style={{ color: '#4299e1', textDecoration: 'none', fontSize: 14 }}>
-            ← Home
-          </Link>
-          <span style={{ marginLeft: 16 }}>
-            Users: {users.length} | Clients: {clients.length} | Teams: {teams.length}
-          </span>
-        </div>
       </div>
 
       {/* Tabs */}
