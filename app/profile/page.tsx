@@ -25,6 +25,27 @@ export default async function ProfilePage() {
         take: 100, // Limit to last 100 activities
       },
     },
+    select: {
+      id: true,
+      email: true,
+      name: true,
+      phone: true,
+      website: true,
+      pronouns: true,
+      timezone: true,
+      avatar: true,
+      role: true,
+      teamMemberships: {
+        include: {
+          team: true,
+        },
+      },
+      notificationPreferences: true,
+      activityLogs: {
+        orderBy: { createdAt: 'desc' },
+        take: 100,
+      },
+    },
   });
 
   if (!user) {
@@ -36,17 +57,34 @@ export default async function ProfilePage() {
     orderBy: { name: 'asc' },
   });
 
-  // Get all admins for account deletion notification
+  // Get all admins and owners for account deletion notification
   const admins = await prisma.user.findMany({
-    where: { role: 'ADMIN' },
-    select: { id: true, email: true, name: true },
+    where: { 
+      role: { in: ['ADMIN', 'OWNER'] }
+    },
+    select: { id: true, email: true, name: true, role: true },
   });
+
+  // Get all users for admin management (only if user is owner or admin)
+  const allUsers = (user.role === 'OWNER' || user.role === 'ADMIN') 
+    ? await prisma.user.findMany({
+        select: {
+          id: true,
+          email: true,
+          name: true,
+          role: true,
+          createdAt: true,
+        },
+        orderBy: { email: 'asc' },
+      })
+    : [];
 
   return (
     <ProfilePageClient
       user={user}
       allTeams={allTeams}
       admins={admins}
+      allUsers={allUsers}
     />
   );
 }

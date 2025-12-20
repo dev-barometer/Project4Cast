@@ -20,7 +20,7 @@ export default async function HomePage() {
     select: { role: true },
   });
 
-  const isAdmin = user?.role === 'ADMIN';
+  const isAdmin = user?.role === 'ADMIN' || user?.role === 'OWNER';
   type JobWithRelations = {
     id: string;
     jobNumber: string;

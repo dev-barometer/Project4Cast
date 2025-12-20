@@ -9,6 +9,8 @@ import {
   updateTeams,
   updateNotificationPreferences,
   deleteAccount,
+  assignAdmin,
+  removeAdmin,
 } from './actions';
 
 type Team = {
@@ -57,9 +59,10 @@ type User = {
 };
 
 type ProfilePageClientProps = {
-  user: User;
+  user: User & { role: 'OWNER' | 'ADMIN' | 'USER' };
   allTeams: Team[];
-  admins: Array<{ id: string; email: string; name: string | null }>;
+  admins: Array<{ id: string; email: string; name: string | null; role: 'OWNER' | 'ADMIN' | 'USER' }>;
+  allUsers: Array<{ id: string; email: string; name: string | null; role: 'OWNER' | 'ADMIN' | 'USER'; createdAt: Date }>;
 };
 
 // Timezone options (common ones)
@@ -92,10 +95,14 @@ const ACTIVITY_LABELS: Record<string, string> = {
   DELETED_ACCOUNT: 'Deleted account',
 };
 
-export default function ProfilePageClient({ user, allTeams, admins }: ProfilePageClientProps) {
-  const [activeTab, setActiveTab] = useState<'profile' | 'notifications' | 'activity' | 'account'>('profile');
+export default function ProfilePageClient({ user, allTeams, admins, allUsers }: ProfilePageClientProps) {
+  const [activeTab, setActiveTab] = useState<'profile' | 'notifications' | 'activity' | 'account' | 'admin'>('profile');
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [deleteConfirmText, setDeleteConfirmText] = useState('');
+  
+  const isOwner = user.role === 'OWNER';
+  const isAdmin = user.role === 'ADMIN' || user.role === 'OWNER';
+  const canManageAdmins = isOwner || isAdmin;
 
   const [profileState, profileAction] = useFormState(updateProfile, { success: false, error: null });
   const [passwordState, passwordAction] = useFormState(changePassword, { success: false, error: null });
@@ -160,7 +167,7 @@ export default function ProfilePageClient({ user, allTeams, admins }: ProfilePag
 
       {/* Tabs */}
       <div style={{ display: 'flex', gap: 8, marginBottom: 24, borderBottom: '1px solid #e2e8f0' }}>
-        {(['profile', 'notifications', 'activity', 'account'] as const).map((tab) => (
+        {(['profile', 'notifications', 'activity', 'account', ...(canManageAdmins ? ['admin'] : [])] as const).map((tab) => (
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
@@ -176,7 +183,7 @@ export default function ProfilePageClient({ user, allTeams, admins }: ProfilePag
               textTransform: 'capitalize',
             }}
           >
-            {tab}
+            {tab === 'admin' ? 'Admin' : tab}
           </button>
         ))}
       </div>
@@ -847,6 +854,185 @@ export default function ProfilePageClient({ user, allTeams, admins }: ProfilePag
           )}
         </div>
       )}
+
+      {/* Admin Tab */}
+      {activeTab === 'admin' && canManageAdmins && (
+        <div style={{ backgroundColor: '#ffffff', borderRadius: 8, padding: 24, boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
+          <div style={{ marginBottom: 24 }}>
+            <h2 style={{ fontSize: 20, fontWeight: 600, color: '#2d3748', marginBottom: 8 }}>
+              Admin Management
+            </h2>
+            <p style={{ fontSize: 14, color: '#718096' }}>
+              {isOwner 
+                ? 'As the owner, you can assign and remove admin privileges. Only you can remove admin privileges.'
+                : 'You can assign admin privileges to other users. Only the owner can remove admin privileges.'}
+            </p>
+          </div>
+
+          {/* Current Role Display */}
+          <div style={{ marginBottom: 24, padding: 16, backgroundColor: '#f7fafc', borderRadius: 6 }}>
+            <div style={{ fontSize: 14, color: '#4a5568', marginBottom: 4 }}>Your Role</div>
+            <div style={{ fontSize: 18, fontWeight: 600, color: isOwner ? '#742a2a' : '#2c5282' }}>
+              {user.role === 'OWNER' ? '👑 Owner' : '🔧 Admin'}
+            </div>
+          </div>
+
+          {/* Users Table */}
+          <div style={{ overflowX: 'auto' }}>
+            <table style={{ borderCollapse: 'collapse', width: '100%', fontSize: 14 }}>
+              <thead>
+                <tr style={{ backgroundColor: '#f7fafc' }}>
+                  <th style={{ textAlign: 'left', padding: '12px 16px', borderBottom: '1px solid #e2e8f0', color: '#4a5568', fontWeight: 600, fontSize: 13 }}>
+                    User
+                  </th>
+                  <th style={{ textAlign: 'left', padding: '12px 16px', borderBottom: '1px solid #e2e8f0', color: '#4a5568', fontWeight: 600, fontSize: 13 }}>
+                    Role
+                  </th>
+                  <th style={{ textAlign: 'left', padding: '12px 16px', borderBottom: '1px solid #e2e8f0', color: '#4a5568', fontWeight: 600, fontSize: 13 }}>
+                    Joined
+                  </th>
+                  <th style={{ textAlign: 'right', padding: '12px 16px', borderBottom: '1px solid #e2e8f0', color: '#4a5568', fontWeight: 600, fontSize: 13 }}>
+                    Actions
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {allUsers.map((targetUser) => {
+                  const isCurrentUser = targetUser.id === user.id;
+                  const isTargetOwner = targetUser.role === 'OWNER';
+                  const isTargetAdmin = targetUser.role === 'ADMIN';
+                  const canAssign = !isCurrentUser && !isTargetOwner && !isTargetAdmin;
+                  const canRemove = isOwner && !isCurrentUser && !isTargetOwner && isTargetAdmin;
+
+                  return (
+                    <tr key={targetUser.id} style={{ borderBottom: '1px solid #f0f4f8' }}>
+                      <td style={{ padding: '12px 16px', color: '#2d3748' }}>
+                        <div style={{ fontWeight: 500 }}>{targetUser.name || targetUser.email}</div>
+                        {targetUser.name && (
+                          <div style={{ fontSize: 12, color: '#a0aec0', marginTop: 2 }}>{targetUser.email}</div>
+                        )}
+                        {isCurrentUser && (
+                          <div style={{ fontSize: 11, color: '#4299e1', marginTop: 2 }}>(You)</div>
+                        )}
+                      </td>
+                      <td style={{ padding: '12px 16px' }}>
+                        <span
+                          style={{
+                            display: 'inline-block',
+                            padding: '4px 8px',
+                            borderRadius: 4,
+                            fontSize: 12,
+                            fontWeight: 500,
+                            backgroundColor: isTargetOwner ? '#fed7d7' : isTargetAdmin ? '#e6f2ff' : '#f0f4f8',
+                            color: isTargetOwner ? '#742a2a' : isTargetAdmin ? '#2c5282' : '#4a5568',
+                          }}
+                        >
+                          {isTargetOwner ? '👑 Owner' : isTargetAdmin ? '🔧 Admin' : '👤 User'}
+                        </span>
+                      </td>
+                      <td style={{ padding: '12px 16px', color: '#718096', fontSize: 13 }}>
+                        {new Date(targetUser.createdAt).toLocaleDateString()}
+                      </td>
+                      <td style={{ padding: '12px 16px', textAlign: 'right' }}>
+                        {canAssign && (
+                          <AdminAssignForm userId={targetUser.id} userEmail={targetUser.email} />
+                        )}
+                        {canRemove && (
+                          <AdminRemoveForm userId={targetUser.id} userEmail={targetUser.email} />
+                        )}
+                        {!canAssign && !canRemove && (
+                          <span style={{ color: '#a0aec0', fontSize: 13 }}>
+                            {isCurrentUser ? '—' : isTargetOwner ? 'Cannot modify' : '—'}
+                          </span>
+                        )}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Info Box */}
+          <div style={{ marginTop: 24, padding: 16, backgroundColor: '#fff5f5', borderRadius: 6, border: '1px solid #fed7d7' }}>
+            <p style={{ fontSize: 13, color: '#742a2a', margin: 0 }}>
+              <strong>Note:</strong> {isOwner 
+                ? 'As the owner, you have full access to all features. Only you can remove admin privileges from other users.'
+                : 'Admins can assign admin privileges to other users, but only the owner can remove them.'}
+            </p>
+          </div>
+        </div>
+      )}
     </div>
+  );
+}
+
+// Admin Assign Form Component
+function AdminAssignForm({ userId, userEmail }: { userId: string; userEmail: string }) {
+  const [state, formAction] = useFormState(assignAdmin, { success: false, error: null });
+
+  useEffect(() => {
+    if (state?.success) {
+      // Form will revalidate automatically
+    }
+  }, [state?.success]);
+
+  return (
+    <form action={formAction}>
+      <input type="hidden" name="userId" value={userId} />
+      <button
+        type="submit"
+        style={{
+          padding: '6px 16px',
+          backgroundColor: '#38a169',
+          color: '#ffffff',
+          border: 'none',
+          borderRadius: 4,
+          fontSize: 12,
+          fontWeight: 500,
+          cursor: 'pointer',
+        }}
+      >
+        Make Admin
+      </button>
+      {state?.error && (
+        <div style={{ fontSize: 11, color: '#e53e3e', marginTop: 4 }}>{state.error}</div>
+      )}
+    </form>
+  );
+}
+
+// Admin Remove Form Component
+function AdminRemoveForm({ userId, userEmail }: { userId: string; userEmail: string }) {
+  const [state, formAction] = useFormState(removeAdmin, { success: false, error: null });
+
+  useEffect(() => {
+    if (state?.success) {
+      // Form will revalidate automatically
+    }
+  }, [state?.success]);
+
+  return (
+    <form action={formAction}>
+      <input type="hidden" name="userId" value={userId} />
+      <button
+        type="submit"
+        style={{
+          padding: '6px 16px',
+          backgroundColor: '#e53e3e',
+          color: '#ffffff',
+          border: 'none',
+          borderRadius: 4,
+          fontSize: 12,
+          fontWeight: 500,
+          cursor: 'pointer',
+        }}
+      >
+        Remove Admin
+      </button>
+      {state?.error && (
+        <div style={{ fontSize: 11, color: '#e53e3e', marginTop: 4 }}>{state.error}</div>
+      )}
+    </form>
   );
 }

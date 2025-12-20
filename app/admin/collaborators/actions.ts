@@ -19,7 +19,7 @@ export async function removeUserFromAllJobs(formData: FormData) {
     where: { id: session.user.id },
   });
 
-  if (!user || user.role !== 'ADMIN') {
+  if (!user || (user.role !== 'ADMIN' && user.role !== 'OWNER')) {
     return;
   }
 

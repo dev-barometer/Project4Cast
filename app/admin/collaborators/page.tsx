@@ -21,7 +21,7 @@ export default async function CollaboratorsPage() {
     where: { id: currentUserId },
   });
 
-  if (!user || user.role !== 'ADMIN') {
+  if (!user || (user.role !== 'ADMIN' && user.role !== 'OWNER')) {
     redirect('/');
   }
 

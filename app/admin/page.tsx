@@ -16,13 +16,13 @@ export default async function AdminPage() {
     redirect('/login');
   }
 
-  // Check if user is admin
+  // Check if user is admin or owner
   const user = await prisma.user.findUnique({
     where: { id: currentUserId },
     select: { role: true },
   });
 
-  if (!user || user.role !== 'ADMIN') {
+  if (!user || (user.role !== 'ADMIN' && user.role !== 'OWNER')) {
     redirect('/');
   }
 
@@ -120,7 +120,7 @@ export default async function AdminPage() {
   // Calculate statistics
   const stats = {
     totalUsers: allUsers.length,
-    totalAdmins: allUsers.filter(u => u.role === 'ADMIN').length,
+    totalAdmins: allUsers.filter(u => u.role === 'ADMIN' || u.role === 'OWNER').length,
     totalClients: allClients.length,
     totalBrands: allBrands.length,
     totalJobs: allJobs.length,

@@ -21,7 +21,7 @@ export async function markJobInactive(formData: FormData) {
     select: { role: true },
   });
 
-  const isAdmin = user?.role === 'ADMIN';
+  const isAdmin = user?.role === 'ADMIN' || user?.role === 'OWNER';
 
   if (!isAdmin) {
     // Check if user is a collaborator
@@ -69,7 +69,7 @@ export async function markJobActive(formData: FormData) {
     select: { role: true },
   });
 
-  const isAdmin = user?.role === 'ADMIN';
+  const isAdmin = user?.role === 'ADMIN' || user?.role === 'OWNER';
 
   if (!isAdmin) {
     // Check if user is a collaborator

@@ -7,7 +7,7 @@ import { prisma } from '@/lib/prisma';
 import { auth } from '@/auth';
 import { revalidatePath } from 'next/cache';
 
-async function requireAdmin() {
+async function requireAdminOrOwner() {
   const session = await auth();
   const userId = session?.user?.id;
 
@@ -20,8 +20,8 @@ async function requireAdmin() {
     select: { role: true },
   });
 
-  if (!user || user.role !== 'ADMIN') {
-    throw new Error('Forbidden: Admin access required');
+  if (!user || (user.role !== 'ADMIN' && user.role !== 'OWNER')) {
+    throw new Error('Forbidden: Admin or Owner access required');
   }
 
   return userId;
@@ -29,7 +29,7 @@ async function requireAdmin() {
 
 export async function updateJobFinancials(prevState: any, formData: FormData) {
   try {
-    await requireAdmin();
+    await requireAdminOrOwner();
 
     const jobId = formData.get('jobId') as string;
     const estimateStr = formData.get('estimate') as string;

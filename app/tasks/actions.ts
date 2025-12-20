@@ -238,7 +238,7 @@ export async function updateTask(formData: FormData) {
       // For now, notify all job collaborators who are admins
       if (currentTask.job) {
         const adminCollaborators = currentTask.job.collaborators.filter(
-          (c) => c.user.role === 'ADMIN'
+          (c) => c.user.role === 'ADMIN' || c.user.role === 'OWNER'
         );
 
         const { notifyTaskCompletion } = await import('@/lib/notifications');

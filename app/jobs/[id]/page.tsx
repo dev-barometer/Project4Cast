@@ -42,7 +42,7 @@ export default async function JobDetailPage({ params }: JobPageProps) {
     select: { role: true },
   });
 
-  const isAdmin = user?.role === 'ADMIN';
+  const isAdmin = user?.role === 'ADMIN' || user?.role === 'OWNER';
 
   // Fetch job and all users in parallel
   type JobWithRelations = {

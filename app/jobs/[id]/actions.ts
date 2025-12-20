@@ -84,7 +84,7 @@ export async function updateTask(formData: FormData) {
       // For now, notify all job collaborators who are admins
       if (currentTask.job) {
         const adminCollaborators = currentTask.job.collaborators.filter(
-          (c) => c.user.role === 'ADMIN'
+          (c) => c.user.role === 'ADMIN' || c.user.role === 'OWNER'
         );
 
         const { notifyTaskCompletion } = await import('@/lib/notifications');
@@ -300,7 +300,7 @@ export async function inviteCollaboratorByEmail(prevState: any, formData: FormDa
   const isOwner = job.collaborators.some(
     (c) => c.userId === session.user.id && c.role === 'OWNER'
   );
-  const isAdmin = user.role === 'ADMIN';
+  const isAdmin = user.role === 'ADMIN' || user.role === 'OWNER';
 
   if (!isOwner && !isAdmin) {
     return { success: false, error: 'You do not have permission to invite collaborators to this job' };

@@ -12,6 +12,7 @@ datasource db {
 // ----- Enums -----
 
 enum UserRole {
+  OWNER
   ADMIN
   USER
 }

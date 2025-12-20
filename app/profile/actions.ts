@@ -214,9 +214,9 @@ export async function deleteAccount(prevState: any, formData: FormData) {
       select: { email: true, name: true },
     });
 
-    // Get all admins
+    // Get all admins and owners
     const admins = await prisma.user.findMany({
-      where: { role: 'ADMIN' },
+      where: { role: { in: ['ADMIN', 'OWNER'] } },
     });
 
     // Log activity before deletion
@@ -250,5 +250,131 @@ export async function deleteAccount(prevState: any, formData: FormData) {
   } catch (error: any) {
     console.error('Error deleting account:', error);
     return { success: false, error: error.message || 'Failed to delete account' };
+  }
+}
+
+// Assign admin privileges (owner or admin can do this)
+export async function assignAdmin(prevState: any, formData: FormData) {
+  'use server';
+
+  const session = await auth();
+  if (!session?.user?.id) {
+    return { success: false, error: 'Not authenticated' };
+  }
+
+  const targetUserId = formData.get('userId')?.toString();
+
+  if (!targetUserId) {
+    return { success: false, error: 'User ID is required' };
+  }
+
+  try {
+    // Get current user's role
+    const currentUser = await prisma.user.findUnique({
+      where: { id: session.user.id },
+      select: { role: true },
+    });
+
+    if (!currentUser || (currentUser.role !== 'OWNER' && currentUser.role !== 'ADMIN')) {
+      return { success: false, error: 'Only owners and admins can assign admin privileges' };
+    }
+
+    // Get target user
+    const targetUser = await prisma.user.findUnique({
+      where: { id: targetUserId },
+      select: { id: true, email: true, role: true },
+    });
+
+    if (!targetUser) {
+      return { success: false, error: 'User not found' };
+    }
+
+    // Prevent assigning owner role (only migration can do that)
+    if (targetUser.role === 'OWNER') {
+      return { success: false, error: 'Cannot change owner role' };
+    }
+
+    // Prevent self-assignment if not owner
+    if (targetUserId === session.user.id && currentUser.role !== 'OWNER') {
+      return { success: false, error: 'You cannot assign admin privileges to yourself' };
+    }
+
+    // Update user to admin
+    await prisma.user.update({
+      where: { id: targetUserId },
+      data: { role: 'ADMIN' },
+    });
+
+    revalidatePath('/profile');
+    return { success: true, error: null };
+  } catch (error: any) {
+    console.error('Error assigning admin:', error);
+    return { success: false, error: error.message || 'Failed to assign admin privileges' };
+  }
+}
+
+// Remove admin privileges (only owner can do this)
+export async function removeAdmin(prevState: any, formData: FormData) {
+  'use server';
+
+  const session = await auth();
+  if (!session?.user?.id) {
+    return { success: false, error: 'Not authenticated' };
+  }
+
+  const targetUserId = formData.get('userId')?.toString();
+
+  if (!targetUserId) {
+    return { success: false, error: 'User ID is required' };
+  }
+
+  try {
+    // Get current user's role
+    const currentUser = await prisma.user.findUnique({
+      where: { id: session.user.id },
+      select: { role: true },
+    });
+
+    // Only owner can remove admin privileges
+    if (!currentUser || currentUser.role !== 'OWNER') {
+      return { success: false, error: 'Only the owner can remove admin privileges' };
+    }
+
+    // Get target user
+    const targetUser = await prisma.user.findUnique({
+      where: { id: targetUserId },
+      select: { id: true, email: true, role: true },
+    });
+
+    if (!targetUser) {
+      return { success: false, error: 'User not found' };
+    }
+
+    // Prevent removing owner role
+    if (targetUser.role === 'OWNER') {
+      return { success: false, error: 'Cannot remove owner role' };
+    }
+
+    // Prevent removing admin from self
+    if (targetUserId === session.user.id) {
+      return { success: false, error: 'You cannot remove admin privileges from yourself' };
+    }
+
+    // Only remove if user is currently admin
+    if (targetUser.role !== 'ADMIN') {
+      return { success: false, error: 'User is not an admin' };
+    }
+
+    // Update user to regular user
+    await prisma.user.update({
+      where: { id: targetUserId },
+      data: { role: 'USER' },
+    });
+
+    revalidatePath('/profile');
+    return { success: true, error: null };
+  } catch (error: any) {
+    console.error('Error removing admin:', error);
+    return { success: false, error: error.message || 'Failed to remove admin privileges' };
   }
 }
