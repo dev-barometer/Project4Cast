@@ -8,25 +8,34 @@ This migration adds the `OWNER` role to the UserRole enum and sets `barclay@baro
    - Go to your Supabase project dashboard
    - Navigate to the SQL Editor
 
-2. **Run the Migration SQL**
+2. **Run the First Migration SQL** (Add OWNER to enum)
    - Copy and paste the following SQL into the SQL Editor:
 
 ```sql
 -- AlterEnum: Add OWNER to UserRole enum
 ALTER TYPE "UserRole" ADD VALUE 'OWNER';
+```
 
+3. **Execute the First Query**
+   - Click "Run" or press Ctrl+Enter (Cmd+Enter on Mac)
+   - You should see: "Success. No rows returned" - this is correct!
+   - **IMPORTANT**: Wait for this query to complete before proceeding
+
+4. **Run the Second Migration SQL** (Set owner)
+   - Copy and paste the following SQL into the SQL Editor:
+
+```sql
 -- Set barclay@barometergroup.com as OWNER (if user exists)
 UPDATE "User" 
 SET "role" = 'OWNER' 
-WHERE "email" = 'barclay@barometergroup.com' 
-AND "role" != 'OWNER';
+WHERE "email" = 'barclay@barometergroup.com';
 ```
 
-3. **Execute the Query**
+5. **Execute the Second Query**
    - Click "Run" or press Ctrl+Enter (Cmd+Enter on Mac)
-   - You should see: "Success. No rows returned" - this is correct!
+   - You should see: "Success. No rows returned" or a message indicating how many rows were updated
 
-4. **Verify the Migration**
+6. **Verify the Migration**
    - Go to Table Editor → User table
    - Find the user with email `barclay@barometergroup.com`
    - Verify that their `role` column shows `OWNER`
