@@ -4,7 +4,17 @@ import bcrypt from 'bcryptjs';
 
 export async function GET() {
   try {
+    // Check if we're in production - don't seed in production
+    if (process.env.NODE_ENV === 'production') {
+      return NextResponse.json({
+        success: false,
+        error: 'Seed route is disabled in production',
+      }, { status: 403 });
+    }
+
     // 1. Create test users if they don't exist (with passwords)
+    // IMPORTANT: Only creates users if they don't exist. If users were deleted,
+    // they will NOT be recreated unless you manually call this route.
     const defaultPassword = await bcrypt.hash('password123', 10);
     
     // Only create users if they don't exist (don't recreate deleted ones)
