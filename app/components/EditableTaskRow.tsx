@@ -183,36 +183,6 @@ export default function EditableTaskRow({
         </td>
       )}
 
-      {/* Priority - editable dropdown */}
-      <td style={{ padding: '8px 12px', color: '#4a5568' }}>
-        <form action={updateTask} style={{ display: 'inline' }}>
-          <input type="hidden" name="taskId" value={task.id} />
-          {jobId && <input type="hidden" name="jobId" value={jobId} />}
-          <select
-            name="priority"
-            defaultValue={task.priority}
-            onChange={(e) => {
-              // Submit immediately when changed
-              e.currentTarget.form?.requestSubmit();
-            }}
-            style={{
-              border: '1px solid #cbd5e0',
-              borderRadius: 4,
-              padding: '4px 8px',
-              fontSize: 14,
-              color: '#4a5568',
-              backgroundColor: '#ffffff',
-              cursor: 'pointer',
-            }}
-          >
-            <option value="LOW">LOW</option>
-            <option value="MEDIUM">MEDIUM</option>
-            <option value="HIGH">HIGH</option>
-            <option value="URGENT">URGENT</option>
-          </select>
-        </form>
-      </td>
-
       {/* Due Date - editable */}
       <td style={{ padding: '8px 12px', color: '#4a5568' }}>
         <form action={updateTask} style={{ display: 'inline' }}>

@@ -86,9 +86,13 @@ export default function SortableTaskTable({
         if (aDone !== bDone) {
           return aDone ? 1 : -1; // Not done first
         }
-        // Both same status, sort by priority
-        const priorityOrder = { URGENT: 0, HIGH: 1, MEDIUM: 2, LOW: 3 };
-        return priorityOrder[a.priority] - priorityOrder[b.priority];
+        // Both same status, sort by due date
+        if (a.dueDate && b.dueDate) {
+          return new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime();
+        }
+        if (a.dueDate) return -1;
+        if (b.dueDate) return 1;
+        return 0;
       });
     }
 
@@ -162,10 +166,6 @@ export default function SortableTaskTable({
             if (a.assignees.length > 0 && b.assignees.length === 0) comparison = -1;
             break;
 
-          case 'priority':
-            const priorityOrder = { URGENT: 0, HIGH: 1, MEDIUM: 2, LOW: 3 };
-            comparison = priorityOrder[a.priority] - priorityOrder[b.priority];
-            break;
         }
 
         return sortDirection === 'asc' ? comparison : -comparison;
@@ -257,12 +257,6 @@ export default function SortableTaskTable({
                 Client / Brand
               </SortableHeader>
             )}
-            <SortableHeader
-              field="priority"
-              style={{ textAlign: 'left', padding: '8px 12px', borderBottom: '1px solid #e2e8f0', color: '#4a5568', fontWeight: 600, fontSize: 13 }}
-            >
-              Priority
-            </SortableHeader>
             <SortableHeader
               field="dueDate"
               style={{ textAlign: 'left', padding: '8px 12px', borderBottom: '1px solid #e2e8f0', color: '#4a5568', fontWeight: 600, fontSize: 13 }}

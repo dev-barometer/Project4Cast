@@ -80,26 +80,16 @@ export default async function MyTasksPage() {
   return (
     <main style={{ padding: 40, maxWidth: 1400, margin: '0 auto' }}>
       {/* Header */}
-      <div style={{ marginBottom: 32 }}>
-        <h1 style={{ fontSize: 28, fontWeight: 600, color: '#2d3748', marginBottom: 8 }}>
+      <div style={{ marginBottom: 32, display: 'flex', alignItems: 'center', gap: 12 }}>
+        <h1 style={{ fontSize: 28, fontWeight: 600, color: '#2d3748', marginBottom: 0 }}>
           My Tasks
         </h1>
-        <p style={{ color: '#718096', fontSize: 15 }}>
-          Tasks assigned to you. Create standalone tasks or tasks associated with jobs.
-        </p>
-        <p style={{ marginTop: 16, fontSize: 14, color: '#718096' }}>
-          <Link href="/jobs" style={{ color: '#4299e1', textDecoration: 'none' }}>← Jobs</Link> ·{' '}
-          <Link href="/tasks" style={{ color: '#4299e1', textDecoration: 'none' }}>All Tasks</Link> ·{' '}
-          <Link href="/" style={{ color: '#4299e1', textDecoration: 'none' }}>Home</Link>
-        </p>
+        <StandaloneTaskForm
+          allUsers={allUsers}
+          allJobs={allJobs}
+          currentUserId={currentUserId}
+        />
       </div>
-
-      {/* Task Creation Form */}
-      <StandaloneTaskForm
-        allUsers={allUsers}
-        allJobs={allJobs}
-        currentUserId={currentUserId}
-      />
 
       {/* Summary Stats */}
       {tasks.length > 0 && (

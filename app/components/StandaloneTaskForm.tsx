@@ -56,27 +56,30 @@ export default function StandaloneTaskForm({ allUsers, allJobs, currentUserId }:
   };
 
   return (
-    <div style={{ marginBottom: 24 }}>
+    <div style={{ display: 'inline-block' }}>
       {!isExpanded ? (
         <button
           type="button"
           onClick={() => setIsExpanded(true)}
           style={{
-            padding: '10px 16px',
-            borderRadius: 6,
+            width: 32,
+            height: 32,
+            borderRadius: '50%',
             border: '1px solid #cbd5e0',
             background: '#ffffff',
             color: '#4299e1',
-            fontSize: 14,
+            fontSize: 18,
             cursor: 'pointer',
             fontWeight: 500,
             display: 'flex',
             alignItems: 'center',
-            gap: 8,
+            justifyContent: 'center',
+            padding: 0,
+            lineHeight: 1,
           }}
+          title="Add Task"
         >
-          <span>+</span>
-          <span>Add Task</span>
+          +
         </button>
       ) : (
         <form action={formAction} ref={formRef}>
