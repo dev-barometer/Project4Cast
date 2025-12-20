@@ -62,7 +62,7 @@ type ProfilePageClientProps = {
   user: User & { role: 'OWNER' | 'ADMIN' | 'USER' };
   allTeams: Team[];
   admins: Array<{ id: string; email: string; name: string | null; role: 'OWNER' | 'ADMIN' | 'USER' }>;
-  allUsers: Array<{ id: string; email: string; name: string | null; role: 'OWNER' | 'ADMIN' | 'USER'; createdAt: Date }>;
+  allUsers: Array<{ id: string; email: string; name: string | null; role: 'OWNER' | 'ADMIN' | 'USER' }>;
 };
 
 // Timezone options (common ones)
@@ -895,9 +895,6 @@ export default function ProfilePageClient({ user, allTeams, admins, allUsers }: 
                   <th style={{ textAlign: 'left', padding: '12px 16px', borderBottom: '1px solid #e2e8f0', color: '#4a5568', fontWeight: 600, fontSize: 13 }}>
                     Role
                   </th>
-                  <th style={{ textAlign: 'left', padding: '12px 16px', borderBottom: '1px solid #e2e8f0', color: '#4a5568', fontWeight: 600, fontSize: 13 }}>
-                    Joined
-                  </th>
                   <th style={{ textAlign: 'right', padding: '12px 16px', borderBottom: '1px solid #e2e8f0', color: '#4a5568', fontWeight: 600, fontSize: 13 }}>
                     Actions
                   </th>
@@ -936,9 +933,6 @@ export default function ProfilePageClient({ user, allTeams, admins, allUsers }: 
                         >
                           {isTargetOwner ? '👑 Owner' : isTargetAdmin ? '🔧 Admin' : '👤 User'}
                         </span>
-                      </td>
-                      <td style={{ padding: '12px 16px', color: '#718096', fontSize: 13 }}>
-                        {new Date(targetUser.createdAt).toLocaleDateString()}
                       </td>
                       <td style={{ padding: '12px 16px', textAlign: 'right' }}>
                         {canAssign && (

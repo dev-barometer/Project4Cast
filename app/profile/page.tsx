@@ -13,18 +13,6 @@ export default async function ProfilePage() {
   // Get user with all related data
   const user = await prisma.user.findUnique({
     where: { id: session.user.id },
-    include: {
-      teamMemberships: {
-        include: {
-          team: true,
-        },
-      },
-      notificationPreferences: true,
-      activityLogs: {
-        orderBy: { createdAt: 'desc' },
-        take: 100, // Limit to last 100 activities
-      },
-    },
     select: {
       id: true,
       email: true,
@@ -73,7 +61,6 @@ export default async function ProfilePage() {
           email: true,
           name: true,
           role: true,
-          createdAt: true,
         },
         orderBy: { email: 'asc' },
       })
