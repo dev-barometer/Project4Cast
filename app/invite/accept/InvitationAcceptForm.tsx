@@ -227,7 +227,7 @@ export default function InvitationAcceptForm({ invitation }: InvitationAcceptFor
             padding: '12px 24px',
             borderRadius: 6,
             border: 'none',
-            background: isSubmitting || !name.trim() || !password || !confirmPassword ? '#a0aec0' : '#06B6D4',
+            background: isSubmitting || !name.trim() || !password || !confirmPassword ? '#a0aec0' : '#14B8A6',
             color: 'white',
             fontSize: 16,
             cursor: isSubmitting || !name.trim() || !password || !confirmPassword ? 'not-allowed' : 'pointer',

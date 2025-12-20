@@ -167,7 +167,7 @@ export default function CollaboratorManager({
                   {user.name || user.email}
                 </option>
               ))}
-              <option value="INVITE_EMAIL" style={{ fontStyle: 'italic', color: '#06B6D4' }}>
+              <option value="INVITE_EMAIL" style={{ fontStyle: 'italic', color: '#14B8A6' }}>
                 ─ Invite via email ─
               </option>
             </select>
@@ -184,7 +184,7 @@ export default function CollaboratorManager({
               borderRadius: 4,
               padding: '6px 10px',
               fontSize: 13,
-              color: '#06B6D4',
+              color: '#14B8A6',
               backgroundColor: '#ffffff',
               cursor: 'pointer',
               textAlign: 'left',
@@ -241,12 +241,12 @@ export default function CollaboratorManager({
               <button
                 type="submit"
                 style={{
-                  border: '1px solid #06B6D4',
+                  border: '1px solid #14B8A6',
                   borderRadius: 4,
                   padding: '6px 12px',
                   fontSize: 13,
                   color: '#ffffff',
-                  backgroundColor: '#06B6D4',
+                  backgroundColor: '#14B8A6',
                   cursor: 'pointer',
                   fontWeight: 500,
                 }}

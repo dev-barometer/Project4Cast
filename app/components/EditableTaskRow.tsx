@@ -104,7 +104,7 @@ export default function EditableTaskRow({
               width: 18,
               height: 18,
               cursor: 'pointer',
-              accentColor: '#06B6D4',
+              accentColor: '#14B8A6',
             }}
             title={isDone ? 'Mark as not done' : 'Mark as done'}
           />
@@ -155,7 +155,7 @@ export default function EditableTaskRow({
             <>
               <Link
                 href={`/jobs/${task.jobId}`}
-                style={{ color: '#06B6D4', textDecoration: 'none' }}
+                style={{ color: '#14B8A6', textDecoration: 'none' }}
               >
                 {task.job.jobNumber}
               </Link>

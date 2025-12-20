@@ -190,7 +190,7 @@ export default function LoginPage() {
               padding: '12px 16px',
               borderRadius: 6,
               border: 'none',
-              background: isLoading ? '#a0aec0' : '#06B6D4',
+              background: isLoading ? '#a0aec0' : '#14B8A6',
               color: 'white',
               fontSize: 14,
               fontWeight: 500,
@@ -213,7 +213,7 @@ export default function LoginPage() {
           <Link
             href="/forgot-password"
             style={{
-              color: '#06B6D4',
+              color: '#14B8A6',
               textDecoration: 'none',
               fontWeight: 500,
             }}
@@ -232,7 +232,7 @@ export default function LoginPage() {
           <Link
             href="/signup"
             style={{
-              color: '#06B6D4',
+              color: '#14B8A6',
               textDecoration: 'none',
               fontWeight: 500,
             }}

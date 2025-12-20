@@ -206,8 +206,8 @@ export default function ProfilePageClient({ user, allTeams, admins, allUsers }: 
                 padding: '12px 24px',
                 background: 'none',
                 border: 'none',
-                borderBottom: activeTab === tab ? '2px solid #06B6D4' : '2px solid transparent',
-                color: activeTab === tab ? '#06B6D4' : '#718096',
+                borderBottom: activeTab === tab ? '2px solid #14B8A6' : '2px solid transparent',
+                color: activeTab === tab ? '#14B8A6' : '#718096',
                 fontSize: 14,
                 fontWeight: activeTab === tab ? 600 : 500,
                 cursor: 'pointer',
@@ -361,7 +361,7 @@ export default function ProfilePageClient({ user, allTeams, admins, allUsers }: 
                   type="submit"
                   style={{
                     padding: '10px 20px',
-                    backgroundColor: '#06B6D4',
+                    backgroundColor: '#14B8A6',
                     color: '#ffffff',
                     border: 'none',
                     borderRadius: 6,
@@ -429,7 +429,7 @@ export default function ProfilePageClient({ user, allTeams, admins, allUsers }: 
                   type="submit"
                   style={{
                     padding: '10px 20px',
-                    backgroundColor: '#06B6D4',
+                    backgroundColor: '#14B8A6',
                     color: '#ffffff',
                     border: 'none',
                     borderRadius: 6,
@@ -521,7 +521,7 @@ export default function ProfilePageClient({ user, allTeams, admins, allUsers }: 
                   type="submit"
                   style={{
                     padding: '10px 20px',
-                    backgroundColor: '#06B6D4',
+                    backgroundColor: '#14B8A6',
                     color: '#ffffff',
                     border: 'none',
                     borderRadius: 6,
@@ -702,7 +702,7 @@ export default function ProfilePageClient({ user, allTeams, admins, allUsers }: 
               type="submit"
               style={{
                 padding: '10px 20px',
-                backgroundColor: '#06B6D4',
+                backgroundColor: '#14B8A6',
                 color: '#ffffff',
                 border: 'none',
                 borderRadius: 6,
@@ -941,7 +941,7 @@ export default function ProfilePageClient({ user, allTeams, admins, allUsers }: 
                           <div style={{ fontSize: 12, color: '#a0aec0', marginTop: 2 }}>{targetUser.email}</div>
                         )}
                         {isCurrentUser && (
-                          <div style={{ fontSize: 11, color: '#06B6D4', marginTop: 2 }}>(You)</div>
+                          <div style={{ fontSize: 11, color: '#14B8A6', marginTop: 2 }}>(You)</div>
                         )}
                       </td>
                       <td style={{ padding: '12px 16px' }}>

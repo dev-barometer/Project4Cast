@@ -81,7 +81,7 @@ export default async function AcceptInvitationPage({ searchParams }: PageProps) 
           </h1>
           <p style={{ color: '#718096', fontSize: 16, marginBottom: 24 }}>
             This invitation has already been accepted. You can{' '}
-            <a href="/login" style={{ color: '#06B6D4', textDecoration: 'none' }}>
+            <a href="/login" style={{ color: '#14B8A6', textDecoration: 'none' }}>
               sign in here
             </a>
             .

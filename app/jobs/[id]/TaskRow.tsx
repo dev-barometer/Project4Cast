@@ -89,7 +89,7 @@ export default function TaskRow({
       style={{
         borderBottom: '1px solid #f0f4f8',
         cursor: onSelect ? 'pointer' : 'default',
-        backgroundColor: isSelected ? '#ebf8ff' : 'transparent',
+        backgroundColor: isSelected ? '#E6FFFA' : 'transparent',
         transition: 'background-color 0.2s',
       }}
     >
@@ -120,7 +120,7 @@ export default function TaskRow({
               width: 18,
               height: 18,
               cursor: 'pointer',
-              accentColor: '#06B6D4',
+              accentColor: '#14B8A6',
             }}
             title={isDone ? 'Mark as not done' : 'Mark as done'}
           />

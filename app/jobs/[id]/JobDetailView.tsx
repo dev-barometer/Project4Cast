@@ -284,7 +284,7 @@ export default function JobDetailView({
                 height: 32,
                 borderRadius: 8,
                 border: '1px solid #e2e8f0',
-                background: isRightPanelOpen ? '#ebf8ff' : '#f7fafc',
+                background: isRightPanelOpen ? '#E6FFFA' : '#f7fafc',
                 color: '#2d3748',
                 fontSize: 16,
                 lineHeight: 1,

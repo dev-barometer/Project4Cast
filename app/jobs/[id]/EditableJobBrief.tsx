@@ -116,7 +116,7 @@ export default function EditableJobBrief({ jobId, initialBrief, canEdit }: Edita
                 padding: '8px 16px',
                 borderRadius: 6,
                 border: 'none',
-                background: isPending ? '#a0aec0' : '#06B6D4',
+                background: isPending ? '#a0aec0' : '#14B8A6',
                 color: 'white',
                 fontSize: 13,
                 fontWeight: 500,

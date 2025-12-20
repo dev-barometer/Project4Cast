@@ -76,7 +76,7 @@ export default async function DevPage() {
       </section>
 
       <p style={{ marginTop: 32 }}>
-        <Link href="/" style={{ color: '#06B6D4', textDecoration: 'none', fontSize: 14 }}>← Back to home</Link>
+        <Link href="/" style={{ color: '#14B8A6', textDecoration: 'none', fontSize: 14 }}>← Back to home</Link>
       </p>
     </main>
   );

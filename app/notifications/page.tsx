@@ -93,7 +93,7 @@ export default async function NotificationsPage() {
           {unreadCount > 0 ? `${unreadCount} unread notification${unreadCount === 1 ? '' : 's'}` : 'All caught up!'}
         </p>
         <p style={{ marginTop: 16, fontSize: 14, color: '#718096' }}>
-          <Link href="/" style={{ color: '#06B6D4', textDecoration: 'none' }}>← Home</Link>
+          <Link href="/" style={{ color: '#14B8A6', textDecoration: 'none' }}>← Home</Link>
         </p>
       </div>
 
@@ -139,7 +139,7 @@ export default async function NotificationsPage() {
                             width: 8,
                             height: 8,
                             borderRadius: '50%',
-                            backgroundColor: '#06B6D4',
+                            backgroundColor: '#14B8A6',
                             display: 'inline-block',
                           }}
                         />

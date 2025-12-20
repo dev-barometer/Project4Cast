@@ -138,7 +138,7 @@ export default function ResetPasswordForm({ token }: ResetPasswordFormProps) {
               padding: '12px 16px',
               borderRadius: 6,
               border: 'none',
-              background: submitted ? '#a0aec0' : '#06B6D4',
+              background: submitted ? '#a0aec0' : '#14B8A6',
               color: 'white',
               fontSize: 14,
               fontWeight: 500,
@@ -161,7 +161,7 @@ export default function ResetPasswordForm({ token }: ResetPasswordFormProps) {
         <Link
           href="/login"
           style={{
-            color: '#06B6D4',
+            color: '#14B8A6',
             textDecoration: 'none',
             fontWeight: 500,
           }}

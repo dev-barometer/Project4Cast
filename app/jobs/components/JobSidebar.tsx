@@ -210,7 +210,7 @@ export default function JobSidebar({ jobs, isAdmin, currentJobId }: JobSidebarPr
                     padding: '10px 16px',
                     background: 'none',
                     border: 'none',
-                    color: groupBy === 'none' ? '#06B6D4' : '#5a6579',
+                    color: groupBy === 'none' ? '#14B8A6' : '#5a6579',
                     fontSize: 14,
                     
                     cursor: 'pointer',
@@ -230,7 +230,7 @@ export default function JobSidebar({ jobs, isAdmin, currentJobId }: JobSidebarPr
                     padding: '10px 16px',
                     background: 'none',
                     border: 'none',
-                    color: groupBy === 'brand' ? '#06B6D4' : '#5a6579',
+                    color: groupBy === 'brand' ? '#14B8A6' : '#5a6579',
                     fontSize: 14,
                     
                     cursor: 'pointer',
@@ -250,7 +250,7 @@ export default function JobSidebar({ jobs, isAdmin, currentJobId }: JobSidebarPr
                     padding: '10px 16px',
                     background: 'none',
                     border: 'none',
-                    color: groupBy === 'client' ? '#06B6D4' : '#5a6579',
+                    color: groupBy === 'client' ? '#14B8A6' : '#5a6579',
                     fontSize: 14,
                     
                     cursor: 'pointer',
@@ -338,7 +338,7 @@ export default function JobSidebar({ jobs, isAdmin, currentJobId }: JobSidebarPr
                         alignItems: 'center',
                         justifyContent: 'space-between',
                         padding: '8px 12px',
-                        backgroundColor: isActive ? '#ebf8ff' : '#ffffff',
+                        backgroundColor: isActive ? '#E6FFFA' : '#ffffff',
                         borderRadius: 12,
                         transition: 'all 0.2s',
                         opacity: isInactive ? 0.6 : 1,
@@ -365,7 +365,7 @@ export default function JobSidebar({ jobs, isAdmin, currentJobId }: JobSidebarPr
                               fontSize: 14,
                             }}
                           >
-                            <span style={{ fontWeight: 600, color: '#2d3748' }}>
+                            <span style={{ fontWeight: 600, color: isActive ? '#14B8A6' : '#2d3748' }}>
                               {job.jobNumber}
                             </span>{' '}
                             <span style={{ fontWeight: 400, color: '#5a6579' }}>
@@ -423,7 +423,7 @@ export default function JobSidebar({ jobs, isAdmin, currentJobId }: JobSidebarPr
                   width: '100%',
                   padding: '10px 12px',
                   textAlign: 'left',
-                  backgroundColor: hasActiveJob ? '#ebf8ff' : 'transparent',
+                  backgroundColor: hasActiveJob ? '#E6FFFA' : 'transparent',
                   border: 'none',
                   borderRadius: 6,
                   cursor: 'pointer',
@@ -466,7 +466,7 @@ export default function JobSidebar({ jobs, isAdmin, currentJobId }: JobSidebarPr
                           alignItems: 'center',
                           justifyContent: 'space-between',
                           padding: '8px 12px',
-                          backgroundColor: isActive ? '#ebf8ff' : '#ffffff',
+                          backgroundColor: isActive ? '#E6FFFA' : '#ffffff',
                           borderRadius: 12,
                           transition: 'all 0.2s',
                           opacity: isInactive ? 0.6 : 1,

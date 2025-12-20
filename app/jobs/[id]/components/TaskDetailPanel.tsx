@@ -306,14 +306,14 @@ export default function TaskDetailPanel({
                               borderRadius: 6,
                               border: '1px solid #e2e8f0',
                               fontSize: 12,
-                              color: '#06B6D4',
+                              color: '#14B8A6',
                               textDecoration: 'none',
                               cursor: 'pointer',
                               transition: 'all 0.2s',
                             }}
                             onMouseEnter={(e) => {
-                              e.currentTarget.style.backgroundColor = '#ebf8ff';
-                              e.currentTarget.style.borderColor = '#06B6D4';
+                              e.currentTarget.style.backgroundColor = '#E6FFFA';
+                              e.currentTarget.style.borderColor = '#14B8A6';
                             }}
                             onMouseLeave={(e) => {
                               e.currentTarget.style.backgroundColor = '#ffffff';
@@ -491,7 +491,7 @@ export default function TaskDetailPanel({
               <button
                 type="submit"
                 style={{
-                  background: '#06B6D4',
+                  background: '#14B8A6',
                   border: 'none',
                   borderRadius: 8,
                   width: 36,
