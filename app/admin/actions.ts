@@ -139,7 +139,14 @@ export async function deleteUser(prevState: any, formData: FormData) {
       where: { id: userId },
     });
 
+    // Revalidate all paths that might show users
     revalidatePath('/admin');
+    revalidatePath('/admin/collaborators');
+    revalidatePath('/profile');
+    revalidatePath('/jobs');
+    revalidatePath('/tasks');
+    revalidatePath('/my-tasks');
+    
     return { success: true, error: null };
   } catch (error: any) {
     return { success: false, error: error.message || 'Failed to delete user' };
