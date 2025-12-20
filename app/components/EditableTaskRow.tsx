@@ -315,17 +315,28 @@ function AssigneeDropdown({
   addAssignee: (formData: FormData) => Promise<any>;
 }) {
   const [isOpen, setIsOpen] = useState(false);
+  const [position, setPosition] = useState({ top: 0, left: 0 });
+  const buttonRef = useRef<HTMLButtonElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node) &&
+          buttonRef.current && !buttonRef.current.contains(event.target as Node)) {
         setIsOpen(false);
       }
     }
 
     if (isOpen) {
       document.addEventListener('mousedown', handleClickOutside);
+      // Calculate position when opening
+      if (buttonRef.current) {
+        const rect = buttonRef.current.getBoundingClientRect();
+        setPosition({
+          top: rect.bottom + window.scrollY + 4,
+          left: rect.left + window.scrollX,
+        });
+      }
     }
 
     return () => {
@@ -345,8 +356,9 @@ function AssigneeDropdown({
   };
 
   return (
-    <div ref={dropdownRef} style={{ position: 'relative', display: 'inline-block' }}>
+    <>
       <button
+        ref={buttonRef}
         type="button"
         onClick={() => setIsOpen(!isOpen)}
         style={{
@@ -370,16 +382,16 @@ function AssigneeDropdown({
       </button>
       {isOpen && (
         <div
+          ref={dropdownRef}
           style={{
-            position: 'absolute',
-            top: '100%',
-            left: 0,
-            marginTop: 4,
+            position: 'fixed',
+            top: position.top,
+            left: position.left,
             backgroundColor: '#ffffff',
             border: '1px solid #e2e8f0',
             borderRadius: 6,
             boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
-            zIndex: 1000,
+            zIndex: 9999,
             minWidth: 200,
             maxHeight: 200,
             overflowY: 'auto',
@@ -412,7 +424,7 @@ function AssigneeDropdown({
           ))}
         </div>
       )}
-    </div>
+    </>
   );
 }
 
