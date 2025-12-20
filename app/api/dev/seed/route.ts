@@ -7,37 +7,35 @@ export async function GET() {
     // 1. Create test users if they don't exist (with passwords)
     const defaultPassword = await bcrypt.hash('password123', 10);
     
+    // Only create users if they don't exist (don't recreate deleted ones)
     const users = await Promise.all([
-      prisma.user.upsert({
-        where: { email: 'alice@example.com' },
-        update: {},
-        create: {
-          email: 'alice@example.com',
-          name: 'Alice Johnson',
-          password: defaultPassword,
-          role: 'USER',
-        },
-      }),
-      prisma.user.upsert({
-        where: { email: 'bob@example.com' },
-        update: {},
-        create: {
-          email: 'bob@example.com',
-          name: 'Bob Smith',
-          password: defaultPassword,
-          role: 'USER',
-        },
-      }),
-      prisma.user.upsert({
-        where: { email: 'charlie@example.com' },
-        update: {},
-        create: {
-          email: 'charlie@example.com',
-          name: 'Charlie Brown',
-          password: defaultPassword,
-          role: 'USER',
-        },
-      }),
+      prisma.user.findUnique({ where: { email: 'alice@example.com' } })
+        .then(existing => existing || prisma.user.create({
+          data: {
+            email: 'alice@example.com',
+            name: 'Alice Johnson',
+            password: defaultPassword,
+            role: 'USER',
+          },
+        })),
+      prisma.user.findUnique({ where: { email: 'bob@example.com' } })
+        .then(existing => existing || prisma.user.create({
+          data: {
+            email: 'bob@example.com',
+            name: 'Bob Smith',
+            password: defaultPassword,
+            role: 'USER',
+          },
+        })),
+      prisma.user.findUnique({ where: { email: 'charlie@example.com' } })
+        .then(existing => existing || prisma.user.create({
+          data: {
+            email: 'charlie@example.com',
+            name: 'Charlie Brown',
+            password: defaultPassword,
+            role: 'USER',
+          },
+        })),
     ]);
 
     // 2. Check if the job already exists

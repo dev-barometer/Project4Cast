@@ -6,10 +6,16 @@ import Link from 'next/link';
 import JobForm from './JobForm';
 
 export default async function NewJobPage() {
-  // Fetch all clients with their brands for the form
+  // Fetch all non-archived clients with their non-archived brands for the form
   const clients = await prisma.client.findMany({
+    where: {
+      isArchived: false,
+    },
     include: {
       brands: {
+        where: {
+          isArchived: false,
+        },
         orderBy: { name: 'asc' },
       },
     },
