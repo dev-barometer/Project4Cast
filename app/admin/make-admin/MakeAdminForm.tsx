@@ -139,7 +139,7 @@ export default function MakeAdminForm({ users, currentUserId }: MakeAdminFormPro
             padding: '12px 24px',
             borderRadius: 6,
             border: 'none',
-            background: isSubmitting || !selectedUserId ? '#a0aec0' : '#4299e1',
+            background: isSubmitting || !selectedUserId ? '#a0aec0' : '#06B6D4',
             color: 'white',
             fontSize: 16,
             cursor: isSubmitting || !selectedUserId ? 'not-allowed' : 'pointer',

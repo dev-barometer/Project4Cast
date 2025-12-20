@@ -261,7 +261,7 @@ export default function JobForm({ clients }: JobFormProps) {
                   {client.name}
                 </option>
               ))}
-              <option value="__create_new__" style={{ fontStyle: 'italic', color: '#4299e1' }}>
+              <option value="__create_new__" style={{ fontStyle: 'italic', color: '#06B6D4' }}>
                 ➕ Create new client...
               </option>
             </select>
@@ -315,7 +315,7 @@ export default function JobForm({ clients }: JobFormProps) {
                 </option>
               ))}
               {selectedClientId && (
-                <option value="__create_new__" style={{ fontStyle: 'italic', color: '#4299e1' }}>
+                <option value="__create_new__" style={{ fontStyle: 'italic', color: '#06B6D4' }}>
                   ➕ Create new brand...
                 </option>
               )}
@@ -331,7 +331,7 @@ export default function JobForm({ clients }: JobFormProps) {
                 padding: '12px 24px',
                 borderRadius: 6,
                 border: 'none',
-                background: '#4299e1',
+                background: '#06B6D4',
                 color: 'white',
                 fontSize: 14,
                 cursor: 'pointer',
@@ -449,7 +449,7 @@ export default function JobForm({ clients }: JobFormProps) {
                       padding: '10px 20px',
                       borderRadius: 6,
                       border: 'none',
-                      backgroundColor: '#4299e1',
+                      backgroundColor: '#06B6D4',
                       color: 'white',
                       fontSize: 14,
                       fontWeight: 500,
@@ -556,7 +556,7 @@ export default function JobForm({ clients }: JobFormProps) {
                       padding: '10px 20px',
                       borderRadius: 6,
                       border: 'none',
-                      backgroundColor: '#4299e1',
+                      backgroundColor: '#06B6D4',
                       color: 'white',
                       fontSize: 14,
                       fontWeight: 500,

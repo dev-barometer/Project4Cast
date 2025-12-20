@@ -77,7 +77,7 @@ export default function AttachmentManager({
         style={{
           background: 'none',
           border: 'none',
-          color: '#4299e1',
+          color: '#06B6D4',
           cursor: 'pointer',
           fontSize: 12,
           padding: '4px 0',
@@ -134,7 +134,7 @@ export default function AttachmentManager({
                         target="_blank"
                         rel="noopener noreferrer"
                         style={{
-                          color: '#4299e1',
+                          color: '#06B6D4',
                           textDecoration: 'none',
                           fontSize: 13,
                           fontWeight: 500,

@@ -176,7 +176,7 @@ export default function JobDetailView({
               fontSize: '2.5rem',
               fontWeight: 700,
               color: '#2d3748',
-              fontFamily: 'Inter, sans-serif',
+              
               letterSpacing: '-0.02em',
               lineHeight: 1.1,
             }}
@@ -188,7 +188,7 @@ export default function JobDetailView({
               fontSize: '1.25rem',
               fontWeight: 600,
               color: '#2d3748',
-              fontFamily: 'Inter, sans-serif',
+              
               lineHeight: 1.3,
             }}
           >
@@ -199,7 +199,7 @@ export default function JobDetailView({
               style={{
                 fontSize: 14,
                 color: '#718096',
-                fontFamily: 'Inter, sans-serif',
+                
                 lineHeight: 1.3,
               }}
             >
@@ -245,7 +245,7 @@ export default function JobDetailView({
                   fontWeight: 600,
                   color: '#2d3748',
                   margin: 0,
-                  fontFamily: 'Inter, sans-serif',
+                  
                 }}
               >
                 Tasks

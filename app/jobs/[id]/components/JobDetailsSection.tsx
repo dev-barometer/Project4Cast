@@ -124,7 +124,7 @@ export default function JobDetailsSection({
             fontWeight: 600,
             color: '#2d3748',
             margin: 0,
-            fontFamily: 'Inter, sans-serif',
+            
           }}
         >
           Job Details

@@ -33,7 +33,6 @@ export default function Header({ user, unreadNotificationCount = 0 }: HeaderProp
             fontWeight: 600,
             color: '#2d3748',
             textDecoration: 'none',
-            fontFamily: 'Inter, sans-serif',
           }}
         >
           Project4cast
@@ -58,7 +57,6 @@ export default function Header({ user, unreadNotificationCount = 0 }: HeaderProp
               backgroundColor: '#e7eef3',
               fontSize: 14,
               color: '#2d3748',
-              fontFamily: 'Inter, sans-serif',
             }}
           />
           <span
@@ -83,7 +81,6 @@ export default function Header({ user, unreadNotificationCount = 0 }: HeaderProp
             fontWeight: 500,
             padding: '6px 12px',
             borderRadius: 8,
-            fontFamily: 'Inter, sans-serif',
           }}
         >
           My Tasks

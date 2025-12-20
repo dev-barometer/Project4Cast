@@ -210,9 +210,9 @@ export default function JobSidebar({ jobs, isAdmin, currentJobId }: JobSidebarPr
                     padding: '10px 16px',
                     background: 'none',
                     border: 'none',
-                    color: groupBy === 'none' ? '#4299e1' : '#5a6579',
+                    color: groupBy === 'none' ? '#06B6D4' : '#5a6579',
                     fontSize: 14,
-                    fontFamily: 'Inter, sans-serif',
+                    
                     cursor: 'pointer',
                     fontWeight: groupBy === 'none' ? 600 : 400,
                   }}
@@ -230,9 +230,9 @@ export default function JobSidebar({ jobs, isAdmin, currentJobId }: JobSidebarPr
                     padding: '10px 16px',
                     background: 'none',
                     border: 'none',
-                    color: groupBy === 'brand' ? '#4299e1' : '#5a6579',
+                    color: groupBy === 'brand' ? '#06B6D4' : '#5a6579',
                     fontSize: 14,
-                    fontFamily: 'Inter, sans-serif',
+                    
                     cursor: 'pointer',
                     fontWeight: groupBy === 'brand' ? 600 : 400,
                   }}
@@ -250,9 +250,9 @@ export default function JobSidebar({ jobs, isAdmin, currentJobId }: JobSidebarPr
                     padding: '10px 16px',
                     background: 'none',
                     border: 'none',
-                    color: groupBy === 'client' ? '#4299e1' : '#5a6579',
+                    color: groupBy === 'client' ? '#06B6D4' : '#5a6579',
                     fontSize: 14,
-                    fontFamily: 'Inter, sans-serif',
+                    
                     cursor: 'pointer',
                     fontWeight: groupBy === 'client' ? 600 : 400,
                   }}
@@ -274,7 +274,7 @@ export default function JobSidebar({ jobs, isAdmin, currentJobId }: JobSidebarPr
                         border: 'none',
                         color: '#5a6579',
                         fontSize: 14,
-                        fontFamily: 'Inter, sans-serif',
+                        
                         cursor: 'pointer',
                         textDecoration: 'none',
                       }}
@@ -297,7 +297,7 @@ export default function JobSidebar({ jobs, isAdmin, currentJobId }: JobSidebarPr
                     border: 'none',
                     color: '#5a6579',
                     fontSize: 14,
-                    fontFamily: 'Inter, sans-serif',
+                    
                     cursor: 'pointer',
                     display: 'flex',
                     alignItems: 'center',
@@ -361,7 +361,7 @@ export default function JobSidebar({ jobs, isAdmin, currentJobId }: JobSidebarPr
                               overflow: 'hidden',
                               textOverflow: 'ellipsis',
                               whiteSpace: 'nowrap',
-                              fontFamily: 'Inter, sans-serif',
+                              
                               fontSize: 14,
                             }}
                           >
@@ -489,7 +489,7 @@ export default function JobSidebar({ jobs, isAdmin, currentJobId }: JobSidebarPr
                                 overflow: 'hidden',
                                 textOverflow: 'ellipsis',
                                 whiteSpace: 'nowrap',
-                                fontFamily: 'Inter, sans-serif',
+                                
                                 fontSize: 14,
                               }}
                             >
@@ -559,7 +559,7 @@ export default function JobSidebar({ jobs, isAdmin, currentJobId }: JobSidebarPr
               color: '#5a6579',
               fontSize: 14,
               fontWeight: 500,
-              fontFamily: 'Inter, sans-serif',
+              
             }}
           >
             <Image

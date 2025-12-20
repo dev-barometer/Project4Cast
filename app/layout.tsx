@@ -1,12 +1,10 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { GeistSans } from "geist/font/sans";
 import "./globals.css";
 import { auth } from '@/auth';
 import Header from './components/Header';
 import { prisma } from '@/lib/prisma';
 import EmailVerificationWrapper from './components/EmailVerificationWrapper';
-
-const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "Project Management",
@@ -36,8 +34,8 @@ export default async function RootLayout({
   }
 
   return (
-    <html lang="en">
-      <body className={inter.className}>
+    <html lang="en" className={GeistSans.className}>
+      <body>
         {session?.user && <Header user={session.user} unreadNotificationCount={unreadNotificationCount} />}
         <EmailVerificationWrapper>
           {children}

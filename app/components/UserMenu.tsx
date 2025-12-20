@@ -101,7 +101,7 @@ export default function UserMenu({ user }: UserMenuProps) {
               textDecoration: 'none',
               color: '#5a6579',
               fontSize: 14,
-              fontFamily: 'Inter, sans-serif',
+              
             }}
           >
             User Profile
@@ -116,7 +116,7 @@ export default function UserMenu({ user }: UserMenuProps) {
               border: 'none',
               color: '#5a6579',
               fontSize: 14,
-              fontFamily: 'Inter, sans-serif',
+              
               cursor: 'pointer',
             }}
           >

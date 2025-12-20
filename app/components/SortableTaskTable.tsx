@@ -204,7 +204,7 @@ export default function SortableTaskTable({
         <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
           {children}
           {isActive && (
-            <span style={{ fontSize: 12, color: '#4299e1' }}>
+            <span style={{ fontSize: 12, color: '#06B6D4' }}>
               {sortDirection === 'asc' ? '↑' : '↓'}
             </span>
           )}

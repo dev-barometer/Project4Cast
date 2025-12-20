@@ -70,9 +70,9 @@ export default async function CollaboratorsPage() {
           Manage user access to all jobs. Removing a user will remove them from all jobs and all task assignments.
         </p>
         <p style={{ marginTop: 16, fontSize: 14, color: '#718096' }}>
-          <Link href="/jobs" style={{ color: '#4299e1', textDecoration: 'none' }}>← Jobs</Link> ·{' '}
-          <Link href="/invitations" style={{ color: '#4299e1', textDecoration: 'none' }}>Invitations</Link> ·{' '}
-          <Link href="/" style={{ color: '#4299e1', textDecoration: 'none' }}>Home</Link>
+          <Link href="/jobs" style={{ color: '#06B6D4', textDecoration: 'none' }}>← Jobs</Link> ·{' '}
+          <Link href="/invitations" style={{ color: '#06B6D4', textDecoration: 'none' }}>Invitations</Link> ·{' '}
+          <Link href="/" style={{ color: '#06B6D4', textDecoration: 'none' }}>Home</Link>
         </p>
       </div>
 
@@ -136,7 +136,7 @@ export default async function CollaboratorsPage() {
                           <Link
                             key={collab.id}
                             href={`/jobs/${collab.job.id}`}
-                            style={{ color: '#4299e1', textDecoration: 'none', fontSize: 12 }}
+                            style={{ color: '#06B6D4', textDecoration: 'none', fontSize: 12 }}
                           >
                             {collab.job.jobNumber}
                           </Link>

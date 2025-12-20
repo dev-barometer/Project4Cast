@@ -58,10 +58,10 @@ export default async function InvitationsPage() {
           Invite users to join the platform by sending them an email invitation.
         </p>
         <p style={{ marginTop: 16, fontSize: 14, color: '#718096' }}>
-          <Link href="/jobs" style={{ color: '#4299e1', textDecoration: 'none' }}>← Jobs</Link> ·{' '}
-          <Link href="/tasks" style={{ color: '#4299e1', textDecoration: 'none' }}>All Tasks</Link> ·{' '}
-          <Link href="/my-tasks" style={{ color: '#4299e1', textDecoration: 'none' }}>My Tasks</Link> ·{' '}
-          <Link href="/" style={{ color: '#4299e1', textDecoration: 'none' }}>Home</Link>
+          <Link href="/jobs" style={{ color: '#06B6D4', textDecoration: 'none' }}>← Jobs</Link> ·{' '}
+          <Link href="/tasks" style={{ color: '#06B6D4', textDecoration: 'none' }}>All Tasks</Link> ·{' '}
+          <Link href="/my-tasks" style={{ color: '#06B6D4', textDecoration: 'none' }}>My Tasks</Link> ·{' '}
+          <Link href="/" style={{ color: '#06B6D4', textDecoration: 'none' }}>Home</Link>
         </p>
       </div>
 
@@ -150,7 +150,7 @@ export default async function InvitationsPage() {
                               borderRadius: 4,
                               border: '1px solid #cbd5e0',
                               background: '#ffffff',
-                              color: '#4299e1',
+                              color: '#06B6D4',
                               fontSize: 13,
                               cursor: 'pointer',
                             }}

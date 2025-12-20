@@ -51,7 +51,7 @@ export default function TaskComments({
         style={{
           background: 'none',
           border: 'none',
-          color: '#4299e1',
+          color: '#06B6D4',
           cursor: 'pointer',
           fontSize: 12,
           padding: '4px 0',
@@ -160,7 +160,7 @@ export default function TaskComments({
                   padding: '6px 12px',
                   borderRadius: 4,
                   border: 'none',
-                  background: '#4299e1',
+                  background: '#06B6D4',
                   color: 'white',
                   fontSize: 12,
                   cursor: 'pointer',

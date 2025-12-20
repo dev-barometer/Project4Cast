@@ -85,7 +85,7 @@ export default function JobMenu({ jobId, jobNumber, jobStatus, onMoveTo }: JobMe
               border: 'none',
               color: '#2d3748',
               fontSize: 14,
-              fontFamily: 'Inter, sans-serif',
+              
               cursor: 'pointer',
             }}
           >
@@ -115,7 +115,7 @@ export default function JobMenu({ jobId, jobNumber, jobStatus, onMoveTo }: JobMe
                 border: 'none',
                 color: '#5a6579',
                 fontSize: 14,
-                fontFamily: 'Inter, sans-serif',
+                
                 cursor: 'pointer',
               }}
             >
@@ -145,7 +145,7 @@ export default function JobMenu({ jobId, jobNumber, jobStatus, onMoveTo }: JobMe
                 border: 'none',
                 color: '#5a6579',
                 fontSize: 14,
-                fontFamily: 'Inter, sans-serif',
+                
                 cursor: 'pointer',
               }}
             >

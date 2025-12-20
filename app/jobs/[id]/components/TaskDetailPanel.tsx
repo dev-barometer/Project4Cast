@@ -131,7 +131,7 @@ export default function TaskDetailPanel({
           justifyContent: 'center',
           color: '#a0aec0',
           fontSize: 14,
-          fontFamily: 'Inter, sans-serif',
+          
         }}
       >
         Select a task to view details
@@ -204,7 +204,7 @@ export default function TaskDetailPanel({
               fontWeight: 600,
               color: '#2d3748',
               margin: 0,
-              fontFamily: 'Inter, sans-serif',
+              
             }}
           >
             Comments
@@ -306,14 +306,14 @@ export default function TaskDetailPanel({
                               borderRadius: 6,
                               border: '1px solid #e2e8f0',
                               fontSize: 12,
-                              color: '#4299e1',
+                              color: '#06B6D4',
                               textDecoration: 'none',
                               cursor: 'pointer',
                               transition: 'all 0.2s',
                             }}
                             onMouseEnter={(e) => {
                               e.currentTarget.style.backgroundColor = '#ebf8ff';
-                              e.currentTarget.style.borderColor = '#4299e1';
+                              e.currentTarget.style.borderColor = '#06B6D4';
                             }}
                             onMouseLeave={(e) => {
                               e.currentTarget.style.backgroundColor = '#ffffff';
@@ -482,7 +482,7 @@ export default function TaskDetailPanel({
                   fontSize: 14,
                   backgroundColor: '#e7eef3',
                   color: '#2d3748',
-                  fontFamily: 'Inter, sans-serif',
+                  
                   resize: 'none',
                 }}
               />
@@ -491,7 +491,7 @@ export default function TaskDetailPanel({
               <button
                 type="submit"
                 style={{
-                  background: '#4299e1',
+                  background: '#06B6D4',
                   border: 'none',
                   borderRadius: 8,
                   width: 36,

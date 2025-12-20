@@ -120,7 +120,7 @@ export default function TaskRow({
               width: 18,
               height: 18,
               cursor: 'pointer',
-              accentColor: '#4299e1',
+              accentColor: '#06B6D4',
             }}
             title={isDone ? 'Mark as not done' : 'Mark as done'}
           />

@@ -60,9 +60,9 @@ export default async function TasksPage() {
           View and manage all tasks. Tasks can be associated with jobs or standalone.
         </p>
         <p style={{ marginTop: 16, fontSize: 14, color: '#718096' }}>
-          <Link href="/jobs" style={{ color: '#4299e1', textDecoration: 'none' }}>← Jobs</Link> ·{' '}
-          <Link href="/my-tasks" style={{ color: '#4299e1', textDecoration: 'none' }}>My Tasks</Link> ·{' '}
-          <Link href="/" style={{ color: '#4299e1', textDecoration: 'none' }}>Home</Link>
+          <Link href="/jobs" style={{ color: '#06B6D4', textDecoration: 'none' }}>← Jobs</Link> ·{' '}
+          <Link href="/my-tasks" style={{ color: '#06B6D4', textDecoration: 'none' }}>My Tasks</Link> ·{' '}
+          <Link href="/" style={{ color: '#06B6D4', textDecoration: 'none' }}>Home</Link>
         </p>
       </div>
 

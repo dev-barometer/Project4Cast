@@ -121,7 +121,7 @@ export default function ForgotPasswordPage() {
                 padding: '12px 16px',
                 borderRadius: 6,
                 border: 'none',
-                background: submitted ? '#a0aec0' : '#4299e1',
+                background: submitted ? '#a0aec0' : '#06B6D4',
                 color: 'white',
                 fontSize: 14,
                 fontWeight: 500,
@@ -145,7 +145,7 @@ export default function ForgotPasswordPage() {
           <Link
             href="/login"
             style={{
-              color: '#4299e1',
+              color: '#06B6D4',
               textDecoration: 'none',
               fontWeight: 500,
             }}
