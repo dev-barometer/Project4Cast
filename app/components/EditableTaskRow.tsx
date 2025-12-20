@@ -221,7 +221,7 @@ export default function EditableTaskRow({
                 display: 'inline-flex',
                 alignItems: 'center',
                 gap: 4,
-                backgroundColor: '#e6f2ff',
+                backgroundColor: '#E6FFFA',
                 color: '#2d3748',
                 padding: '4px 8px',
                 borderRadius: 4,

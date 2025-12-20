@@ -112,7 +112,7 @@ export default async function InvitationsPage() {
                           borderRadius: 4,
                           fontSize: 12,
                           fontWeight: 500,
-                          backgroundColor: invitation.role === 'ADMIN' ? '#fed7d7' : '#e6f2ff',
+                          backgroundColor: invitation.role === 'ADMIN' ? '#fed7d7' : '#E6FFFA',
                           color: invitation.role === 'ADMIN' ? '#742a2a' : '#2c5282',
                         }}
                       >
@@ -218,7 +218,7 @@ export default async function InvitationsPage() {
                           borderRadius: 4,
                           fontSize: 12,
                           fontWeight: 500,
-                          backgroundColor: invitation.role === 'ADMIN' ? '#fed7d7' : '#e6f2ff',
+                          backgroundColor: invitation.role === 'ADMIN' ? '#fed7d7' : '#E6FFFA',
                           color: invitation.role === 'ADMIN' ? '#742a2a' : '#2c5282',
                         }}
                       >
@@ -273,7 +273,7 @@ export default async function InvitationsPage() {
                           borderRadius: 4,
                           fontSize: 12,
                           fontWeight: 500,
-                          backgroundColor: invitation.role === 'ADMIN' ? '#fed7d7' : '#e6f2ff',
+                          backgroundColor: invitation.role === 'ADMIN' ? '#fed7d7' : '#E6FFFA',
                           color: invitation.role === 'ADMIN' ? '#742a2a' : '#2c5282',
                         }}
                       >

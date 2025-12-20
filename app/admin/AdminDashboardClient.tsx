@@ -438,7 +438,7 @@ function UserTeamsList({ userId, teams, allTeams }: { userId: string; teams: Arr
                 alignItems: 'center',
                 gap: 4,
                 padding: '4px 8px',
-                backgroundColor: '#e6f2ff',
+                backgroundColor: '#E6FFFA',
                 borderRadius: 4,
                 fontSize: 12,
                 color: '#2c5282',
