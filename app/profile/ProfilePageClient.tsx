@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useFormState } from 'react-dom';
 import { signOut } from 'next-auth/react';
+import Link from 'next/link';
 import {
   updateProfile,
   changePassword,
@@ -174,25 +175,49 @@ export default function ProfilePageClient({ user, allTeams, admins, allUsers }: 
 
       {/* Tabs */}
       <div style={{ display: 'flex', gap: 8, marginBottom: 24, borderBottom: '1px solid #e2e8f0' }}>
-        {tabs.map((tab: TabType) => (
-          <button
-            key={tab}
-            onClick={() => setActiveTab(tab)}
-            style={{
-              padding: '12px 24px',
-              background: 'none',
-              border: 'none',
-              borderBottom: activeTab === tab ? '2px solid #4299e1' : '2px solid transparent',
-              color: activeTab === tab ? '#4299e1' : '#718096',
-              fontSize: 14,
-              fontWeight: activeTab === tab ? 600 : 500,
-              cursor: 'pointer',
-              textTransform: 'capitalize',
-            }}
-          >
-            {tab === 'admin' ? 'Admin' : tab}
-          </button>
-        ))}
+        {tabs.map((tab: TabType) => {
+          if (tab === 'admin') {
+            return (
+              <Link
+                key={tab}
+                href="/admin"
+                style={{
+                  padding: '12px 24px',
+                  background: 'none',
+                  border: 'none',
+                  borderBottom: '2px solid transparent',
+                  color: '#718096',
+                  fontSize: 14,
+                  fontWeight: 500,
+                  cursor: 'pointer',
+                  textTransform: 'capitalize',
+                  textDecoration: 'none',
+                }}
+              >
+                Admin
+              </Link>
+            );
+          }
+          return (
+            <button
+              key={tab}
+              onClick={() => setActiveTab(tab)}
+              style={{
+                padding: '12px 24px',
+                background: 'none',
+                border: 'none',
+                borderBottom: activeTab === tab ? '2px solid #4299e1' : '2px solid transparent',
+                color: activeTab === tab ? '#4299e1' : '#718096',
+                fontSize: 14,
+                fontWeight: activeTab === tab ? 600 : 500,
+                cursor: 'pointer',
+                textTransform: 'capitalize',
+              }}
+            >
+              {tab}
+            </button>
+          );
+        })}
       </div>
 
       {/* Profile Tab */}
