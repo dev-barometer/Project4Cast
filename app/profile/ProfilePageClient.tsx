@@ -952,7 +952,7 @@ export default function ProfilePageClient({ user, allTeams, admins, allUsers }: 
                             borderRadius: 4,
                             fontSize: 12,
                             fontWeight: 500,
-                            backgroundColor: isTargetOwner ? '#fed7d7' : isTargetAdmin ? '#E6FFFA' : '#f0f4f8',
+                            backgroundColor: isTargetOwner ? '#fed7d7' : isTargetAdmin ? '#cbfdee' : '#f0f4f8',
                             color: isTargetOwner ? '#742a2a' : isTargetAdmin ? '#2c5282' : '#4a5568',
                           }}
                         >

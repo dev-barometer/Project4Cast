@@ -423,7 +423,7 @@ export default function JobSidebar({ jobs, isAdmin, currentJobId }: JobSidebarPr
                   width: '100%',
                   padding: '10px 12px',
                   textAlign: 'left',
-                  backgroundColor: hasActiveJob ? '#E6FFFA' : 'transparent',
+                  backgroundColor: hasActiveJob ? '#cbfdee' : 'transparent',
                   border: 'none',
                   borderRadius: 6,
                   cursor: 'pointer',

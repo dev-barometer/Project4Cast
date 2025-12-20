@@ -89,7 +89,7 @@ export default function TaskRow({
       style={{
         borderBottom: '1px solid #f0f4f8',
         cursor: onSelect ? 'pointer' : 'default',
-        backgroundColor: isSelected ? '#E6FFFA' : 'transparent',
+        backgroundColor: isSelected ? '#cbfdee' : 'transparent',
         transition: 'background-color 0.2s',
       }}
     >
@@ -202,7 +202,7 @@ export default function TaskRow({
                 display: 'inline-flex',
                 alignItems: 'center',
                 gap: 4,
-                backgroundColor: '#E6FFFA',
+                backgroundColor: '#cbfdee',
                 color: '#2d3748',
                 padding: '4px 8px',
                 borderRadius: 4,

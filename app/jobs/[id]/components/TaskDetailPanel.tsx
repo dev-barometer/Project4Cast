@@ -312,7 +312,7 @@ export default function TaskDetailPanel({
                               transition: 'all 0.2s',
                             }}
                             onMouseEnter={(e) => {
-                              e.currentTarget.style.backgroundColor = '#E6FFFA';
+                              e.currentTarget.style.backgroundColor = '#cbfdee';
                               e.currentTarget.style.borderColor = '#14B8A6';
                             }}
                             onMouseLeave={(e) => {

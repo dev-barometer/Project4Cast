@@ -153,7 +153,7 @@ export default function TaskForm({ jobId, allUsers, currentUserId, forceExpanded
                             padding: '6px 12px',
                             borderRadius: 4,
                             border: `1px solid ${isSelected ? '#14B8A6' : '#cbd5e0'}`,
-                            background: isSelected ? '#E6FFFA' : '#f7fdfc',
+                            background: isSelected ? '#cbfdee' : '#f7fdfc',
                             color: isSelected ? '#2d3748' : '#4a5568',
                             fontSize: 13,
                             cursor: 'pointer',

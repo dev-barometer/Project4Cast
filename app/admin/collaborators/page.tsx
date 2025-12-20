@@ -122,7 +122,7 @@ export default async function CollaboratorsPage() {
                         borderRadius: 4,
                         fontSize: 12,
                         fontWeight: 500,
-                        backgroundColor: user.role === 'ADMIN' ? '#fed7d7' : '#E6FFFA',
+                        backgroundColor: user.role === 'ADMIN' ? '#fed7d7' : '#cbfdee',
                         color: user.role === 'ADMIN' ? '#742a2a' : '#2c5282',
                       }}
                     >
