@@ -124,6 +124,17 @@ export async function deleteUser(prevState: any, formData: FormData) {
       return { success: false, error: 'Cannot delete owner account' };
     }
 
+    // Delete related records first to avoid foreign key constraint violations
+    // Note: This should be handled by CASCADE, but we do it explicitly to be safe
+    await prisma.passwordResetToken.deleteMany({
+      where: { userId },
+    });
+    
+    await prisma.emailVerificationToken.deleteMany({
+      where: { userId },
+    });
+
+    // Delete the user (other relations like JobCollaborator, TaskAssignee, etc. should cascade)
     await prisma.user.delete({
       where: { id: userId },
     });
