@@ -7,7 +7,7 @@ type Invitation = {
   id: string;
   email: string;
   token: string;
-  role: 'ADMIN' | 'USER';
+  role: 'OWNER' | 'ADMIN' | 'USER';
 };
 
 type InvitationAcceptFormProps = {
