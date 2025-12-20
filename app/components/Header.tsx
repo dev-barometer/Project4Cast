@@ -54,7 +54,7 @@ export default function Header({ user, unreadNotificationCount = 0 }: HeaderProp
               padding: '8px 12px 8px 36px',
               borderRadius: 12,
               border: 'none',
-              backgroundColor: '#e7eef3',
+              backgroundColor: '#e5f8fa',
               fontSize: 14,
               color: '#2d3748',
             }}

@@ -546,7 +546,7 @@ export default function JobSidebar({ jobs, isAdmin, currentJobId }: JobSidebarPr
         <div
           style={{
             padding: '16px',
-            backgroundColor: '#e7eef3',
+            backgroundColor: '#e5f8fa',
           }}
         >
           <Link

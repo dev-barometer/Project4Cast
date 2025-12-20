@@ -480,7 +480,7 @@ export default function TaskDetailPanel({
                   borderRadius: 8,
                   border: '1px solid #e2e8f0',
                   fontSize: 14,
-                  backgroundColor: '#e7eef3',
+                  backgroundColor: '#e5f8fa',
                   color: '#2d3748',
                   
                   resize: 'none',
