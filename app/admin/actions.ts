@@ -39,33 +39,8 @@ export async function updateJobFinancials(prevState: any, formData: FormData) {
     const billedAmountStr = formData.get('billedAmount') as string;
     const paidAmountStr = formData.get('paidAmount') as string;
     const purchaseOrderStr = formData.get('purchaseOrder') as string;
-    const archiveStr = formData.get('archive') as string;
-    const setBilledToEstimate = formData.get('setBilledToEstimate') === 'true';
-
     if (!jobId) {
       return { success: false, error: 'Job ID is required' };
-    }
-
-    // If setBilledToEstimate flag is set, fetch current estimate and set billedAmount to it
-    if (setBilledToEstimate) {
-      const job = await prisma.job.findUnique({
-        where: { id: jobId },
-        select: { estimate: true },
-      });
-      if (job?.estimate !== null && job?.estimate !== undefined) {
-        const updateData = {
-          billedAmount: job.estimate,
-        };
-        await prisma.job.update({
-          where: { id: jobId },
-          data: updateData,
-        });
-        revalidatePath('/admin');
-        revalidatePath(`/jobs/${jobId}`);
-        return { success: true, error: null };
-      } else {
-        return { success: false, error: 'Cannot set billed amount: estimate is not set' };
-      }
     }
 
     const updateData: {
@@ -73,7 +48,6 @@ export async function updateJobFinancials(prevState: any, formData: FormData) {
       billedAmount?: number | null;
       paidAmount?: number | null;
       purchaseOrder?: string | null;
-      isArchived?: boolean;
     } = {};
 
     if (estimateStr !== null && estimateStr !== '') {
@@ -102,27 +76,12 @@ export async function updateJobFinancials(prevState: any, formData: FormData) {
         return { success: false, error: 'Invalid paid amount value' };
       }
       updateData.paidAmount = paidAmount;
-      // When paid is set, also archive the job
-      if (paidAmount > 0) {
-        updateData.isArchived = true;
-      }
     } else if (formData.has('paidAmount')) {
       updateData.paidAmount = null;
-      // When paid is cleared, unarchive if archive flag is false
-      if (archiveStr === 'false') {
-        updateData.isArchived = false;
-      }
     }
 
     if (purchaseOrderStr !== null) {
       updateData.purchaseOrder = purchaseOrderStr === '' ? null : purchaseOrderStr;
-    }
-
-    // Handle explicit archive flag
-    if (archiveStr === 'true') {
-      updateData.isArchived = true;
-    } else if (archiveStr === 'false') {
-      updateData.isArchived = false;
     }
 
     await prisma.job.update({

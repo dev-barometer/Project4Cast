@@ -73,7 +73,6 @@ export default function AdminDashboardClient({
   teams,
 }: AdminDashboardClientProps) {
   const [activeTab, setActiveTab] = useState<'users' | 'work' | 'financial'>('users');
-  const [editingJobId, setEditingJobId] = useState<string | null>(null);
 
   // Debug: Log data to console
   useEffect(() => {
@@ -251,15 +250,12 @@ export default function AdminDashboardClient({
                         {/* Brand Row */}
                         <BrandRow key={`brand-${brand.id}`} brandId={brand.id} brandName={brand.name} />
                         {/* Job Rows */}
-                        {brand.jobs.map((job) => (
-                          <JobRow
-                            key={job.id}
-                            job={job}
-                            isEditing={editingJobId === job.id}
-                            onEdit={() => setEditingJobId(job.id)}
-                            onCancel={() => setEditingJobId(null)}
-                          />
-                        ))}
+                            {brand.jobs.map((job) => (
+                              <JobRow
+                                key={job.id}
+                                job={job}
+                              />
+                            ))}
                       </>
                     ))}
                   </>
@@ -1041,38 +1037,39 @@ function TotalsRow({ clients }: { clients: Client[] }) {
 }
 
 // Job Row Component
-function JobRow({ job, isEditing, onEdit, onCancel }: { 
+function JobRow({ job }: { 
   job: { id: string; jobNumber: string; title: string; isArchived: boolean; estimate: number | null; billedAmount: number | null; paidAmount: number | null; purchaseOrder: string | null };
-  isEditing: boolean;
-  onEdit: () => void;
-  onCancel: () => void;
 }) {
+  const isBilled = job.billedAmount !== null && job.billedAmount > 0;
   const isPaid = job.paidAmount !== null && job.paidAmount > 0;
-  const isArchived = job.isArchived || isPaid;
-
-  if (isEditing) {
-    return <JobEditForm job={job} onCancel={onCancel} />;
-  }
+  // Only grey out when BOTH billed AND paid are checked
+  const shouldGreyOut = isBilled && isPaid;
 
   return (
-    <tr style={{ borderBottom: '1px solid #f0f4f8', opacity: isArchived ? 0.5 : 1 }}>
+    <tr style={{ borderBottom: '1px solid #f0f4f8', opacity: shouldGreyOut ? 0.5 : 1 }}>
       <td style={{ padding: '8px 12px 8px 36px', color: '#2d3748' }}>
         <span style={{ fontWeight: 500 }}>{job.jobNumber}</span> {job.title}
       </td>
       <td style={{ padding: '8px 12px', textAlign: 'center' }}>
-        <ActiveToggle jobId={job.id} isActive={!isArchived} />
+        <ActiveToggle jobId={job.id} isActive={!job.isArchived} />
       </td>
       <td style={{ padding: '8px 12px' }}>
         <PurchaseOrderField jobId={job.id} purchaseOrder={job.purchaseOrder} />
       </td>
-      <td style={{ padding: '8px 12px', color: '#4a5568', cursor: 'pointer' }} onClick={onEdit}>
-        {job.estimate ? `$${job.estimate.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : '$0.00'}
+      <td style={{ padding: '8px 12px' }}>
+        <EstimateField jobId={job.id} estimate={job.estimate} isLocked={isBilled} />
       </td>
       <td style={{ padding: '8px 12px', textAlign: 'center' }}>
-        <BilledToggle jobId={job.id} isBilled={job.billedAmount !== null && job.billedAmount > 0} estimate={job.estimate} />
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 4, alignItems: 'center' }}>
+          <BilledAmountField jobId={job.id} billedAmount={job.billedAmount} isLocked={isPaid} />
+          <BilledCheckbox jobId={job.id} isBilled={isBilled} billedAmount={job.billedAmount} />
+        </div>
       </td>
       <td style={{ padding: '8px 12px', textAlign: 'center' }}>
-        <PaidToggle jobId={job.id} isPaid={isPaid} billedAmount={job.billedAmount} />
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 4, alignItems: 'center' }}>
+          <PaidAmountField jobId={job.id} paidAmount={job.paidAmount} billedAmount={job.billedAmount} isPaid={isPaid} />
+          <PaidCheckbox jobId={job.id} isPaid={isPaid} billedAmount={job.billedAmount} />
+        </div>
       </td>
       <td style={{ padding: '8px 12px', textAlign: 'right' }}>
         <DeleteJobButton jobId={job.id} jobNumber={job.jobNumber} />
@@ -1258,8 +1255,96 @@ function PurchaseOrderField({ jobId, purchaseOrder }: { jobId: string; purchaseO
   );
 }
 
-// Billed Toggle Component
-function BilledToggle({ jobId, isBilled, estimate }: { jobId: string; isBilled: boolean; estimate: number | null }) {
+// Estimate Field Component
+function EstimateField({ jobId, estimate, isLocked }: { jobId: string; estimate: number | null; isLocked: boolean }) {
+  const [value, setValue] = useState(estimate?.toString() || '');
+  const [state, formAction] = useFormState(updateJobFinancials, { success: false, error: null });
+
+  useEffect(() => {
+    if (state?.success) {
+      window.location.reload();
+    }
+  }, [state?.success]);
+
+  const handleBlur = () => {
+    const numValue = value === '' ? null : parseFloat(value);
+    if (numValue !== estimate) {
+      const formData = new FormData();
+      formData.append('jobId', jobId);
+      formData.append('estimate', value === '' ? '' : value);
+      formAction(formData);
+    }
+  };
+
+  return (
+    <input
+      type="number"
+      value={value}
+      onChange={(e) => setValue(e.target.value)}
+      onBlur={handleBlur}
+      disabled={isLocked}
+      step="0.01"
+      min="0"
+      placeholder="0.00"
+      style={{
+        width: '100%',
+        padding: '4px 8px',
+        border: '1px solid #cbd5e0',
+        borderRadius: 4,
+        fontSize: 12,
+        backgroundColor: isLocked ? '#f7fafc' : '#ffffff',
+        cursor: isLocked ? 'not-allowed' : 'text',
+      }}
+    />
+  );
+}
+
+// Billed Amount Field Component
+function BilledAmountField({ jobId, billedAmount, isLocked }: { jobId: string; billedAmount: number | null; isLocked: boolean }) {
+  const [value, setValue] = useState(billedAmount?.toString() || '');
+  const [state, formAction] = useFormState(updateJobFinancials, { success: false, error: null });
+
+  useEffect(() => {
+    if (state?.success) {
+      window.location.reload();
+    }
+  }, [state?.success]);
+
+  const handleBlur = () => {
+    const numValue = value === '' ? null : parseFloat(value);
+    if (numValue !== billedAmount) {
+      const formData = new FormData();
+      formData.append('jobId', jobId);
+      formData.append('billedAmount', value === '' ? '' : value);
+      formAction(formData);
+    }
+  };
+
+  return (
+    <input
+      type="number"
+      value={value}
+      onChange={(e) => setValue(e.target.value)}
+      onBlur={handleBlur}
+      disabled={isLocked}
+      step="0.01"
+      min="0"
+      placeholder="0.00"
+      style={{
+        width: '80px',
+        padding: '4px 8px',
+        border: '1px solid #cbd5e0',
+        borderRadius: 4,
+        fontSize: 12,
+        backgroundColor: isLocked ? '#f7fafc' : '#ffffff',
+        cursor: isLocked ? 'not-allowed' : 'text',
+      }}
+    />
+  );
+}
+
+// Billed Checkbox Component
+function BilledCheckbox({ jobId, isBilled, billedAmount }: { jobId: string; isBilled: boolean; billedAmount: number | null }) {
   const [state, formAction] = useFormState(updateJobFinancials, { success: false, error: null });
 
   useEffect(() => {
@@ -1272,8 +1357,10 @@ function BilledToggle({ jobId, isBilled, estimate }: { jobId: string; isBilled: 
     const formData = new FormData();
     formData.append('jobId', jobId);
     if (e.target.checked) {
-      // When checking, set billedAmount to estimate
-      formData.append('setBilledToEstimate', 'true');
+      // When checking, set billedAmount if not already set
+      if (!billedAmount || billedAmount === 0) {
+        formData.append('billedAmount', '0');
+      }
     } else {
       // When unchecking, clear billedAmount
       formData.append('billedAmount', '');
@@ -1289,12 +1376,14 @@ function BilledToggle({ jobId, isBilled, estimate }: { jobId: string; isBilled: 
         onChange={toggleBilled}
         style={{ cursor: 'pointer' }}
       />
+      <span style={{ fontSize: 10, marginLeft: 4, color: '#718096' }}>Billed</span>
     </label>
   );
 }
 
-// Paid Toggle Component (archives when toggled on)
-function PaidToggle({ jobId, isPaid, billedAmount }: { jobId: string; isPaid: boolean; billedAmount: number | null }) {
+// Paid Amount Field Component
+function PaidAmountField({ jobId, paidAmount, billedAmount, isPaid }: { jobId: string; paidAmount: number | null; billedAmount: number | null; isPaid: boolean }) {
+  const [value, setValue] = useState(paidAmount?.toString() || '');
   const [state, formAction] = useFormState(updateJobFinancials, { success: false, error: null });
 
   useEffect(() => {
@@ -1303,31 +1392,72 @@ function PaidToggle({ jobId, isPaid, billedAmount }: { jobId: string; isPaid: bo
     }
   }, [state?.success]);
 
-  const togglePaid = () => {
+  const handleBlur = () => {
+    const numValue = value === '' ? null : parseFloat(value);
+    if (numValue !== paidAmount) {
+      const formData = new FormData();
+      formData.append('jobId', jobId);
+      formData.append('paidAmount', value === '' ? '' : value);
+      formAction(formData);
+    }
+  };
+
+  return (
+    <input
+      type="number"
+      value={value}
+      onChange={(e) => setValue(e.target.value)}
+      onBlur={handleBlur}
+      disabled={isPaid}
+      step="0.01"
+      min="0"
+      placeholder="0.00"
+      style={{
+        width: '80px',
+        padding: '4px 8px',
+        border: '1px solid #cbd5e0',
+        borderRadius: 4,
+        fontSize: 12,
+        backgroundColor: isPaid ? '#f7fafc' : '#ffffff',
+        cursor: isPaid ? 'not-allowed' : 'text',
+      }}
+    />
+  );
+}
+
+// Paid Checkbox Component
+function PaidCheckbox({ jobId, isPaid, billedAmount }: { jobId: string; isPaid: boolean; billedAmount: number | null }) {
+  const [state, formAction] = useFormState(updateJobFinancials, { success: false, error: null });
+
+  useEffect(() => {
+    if (state?.success) {
+      window.location.reload();
+    }
+  }, [state?.success]);
+
+  const togglePaid = (e: React.ChangeEvent<HTMLInputElement>) => {
     const formData = new FormData();
     formData.append('jobId', jobId);
-    if (!isPaid) {
-      // When marking as paid, set paidAmount to billedAmount or 0, and archive
+    if (e.target.checked) {
+      // When checking, set paidAmount to billedAmount
       const paidValue = billedAmount && billedAmount > 0 ? billedAmount.toString() : '0';
       formData.append('paidAmount', paidValue);
-      formData.append('archive', 'true');
     } else {
-      // When unmarking, clear paidAmount and unarchive
+      // When unchecking, clear paidAmount
       formData.append('paidAmount', '');
-      formData.append('archive', 'false');
     }
     formAction(formData);
   };
 
   return (
-    <label style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: isPaid ? 'not-allowed' : 'pointer' }}>
+    <label style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
       <input
         type="checkbox"
         checked={isPaid}
         onChange={togglePaid}
-        style={{ cursor: isPaid ? 'not-allowed' : 'pointer' }}
-        disabled={isPaid}
+        style={{ cursor: 'pointer' }}
       />
+      <span style={{ fontSize: 10, marginLeft: 4, color: '#718096' }}>Paid</span>
     </label>
   );
 }
