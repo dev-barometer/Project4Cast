@@ -215,14 +215,14 @@ export default function SortableTaskTable({
 
   if (tasks.length === 0) {
     return (
-      <div style={{ backgroundColor: '#ffffff', padding: 48, borderRadius: 8, boxShadow: '0 1px 3px rgba(0, 0, 0, 0.05)', textAlign: 'center' }}>
+      <div style={{ backgroundColor: '#f7fdfc', padding: 48, borderRadius: 8, boxShadow: '0 1px 3px rgba(0, 0, 0, 0.05)', textAlign: 'center' }}>
         <p style={{ color: '#718096', fontSize: 16 }}>No tasks found.</p>
       </div>
     );
   }
 
   return (
-    <div style={{ backgroundColor: '#ffffff', borderRadius: 8, overflow: 'hidden', boxShadow: '0 1px 3px rgba(0, 0, 0, 0.05)' }}>
+    <div style={{ backgroundColor: '#f7fdfc', borderRadius: 8, overflow: 'hidden', boxShadow: '0 1px 3px rgba(0, 0, 0, 0.05)' }}>
       <table
         style={{
           borderCollapse: 'collapse',
@@ -231,7 +231,7 @@ export default function SortableTaskTable({
         }}
       >
         <thead>
-          <tr style={{ backgroundColor: '#f7fafc' }}>
+          <tr style={{ backgroundColor: '#f7fdfc' }}>
             <th style={{ textAlign: 'center', padding: '8px 12px', borderBottom: '1px solid #e2e8f0', color: '#4a5568', fontWeight: 600, fontSize: 13, width: 40 }}>
               {/* Checkbox column - no header */}
             </th>

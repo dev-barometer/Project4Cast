@@ -67,7 +67,7 @@ export default function EmailVerificationBanner({ userId, email }: EmailVerifica
           padding: '8px 16px',
           borderRadius: 6,
           border: '1px solid #fed7d7',
-          background: '#ffffff',
+          background: '#f7fdfc',
           color: '#742a2a',
           fontSize: 13,
           fontWeight: 500,

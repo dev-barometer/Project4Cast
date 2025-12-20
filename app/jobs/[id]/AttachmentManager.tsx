@@ -91,7 +91,7 @@ export default function AttachmentManager({
 
       {/* Attachments section */}
       {isExpanded && (
-        <div style={{ marginTop: 12, padding: 12, backgroundColor: '#f7fafc', borderRadius: 6 }}>
+        <div style={{ marginTop: 12, padding: 12, backgroundColor: '#f7fdfc', borderRadius: 6 }}>
           {/* Error message */}
           {state?.error && (
             <div
@@ -120,7 +120,7 @@ export default function AttachmentManager({
                     justifyContent: 'space-between',
                     padding: '8px 10px',
                     marginBottom: 8,
-                    backgroundColor: '#ffffff',
+                    backgroundColor: '#f7fdfc',
                     borderRadius: 4,
                     border: '1px solid #e2e8f0',
                   }}
@@ -219,7 +219,7 @@ export default function AttachmentManager({
                 borderRadius: 4,
                 border: fileError ? '1px solid #e53e3e' : '1px solid #cbd5e0',
                 fontSize: 13,
-                backgroundColor: '#ffffff',
+                backgroundColor: '#f7fdfc',
                 cursor: 'pointer',
               }}
             />

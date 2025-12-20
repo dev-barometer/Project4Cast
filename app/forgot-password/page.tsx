@@ -16,13 +16,13 @@ export default function ForgotPasswordPage() {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: '#f7fafc',
+        backgroundColor: '#f7fdfc',
         padding: 20,
       }}
     >
       <div
         style={{
-          backgroundColor: '#ffffff',
+          backgroundColor: '#f7fdfc',
           padding: '40px 32px',
           borderRadius: 8,
           boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
@@ -106,7 +106,7 @@ export default function ForgotPasswordPage() {
                   borderRadius: 6,
                   border: '1px solid #cbd5e0',
                   fontSize: 14,
-                  backgroundColor: '#ffffff',
+                  backgroundColor: '#f7fdfc',
                   color: '#2d3748',
                 }}
                 placeholder="you@example.com"

@@ -153,7 +153,7 @@ export default function JobDetailView({
         display: 'flex',
         flexDirection: 'column',
         overflow: 'hidden',
-        backgroundColor: '#ffffff',
+        backgroundColor: '#f7fdfc',
       }}
     >
       {/* Top Section: Job Title Area (Full Width) */}
@@ -259,7 +259,7 @@ export default function JobDetailView({
                     height: 32,
                     borderRadius: 8,
                     border: '1px solid #e2e8f0',
-                    background: '#f7fafc',
+                    background: '#f7fdfc',
                     color: '#2d3748',
                     fontSize: 18,
                     lineHeight: 1,
@@ -284,7 +284,7 @@ export default function JobDetailView({
                 height: 32,
                 borderRadius: 8,
                 border: '1px solid #e2e8f0',
-                background: isRightPanelOpen ? '#E6FFFA' : '#f7fafc',
+                background: isRightPanelOpen ? '#E6FFFA' : '#f7fdfc',
                 color: '#2d3748',
                 fontSize: 16,
                 lineHeight: 1,
@@ -417,7 +417,7 @@ export default function JobDetailView({
             display: 'flex',
             flexDirection: 'column',
             overflow: 'hidden',
-            backgroundColor: '#ffffff',
+            backgroundColor: '#f7fdfc',
             borderLeft: '1px solid #e2e8f0',
             transform: isRightPanelOpen ? 'translateX(0)' : 'translateX(100%)',
             transition: 'transform 0.3s ease-in-out',

@@ -54,7 +54,7 @@ export default function StandaloneTaskForm({ allUsers, allJobs, currentUserId }:
             height: 32,
             borderRadius: '50%',
             border: '1px solid #cbd5e0',
-            background: '#ffffff',
+            background: '#f7fdfc',
             color: '#14B8A6',
             fontSize: 18,
             cursor: 'pointer',
@@ -73,7 +73,7 @@ export default function StandaloneTaskForm({ allUsers, allJobs, currentUserId }:
         <form action={formAction} ref={formRef}>
           <div
             style={{
-              backgroundColor: '#f7fafc',
+              backgroundColor: '#f7fdfc',
               padding: 20,
               borderRadius: 8,
               border: '1px solid #e2e8f0',
@@ -124,7 +124,7 @@ export default function StandaloneTaskForm({ allUsers, allJobs, currentUserId }:
                     borderRadius: 6,
                     border: '1px solid #cbd5e0',
                     fontSize: 14,
-                    backgroundColor: '#ffffff',
+                    backgroundColor: '#f7fdfc',
                     color: '#2d3748',
                   }}
                   autoFocus
@@ -156,7 +156,7 @@ export default function StandaloneTaskForm({ allUsers, allJobs, currentUserId }:
                       borderRadius: 6,
                       border: '1px solid #cbd5e0',
                       fontSize: 14,
-                      backgroundColor: '#ffffff',
+                      backgroundColor: '#f7fdfc',
                       color: '#4a5568',
                       cursor: 'pointer',
                     }}
@@ -201,7 +201,7 @@ export default function StandaloneTaskForm({ allUsers, allJobs, currentUserId }:
                     borderRadius: 6,
                     border: '1px solid #cbd5e0',
                     fontSize: 14,
-                    backgroundColor: '#ffffff',
+                    backgroundColor: '#f7fdfc',
                     color: '#4a5568',
                     cursor: 'text',
                   }}
@@ -225,7 +225,7 @@ export default function StandaloneTaskForm({ allUsers, allJobs, currentUserId }:
                     padding: '8px 16px',
                     borderRadius: 6,
                     border: '1px solid #cbd5e0',
-                    background: '#ffffff',
+                    background: '#f7fdfc',
                     color: '#4a5568',
                     fontSize: 14,
                     cursor: 'pointer',

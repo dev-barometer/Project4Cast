@@ -64,7 +64,7 @@ export default function NotificationBadge({ initialCount }: NotificationBadgePro
           top: -6,
           right: -12,
           backgroundColor: '#e53e3e',
-          color: '#ffffff',
+          color: '#f7fdfc',
           borderRadius: '50%',
           width: 18,
           height: 18,

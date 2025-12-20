@@ -165,7 +165,7 @@ export default function AdminDashboardClient({
 
       {/* Users Tab */}
       {activeTab === 'users' && (
-        <div style={{ backgroundColor: '#ffffff', borderRadius: 8, padding: 24, boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
+        <div style={{ backgroundColor: '#f7fdfc', borderRadius: 8, padding: 24, boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 24 }}>
             <h2 style={{ fontSize: 20, fontWeight: 600, color: '#2d3748', marginBottom: 0 }}>Users</h2>
             <InviteUserButton />
@@ -176,7 +176,7 @@ export default function AdminDashboardClient({
             <div style={{ overflowX: 'auto' }}>
               <table style={{ borderCollapse: 'collapse', width: '100%', fontSize: 14 }}>
                 <thead>
-                  <tr style={{ backgroundColor: '#f7fafc' }}>
+                  <tr style={{ backgroundColor: '#f7fdfc' }}>
                     <th style={{ textAlign: 'left', padding: '12px 8px', borderBottom: '1px solid #e2e8f0', color: '#4a5568', fontWeight: 600, fontSize: 13 }}>
                       Name
                     </th>
@@ -226,14 +226,14 @@ export default function AdminDashboardClient({
 
       {/* Work Tab */}
       {activeTab === 'work' && (
-        <div style={{ backgroundColor: '#ffffff', borderRadius: 8, padding: 24, boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
+        <div style={{ backgroundColor: '#f7fdfc', borderRadius: 8, padding: 24, boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
           <h2 style={{ fontSize: 20, fontWeight: 600, color: '#2d3748', marginBottom: 24 }}>Work</h2>
           {clients.length === 0 ? (
             <p style={{ color: '#718096', fontSize: 14 }}>No clients found.</p>
           ) : (
             <table style={{ borderCollapse: 'collapse', width: '100%', fontSize: 13 }}>
               <thead>
-                <tr style={{ backgroundColor: '#f7fafc' }}>
+                <tr style={{ backgroundColor: '#f7fdfc' }}>
                   <th style={{ textAlign: 'left', padding: '8px 12px', borderBottom: '1px solid #e2e8f0', color: '#4a5568', fontWeight: 600, fontSize: 12 }}>
                     Job
                   </th>
@@ -287,7 +287,7 @@ export default function AdminDashboardClient({
 
       {/* Financial Tab */}
       {activeTab === 'financial' && (
-        <div style={{ backgroundColor: '#ffffff', borderRadius: 8, padding: 24, boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
+        <div style={{ backgroundColor: '#f7fdfc', borderRadius: 8, padding: 24, boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
           <h2 style={{ fontSize: 20, fontWeight: 600, color: '#2d3748', marginBottom: 24 }}>Financial</h2>
           {financialData.length === 0 ? (
             <p style={{ color: '#718096', fontSize: 14 }}>No financial data available.</p>
@@ -390,7 +390,7 @@ function RoleDropdown({ userId, currentRole }: { userId: string; currentRole: 'A
           borderRadius: 4,
           fontSize: 13,
           cursor: 'pointer',
-          backgroundColor: '#ffffff',
+          backgroundColor: '#f7fdfc',
         }}
       >
         <option value="USER">user</option>
@@ -476,7 +476,7 @@ function UserTeamsList({ userId, teams, allTeams }: { userId: string; teams: Arr
             height: 20,
             borderRadius: '50%',
             border: '1px solid #cbd5e0',
-            backgroundColor: '#ffffff',
+            backgroundColor: '#f7fdfc',
             color: '#4a5568',
             cursor: 'pointer',
             fontSize: 14,
@@ -544,7 +544,7 @@ function TeamManagementPopup({ userId, currentTeams, allTeams, onClose }: { user
     >
       <div
         style={{
-          backgroundColor: '#ffffff',
+          backgroundColor: '#f7fdfc',
           borderRadius: 8,
           padding: 24,
           maxWidth: 500,
@@ -585,7 +585,7 @@ function TeamManagementPopup({ userId, currentTeams, allTeams, onClose }: { user
                 style={{
                   padding: '8px 16px',
                   backgroundColor: '#38a169',
-                  color: '#ffffff',
+                  color: '#f7fdfc',
                   border: 'none',
                   borderRadius: 6,
                   fontSize: 13,
@@ -704,7 +704,7 @@ function CreateTeamFormInline({ onCancel, onCreateSuccess }: { onCancel: () => v
           style={{
             padding: '8px 16px',
             backgroundColor: '#38a169',
-            color: '#ffffff',
+            color: '#f7fdfc',
             border: 'none',
             borderRadius: 6,
             fontSize: 13,
@@ -796,7 +796,7 @@ function DeleteUserButton({ userId, userEmail }: { userId: string; userEmail: st
           style={{
             padding: '2px 8px',
             backgroundColor: '#e53e3e',
-            color: '#ffffff',
+            color: '#f7fdfc',
             border: 'none',
             borderRadius: 4,
             fontSize: 11,
@@ -872,7 +872,7 @@ function DeleteClientButton({ clientId, clientName }: { clientId: string; client
           style={{
             padding: '2px 8px',
             backgroundColor: '#e53e3e',
-            color: '#ffffff',
+            color: '#f7fdfc',
             border: 'none',
             borderRadius: 4,
             fontSize: 11,
@@ -923,7 +923,7 @@ function InviteUserButton() {
           height: 32,
           borderRadius: '50%',
           border: '1px solid #cbd5e0',
-          backgroundColor: '#ffffff',
+          backgroundColor: '#f7fdfc',
           color: '#14B8A6',
           cursor: 'pointer',
           fontSize: 18,
@@ -983,7 +983,7 @@ function InviteUserButton() {
               padding: '6px 10px',
               fontSize: 13,
               color: '#4a5568',
-              backgroundColor: '#ffffff',
+              backgroundColor: '#f7fdfc',
             }}
           />
           <select
@@ -995,7 +995,7 @@ function InviteUserButton() {
               padding: '6px 10px',
               fontSize: 13,
               color: '#4a5568',
-              backgroundColor: '#ffffff',
+              backgroundColor: '#f7fdfc',
               cursor: 'pointer',
             }}
           >
@@ -1009,7 +1009,7 @@ function InviteUserButton() {
               borderRadius: 4,
               padding: '6px 12px',
               fontSize: 13,
-              color: '#ffffff',
+              color: '#f7fdfc',
               backgroundColor: '#14B8A6',
               cursor: 'pointer',
               fontWeight: 500,
@@ -1026,7 +1026,7 @@ function InviteUserButton() {
               padding: '6px 12px',
               fontSize: 13,
               color: '#4a5568',
-              backgroundColor: '#ffffff',
+              backgroundColor: '#f7fdfc',
               cursor: 'pointer',
             }}
           >
@@ -1085,7 +1085,7 @@ function DeleteBrandButton({ brandId, brandName }: { brandId: string; brandName:
           style={{
             padding: '2px 8px',
             backgroundColor: '#e53e3e',
-            color: '#ffffff',
+            color: '#f7fdfc',
             border: 'none',
             borderRadius: 4,
             fontSize: 11,
@@ -1117,7 +1117,7 @@ function DeleteBrandButton({ brandId, brandName }: { brandId: string; brandName:
 // Client Row Component
 function ClientRow({ clientId, clientName }: { clientId: string; clientName: string }) {
   return (
-    <tr style={{ backgroundColor: '#f7fafc', borderBottom: '2px solid #e2e8f0' }}>
+    <tr style={{ backgroundColor: '#f7fdfc', borderBottom: '2px solid #e2e8f0' }}>
       <td style={{ padding: '12px', fontWeight: 600, fontSize: 16, color: '#2d3748' }} colSpan={6}>
         {clientName}
       </td>
@@ -1168,7 +1168,7 @@ function TotalsRow({ clients }: { clients: Client[] }) {
   };
 
   return (
-    <tr style={{ backgroundColor: '#f7fafc', borderTop: '2px solid #e2e8f0', fontWeight: 600 }}>
+    <tr style={{ backgroundColor: '#f7fdfc', borderTop: '2px solid #e2e8f0', fontWeight: 600 }}>
       <td style={{ padding: '12px', color: '#2d3748', fontSize: 14 }}>Total</td>
       <td style={{ padding: '12px', textAlign: 'center' }}></td>
       <td style={{ padding: '12px' }}></td>
@@ -1240,7 +1240,7 @@ function JobEditForm({ job, onCancel }: { job: { id: string; jobNumber: string; 
 
   return (
     <tr>
-      <td colSpan={7} style={{ padding: '12px', backgroundColor: '#f7fafc' }}>
+      <td colSpan={7} style={{ padding: '12px', backgroundColor: '#f7fdfc' }}>
         <form action={formAction} style={{ display: 'flex', gap: 12, alignItems: 'end' }}>
           <input type="hidden" name="jobId" value={job.id} />
           <div style={{ flex: 1 }}>
@@ -1302,7 +1302,7 @@ function JobEditForm({ job, onCancel }: { job: { id: string; jobNumber: string; 
             style={{
               padding: '6px 16px',
               backgroundColor: '#38a169',
-              color: '#ffffff',
+              color: '#f7fdfc',
               border: 'none',
               borderRadius: 4,
               fontSize: 12,
@@ -1442,7 +1442,7 @@ function EstimateField({ jobId, estimate, isLocked }: { jobId: string; estimate:
         border: '1px solid #cbd5e0',
         borderRadius: 4,
         fontSize: 12,
-        backgroundColor: isLocked ? '#f7fafc' : '#ffffff',
+        backgroundColor: isLocked ? '#f7fdfc' : '#f7fdfc',
         cursor: isLocked ? 'not-allowed' : 'text',
       }}
     />
@@ -1486,7 +1486,7 @@ function BilledAmountField({ jobId, billedAmount, isLocked }: { jobId: string; b
         border: '1px solid #cbd5e0',
         borderRadius: 4,
         fontSize: 12,
-        backgroundColor: isLocked ? '#f7fafc' : '#ffffff',
+        backgroundColor: isLocked ? '#f7fdfc' : '#f7fdfc',
         cursor: isLocked ? 'not-allowed' : 'text',
       }}
     />
@@ -1568,7 +1568,7 @@ function PaidAmountField({ jobId, paidAmount, billedAmount, isPaid }: { jobId: s
         border: '1px solid #cbd5e0',
         borderRadius: 4,
         fontSize: 12,
-        backgroundColor: isPaid ? '#f7fafc' : '#ffffff',
+        backgroundColor: isPaid ? '#f7fdfc' : '#f7fdfc',
         cursor: isPaid ? 'not-allowed' : 'text',
       }}
     />
@@ -1658,7 +1658,7 @@ function DeleteJobButton({ jobId, jobNumber }: { jobId: string; jobNumber: strin
           style={{
             padding: '2px 6px',
             backgroundColor: '#e53e3e',
-            color: '#ffffff',
+            color: '#f7fdfc',
             border: 'none',
             borderRadius: 3,
             fontSize: 10,

@@ -101,7 +101,7 @@ export default function InvitationAcceptForm({ invitation }: InvitationAcceptFor
               borderRadius: 6,
               border: '1px solid #cbd5e0',
               fontSize: 14,
-              backgroundColor: '#ffffff',
+              backgroundColor: '#f7fdfc',
               color: '#2d3748',
             }}
             autoFocus
@@ -132,7 +132,7 @@ export default function InvitationAcceptForm({ invitation }: InvitationAcceptFor
               borderRadius: 6,
               border: '1px solid #cbd5e0',
               fontSize: 14,
-              backgroundColor: '#f7fafc',
+              backgroundColor: '#f7fdfc',
               color: '#718096',
               cursor: 'not-allowed',
             }}
@@ -166,7 +166,7 @@ export default function InvitationAcceptForm({ invitation }: InvitationAcceptFor
               borderRadius: 6,
               border: '1px solid #cbd5e0',
               fontSize: 14,
-              backgroundColor: '#ffffff',
+              backgroundColor: '#f7fdfc',
               color: '#2d3748',
             }}
           />
@@ -199,7 +199,7 @@ export default function InvitationAcceptForm({ invitation }: InvitationAcceptFor
               borderRadius: 6,
               border: '1px solid #cbd5e0',
               fontSize: 14,
-              backgroundColor: '#ffffff',
+              backgroundColor: '#f7fdfc',
               color: '#2d3748',
             }}
           />

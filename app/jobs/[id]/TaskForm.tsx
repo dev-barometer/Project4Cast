@@ -39,7 +39,7 @@ export default function TaskForm({ jobId, allUsers, currentUserId, forceExpanded
         <div style={{ marginBottom: 24, marginTop: 16 }}>
           <div
             style={{
-              backgroundColor: '#f7fafc',
+              backgroundColor: '#f7fdfc',
               padding: 20,
               borderRadius: 8,
               border: '1px solid #e2e8f0',
@@ -74,7 +74,7 @@ export default function TaskForm({ jobId, allUsers, currentUserId, forceExpanded
                     borderRadius: 6,
                     border: '1px solid #cbd5e0',
                     fontSize: 14,
-                    backgroundColor: '#ffffff',
+                    backgroundColor: '#f7fdfc',
                     color: '#2d3748',
                   }}
                   autoFocus
@@ -107,7 +107,7 @@ export default function TaskForm({ jobId, allUsers, currentUserId, forceExpanded
                     borderRadius: 6,
                     border: '1px solid #cbd5e0',
                     fontSize: 14,
-                    backgroundColor: '#ffffff',
+                    backgroundColor: '#f7fdfc',
                     color: '#4a5568',
                     cursor: 'text',
                   }}
@@ -133,7 +133,7 @@ export default function TaskForm({ jobId, allUsers, currentUserId, forceExpanded
                     flexWrap: 'wrap',
                     gap: 8,
                     padding: '12px',
-                    backgroundColor: '#ffffff',
+                    backgroundColor: '#f7fdfc',
                     borderRadius: 6,
                     border: '1px solid #cbd5e0',
                     minHeight: 44,
@@ -153,7 +153,7 @@ export default function TaskForm({ jobId, allUsers, currentUserId, forceExpanded
                             padding: '6px 12px',
                             borderRadius: 4,
                             border: `1px solid ${isSelected ? '#14B8A6' : '#cbd5e0'}`,
-                            background: isSelected ? '#E6FFFA' : '#ffffff',
+                            background: isSelected ? '#E6FFFA' : '#f7fdfc',
                             color: isSelected ? '#2d3748' : '#4a5568',
                             fontSize: 13,
                             cursor: 'pointer',
@@ -194,7 +194,7 @@ export default function TaskForm({ jobId, allUsers, currentUserId, forceExpanded
                       padding: '8px 16px',
                       borderRadius: 6,
                       border: '1px solid #cbd5e0',
-                      background: '#ffffff',
+                      background: '#f7fdfc',
                       color: '#4a5568',
                       fontSize: 14,
                       cursor: 'pointer',

@@ -26,7 +26,7 @@ export default async function DevPage() {
       <h1 style={{ fontSize: 28, fontWeight: 600, color: '#2d3748', marginBottom: 8 }}>Dev Dashboard</h1>
       <p style={{ color: '#718096', fontSize: 15 }}>Quick snapshot of what&apos;s in the database.</p>
 
-      <section style={{ marginTop: 32, backgroundColor: '#ffffff', padding: 24, borderRadius: 8, boxShadow: '0 1px 3px rgba(0, 0, 0, 0.05)' }}>
+      <section style={{ marginTop: 32, backgroundColor: '#f7fdfc', padding: 24, borderRadius: 8, boxShadow: '0 1px 3px rgba(0, 0, 0, 0.05)' }}>
         <h2 style={{ fontSize: 20, fontWeight: 600, color: '#2d3748', marginBottom: 16 }}>Counts</h2>
         <ul style={{ listStyle: 'none', padding: 0 }}>
           <li style={{ padding: '8px 0', color: '#4a5568', fontSize: 15 }}>Clients: <strong style={{ color: '#2d3748' }}>{clients.length}</strong></li>
@@ -36,7 +36,7 @@ export default async function DevPage() {
         </ul>
       </section>
 
-      <section style={{ marginTop: 32, backgroundColor: '#ffffff', padding: 24, borderRadius: 8, boxShadow: '0 1px 3px rgba(0, 0, 0, 0.05)' }}>
+      <section style={{ marginTop: 32, backgroundColor: '#f7fdfc', padding: 24, borderRadius: 8, boxShadow: '0 1px 3px rgba(0, 0, 0, 0.05)' }}>
         <h2 style={{ fontSize: 20, fontWeight: 600, color: '#2d3748', marginBottom: 16 }}>Jobs</h2>
         {jobs.length === 0 ? (
           <p style={{ color: '#718096', padding: 24 }}>No jobs yet.</p>

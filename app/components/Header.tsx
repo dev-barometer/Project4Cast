@@ -17,7 +17,7 @@ export default function Header({ user, unreadNotificationCount = 0 }: HeaderProp
   return (
     <header
       style={{
-        backgroundColor: '#ffffff',
+        backgroundColor: '#f7fdfc',
         borderBottom: '1px solid #e2e8f0',
         padding: '12px 40px',
         display: 'flex',

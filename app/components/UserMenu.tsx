@@ -85,7 +85,7 @@ export default function UserMenu({ user }: UserMenuProps) {
             top: '100%',
             right: 0,
             marginTop: 8,
-            backgroundColor: '#ffffff',
+            backgroundColor: '#f7fdfc',
             borderRadius: 8,
             boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
             minWidth: 200,

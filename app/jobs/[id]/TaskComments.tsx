@@ -65,7 +65,7 @@ export default function TaskComments({
 
       {/* Comments section */}
       {isExpanded && (
-        <div style={{ marginTop: 12, padding: 12, backgroundColor: '#f7fafc', borderRadius: 6 }}>
+        <div style={{ marginTop: 12, padding: 12, backgroundColor: '#f7fdfc', borderRadius: 6 }}>
           {/* Error message */}
           {state?.error && (
             <div
@@ -131,7 +131,7 @@ export default function TaskComments({
                 borderRadius: 4,
                 border: '1px solid #cbd5e0',
                 fontSize: 13,
-                backgroundColor: '#ffffff',
+                backgroundColor: '#f7fdfc',
                 color: '#2d3748',
                 fontFamily: 'inherit',
                 resize: 'vertical',
@@ -146,7 +146,7 @@ export default function TaskComments({
                   padding: '6px 12px',
                   borderRadius: 4,
                   border: '1px solid #cbd5e0',
-                  background: '#ffffff',
+                  background: '#f7fdfc',
                   color: '#4a5568',
                   fontSize: 12,
                   cursor: 'pointer',

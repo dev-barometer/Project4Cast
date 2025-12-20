@@ -37,7 +37,7 @@ export default function RemoveUserButton({ userId, userName, userEmail }: Remove
           padding: '6px 12px',
           borderRadius: 4,
           border: '1px solid #cbd5e0',
-          background: '#ffffff',
+          background: '#f7fdfc',
           color: '#e53e3e',
           fontSize: 13,
           cursor: isPending ? 'not-allowed' : 'pointer',

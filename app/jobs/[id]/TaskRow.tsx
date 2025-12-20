@@ -183,7 +183,7 @@ export default function TaskRow({
               padding: '4px 8px',
               fontSize: 13,
               color: '#4a5568',
-              backgroundColor: '#ffffff',
+              backgroundColor: '#f7fdfc',
               cursor: 'text',
               width: '100%',
             }}
@@ -315,7 +315,7 @@ function AssigneeDropdown({
           height: 24,
           borderRadius: '50%',
           border: '1px solid #cbd5e0',
-          backgroundColor: '#ffffff',
+          backgroundColor: '#f7fdfc',
           color: '#4a5568',
           cursor: 'pointer',
           fontSize: 16,
@@ -336,7 +336,7 @@ function AssigneeDropdown({
             position: 'fixed',
             top: position.top,
             left: position.left,
-            backgroundColor: '#ffffff',
+            backgroundColor: '#f7fdfc',
             border: '1px solid #e2e8f0',
             borderRadius: 6,
             boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
@@ -362,7 +362,7 @@ function AssigneeDropdown({
                 fontSize: 13,
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = '#f7fafc';
+                e.currentTarget.style.backgroundColor = '#f7fdfc';
               }}
               onMouseLeave={(e) => {
                 e.currentTarget.style.backgroundColor = 'transparent';

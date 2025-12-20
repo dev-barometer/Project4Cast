@@ -94,7 +94,7 @@ export default async function TasksPage() {
 
       {/* Summary */}
       {tasks.length > 0 && (
-        <div style={{ marginTop: 24, padding: 16, backgroundColor: '#f7fafc', borderRadius: 8, fontSize: 14, color: '#4a5568' }}>
+        <div style={{ marginTop: 24, padding: 16, backgroundColor: '#f7fdfc', borderRadius: 8, fontSize: 14, color: '#4a5568' }}>
           <strong>Total tasks:</strong> {tasks.length} ·{' '}
           <strong>Done:</strong> {tasks.filter((t) => t.status === 'DONE').length} ·{' '}
           <strong>Not done:</strong> {tasks.filter((t) => t.status !== 'DONE').length}

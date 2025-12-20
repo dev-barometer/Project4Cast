@@ -94,11 +94,11 @@ export default async function MyTasksPage() {
       {/* Summary Stats */}
       {tasks.length > 0 && (
         <div style={{ marginBottom: 24, display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 16 }}>
-          <div style={{ backgroundColor: '#ffffff', padding: 16, borderRadius: 8, boxShadow: '0 1px 3px rgba(0, 0, 0, 0.05)' }}>
+          <div style={{ backgroundColor: '#f7fdfc', padding: 16, borderRadius: 8, boxShadow: '0 1px 3px rgba(0, 0, 0, 0.05)' }}>
             <div style={{ fontSize: 24, fontWeight: 600, color: '#2d3748' }}>{notDoneTasks.length}</div>
             <div style={{ fontSize: 13, color: '#718096', marginTop: 4 }}>Not Done</div>
           </div>
-          <div style={{ backgroundColor: '#ffffff', padding: 16, borderRadius: 8, boxShadow: '0 1px 3px rgba(0, 0, 0, 0.05)' }}>
+          <div style={{ backgroundColor: '#f7fdfc', padding: 16, borderRadius: 8, boxShadow: '0 1px 3px rgba(0, 0, 0, 0.05)' }}>
             <div style={{ fontSize: 24, fontWeight: 600, color: '#2d3748' }}>{doneTasks.length}</div>
             <div style={{ fontSize: 13, color: '#718096', marginTop: 4 }}>Done</div>
           </div>
@@ -119,7 +119,7 @@ export default async function MyTasksPage() {
 
       {/* Tasks table */}
       {tasks.length === 0 ? (
-        <div style={{ backgroundColor: '#ffffff', padding: 48, borderRadius: 8, boxShadow: '0 1px 3px rgba(0, 0, 0, 0.05)', textAlign: 'center' }}>
+        <div style={{ backgroundColor: '#f7fdfc', padding: 48, borderRadius: 8, boxShadow: '0 1px 3px rgba(0, 0, 0, 0.05)', textAlign: 'center' }}>
           <p style={{ color: '#718096', fontSize: 16, marginBottom: 8 }}>No tasks assigned to you yet.</p>
           <p style={{ color: '#a0aec0', fontSize: 14 }}>
             Create a task above or wait to be assigned to tasks on jobs.
@@ -148,7 +148,7 @@ export default async function MyTasksPage() {
 
       {/* Summary */}
       {tasks.length > 0 && (
-        <div style={{ marginTop: 24, padding: 16, backgroundColor: '#f7fafc', borderRadius: 8, fontSize: 14, color: '#4a5568' }}>
+        <div style={{ marginTop: 24, padding: 16, backgroundColor: '#f7fdfc', borderRadius: 8, fontSize: 14, color: '#4a5568' }}>
           <strong>Total tasks:</strong> {tasks.length} ·{' '}
           <strong>Done:</strong> {doneTasks.length} ·{' '}
           <strong>Not done:</strong> {notDoneTasks.length}

@@ -37,7 +37,7 @@ export default async function MakeAdminPage() {
 
   return (
     <main style={{ padding: 40, maxWidth: 800, margin: '0 auto' }}>
-      <div style={{ backgroundColor: '#ffffff', padding: 32, borderRadius: 8, boxShadow: '0 1px 3px rgba(0, 0, 0, 0.05)' }}>
+      <div style={{ backgroundColor: '#f7fdfc', padding: 32, borderRadius: 8, boxShadow: '0 1px 3px rgba(0, 0, 0, 0.05)' }}>
         <h1 style={{ fontSize: 24, fontWeight: 600, color: '#2d3748', marginBottom: 8 }}>
           Make User an Admin
         </h1>
@@ -45,7 +45,7 @@ export default async function MakeAdminPage() {
           Select a user to make them an administrator. Administrators can send invitations to other users.
         </p>
 
-        <div style={{ marginBottom: 24, padding: 16, backgroundColor: '#f7fafc', borderRadius: 6 }}>
+        <div style={{ marginBottom: 24, padding: 16, backgroundColor: '#f7fdfc', borderRadius: 6 }}>
           <p style={{ fontSize: 14, color: '#4a5568', margin: 0, fontWeight: 500 }}>
             Your current role: <span style={{ color: currentUser.role === 'ADMIN' ? '#22543d' : '#742a2a' }}>
               {currentUser.role}

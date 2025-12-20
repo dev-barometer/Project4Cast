@@ -4,8 +4,8 @@
 
 /* Light, eye-friendly color scheme */
 :root {
-  --bg-primary: #fafafa;
-  --bg-secondary: #ffffff;
+  --bg-primary: #e5f8fa;
+  --bg-secondary: #f7fdfc;
   --text-primary: #2d3748;
   --text-secondary: #4a5568;
   --text-muted: #718096;
@@ -17,7 +17,7 @@
 }
 
 body {
-  background-color: #e7eef3;
+  background-color: #e5f8fa;
   color: #5a6579;
   font-size: 14px;
   -webkit-font-smoothing: antialiased;

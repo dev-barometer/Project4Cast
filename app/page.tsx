@@ -104,7 +104,7 @@ export default async function HomePage() {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          backgroundColor: '#ffffff',
+          backgroundColor: '#f7fdfc',
           padding: 40,
         }}
       >

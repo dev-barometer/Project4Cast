@@ -76,10 +76,10 @@ export default async function InvitationsPage() {
           <h2 style={{ fontSize: 20, fontWeight: 600, color: '#2d3748', marginBottom: 16 }}>
             Pending Invitations ({pendingInvitations.length})
           </h2>
-          <div style={{ backgroundColor: '#ffffff', borderRadius: 8, overflow: 'hidden', boxShadow: '0 1px 3px rgba(0, 0, 0, 0.05)' }}>
+          <div style={{ backgroundColor: '#f7fdfc', borderRadius: 8, overflow: 'hidden', boxShadow: '0 1px 3px rgba(0, 0, 0, 0.05)' }}>
             <table style={{ borderCollapse: 'collapse', width: '100%', fontSize: 14 }}>
               <thead>
-                <tr style={{ backgroundColor: '#f7fafc' }}>
+                <tr style={{ backgroundColor: '#f7fdfc' }}>
                   <th style={{ textAlign: 'left', padding: '12px 16px', borderBottom: '1px solid #e2e8f0', color: '#4a5568', fontWeight: 600, fontSize: 13 }}>
                     Email
                   </th>
@@ -149,7 +149,7 @@ export default async function InvitationsPage() {
                               padding: '6px 12px',
                               borderRadius: 4,
                               border: '1px solid #cbd5e0',
-                              background: '#ffffff',
+                              background: '#f7fdfc',
                               color: '#14B8A6',
                               fontSize: 13,
                               cursor: 'pointer',
@@ -166,7 +166,7 @@ export default async function InvitationsPage() {
                               padding: '6px 12px',
                               borderRadius: 4,
                               border: '1px solid #cbd5e0',
-                              background: '#ffffff',
+                              background: '#f7fdfc',
                               color: '#e53e3e',
                               fontSize: 13,
                               cursor: 'pointer',
@@ -191,10 +191,10 @@ export default async function InvitationsPage() {
           <h2 style={{ fontSize: 20, fontWeight: 600, color: '#2d3748', marginBottom: 16 }}>
             Expired Invitations ({expiredInvitations.length})
           </h2>
-          <div style={{ backgroundColor: '#ffffff', borderRadius: 8, overflow: 'hidden', boxShadow: '0 1px 3px rgba(0, 0, 0, 0.05)' }}>
+          <div style={{ backgroundColor: '#f7fdfc', borderRadius: 8, overflow: 'hidden', boxShadow: '0 1px 3px rgba(0, 0, 0, 0.05)' }}>
             <table style={{ borderCollapse: 'collapse', width: '100%', fontSize: 14 }}>
               <thead>
-                <tr style={{ backgroundColor: '#f7fafc' }}>
+                <tr style={{ backgroundColor: '#f7fdfc' }}>
                   <th style={{ textAlign: 'left', padding: '12px 16px', borderBottom: '1px solid #e2e8f0', color: '#4a5568', fontWeight: 600, fontSize: 13 }}>
                     Email
                   </th>
@@ -246,10 +246,10 @@ export default async function InvitationsPage() {
           <h2 style={{ fontSize: 20, fontWeight: 600, color: '#2d3748', marginBottom: 16 }}>
             Accepted Invitations ({acceptedInvitations.length})
           </h2>
-          <div style={{ backgroundColor: '#ffffff', borderRadius: 8, overflow: 'hidden', boxShadow: '0 1px 3px rgba(0, 0, 0, 0.05)' }}>
+          <div style={{ backgroundColor: '#f7fdfc', borderRadius: 8, overflow: 'hidden', boxShadow: '0 1px 3px rgba(0, 0, 0, 0.05)' }}>
             <table style={{ borderCollapse: 'collapse', width: '100%', fontSize: 14 }}>
               <thead>
-                <tr style={{ backgroundColor: '#f7fafc' }}>
+                <tr style={{ backgroundColor: '#f7fdfc' }}>
                   <th style={{ textAlign: 'left', padding: '12px 16px', borderBottom: '1px solid #e2e8f0', color: '#4a5568', fontWeight: 600, fontSize: 13 }}>
                     Email
                   </th>
@@ -299,7 +299,7 @@ export default async function InvitationsPage() {
 
       {/* Empty State */}
       {invitations.length === 0 && (
-        <div style={{ backgroundColor: '#ffffff', padding: 48, borderRadius: 8, boxShadow: '0 1px 3px rgba(0, 0, 0, 0.05)', textAlign: 'center' }}>
+        <div style={{ backgroundColor: '#f7fdfc', padding: 48, borderRadius: 8, boxShadow: '0 1px 3px rgba(0, 0, 0, 0.05)', textAlign: 'center' }}>
           <p style={{ color: '#718096', fontSize: 16 }}>No invitations sent yet.</p>
           <p style={{ color: '#a0aec0', fontSize: 14, marginTop: 8 }}>
             Use the form above to invite users to join the platform.

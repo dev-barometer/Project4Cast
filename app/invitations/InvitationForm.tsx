@@ -20,7 +20,7 @@ export default function InvitationForm() {
   }, [state?.success, isExpanded]);
 
   return (
-    <div style={{ backgroundColor: '#ffffff', borderRadius: 8, padding: 24, boxShadow: '0 1px 3px rgba(0, 0, 0, 0.05)' }}>
+    <div style={{ backgroundColor: '#f7fdfc', borderRadius: 8, padding: 24, boxShadow: '0 1px 3px rgba(0, 0, 0, 0.05)' }}>
       {!isExpanded ? (
         <button
           type="button"
@@ -29,7 +29,7 @@ export default function InvitationForm() {
             padding: '10px 16px',
             borderRadius: 6,
             border: '1px solid #cbd5e0',
-            background: '#ffffff',
+            background: '#f7fdfc',
             color: '#14B8A6',
             fontSize: 14,
             cursor: 'pointer',
@@ -72,7 +72,7 @@ export default function InvitationForm() {
                   borderRadius: 6,
                   border: '1px solid #cbd5e0',
                   fontSize: 14,
-                  backgroundColor: '#ffffff',
+                  backgroundColor: '#f7fdfc',
                   color: '#2d3748',
                 }}
                 autoFocus
@@ -103,7 +103,7 @@ export default function InvitationForm() {
                   borderRadius: 6,
                   border: '1px solid #cbd5e0',
                   fontSize: 14,
-                  backgroundColor: '#ffffff',
+                  backgroundColor: '#f7fdfc',
                   color: '#4a5568',
                   cursor: 'pointer',
                 }}
@@ -156,7 +156,7 @@ export default function InvitationForm() {
                   padding: '8px 16px',
                   borderRadius: 6,
                   border: '1px solid #cbd5e0',
-                  background: '#ffffff',
+                  background: '#f7fdfc',
                   color: '#4a5568',
                   fontSize: 14,
                   cursor: 'pointer',

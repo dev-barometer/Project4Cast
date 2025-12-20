@@ -77,10 +77,10 @@ export default async function CollaboratorsPage() {
       </div>
 
       {/* Users Table */}
-      <div style={{ backgroundColor: '#ffffff', borderRadius: 8, overflow: 'hidden', boxShadow: '0 1px 3px rgba(0, 0, 0, 0.05)' }}>
+      <div style={{ backgroundColor: '#f7fdfc', borderRadius: 8, overflow: 'hidden', boxShadow: '0 1px 3px rgba(0, 0, 0, 0.05)' }}>
         <table style={{ borderCollapse: 'collapse', width: '100%', fontSize: 14 }}>
           <thead>
-            <tr style={{ backgroundColor: '#f7fafc' }}>
+            <tr style={{ backgroundColor: '#f7fdfc' }}>
               <th style={{ textAlign: 'left', padding: '12px 16px', borderBottom: '1px solid #e2e8f0', color: '#4a5568', fontWeight: 600, fontSize: 13 }}>
                 User
               </th>

@@ -124,7 +124,7 @@ export default function TaskDetailPanel({
       <div
         style={{
           flex: 1,
-          backgroundColor: '#f7fafc',
+          backgroundColor: '#f7fdfc',
           padding: '40px 24px',
           display: 'flex',
           alignItems: 'center',
@@ -176,7 +176,7 @@ export default function TaskDetailPanel({
         display: 'flex',
         flexDirection: 'column',
         overflow: 'hidden',
-        backgroundColor: '#ffffff',
+        backgroundColor: '#f7fdfc',
         height: '100%',
         minHeight: 0,
       }}
@@ -242,7 +242,7 @@ export default function TaskDetailPanel({
                     key={comment.id}
                     style={{
                       padding: '16px',
-                      backgroundColor: '#f7fafc',
+                      backgroundColor: '#f7fdfc',
                       borderRadius: 8,
                       position: 'relative',
                     }}
@@ -302,7 +302,7 @@ export default function TaskDetailPanel({
                               alignItems: 'center',
                               gap: 6,
                               padding: '6px 10px',
-                              backgroundColor: '#ffffff',
+                              backgroundColor: '#f7fdfc',
                               borderRadius: 6,
                               border: '1px solid #e2e8f0',
                               fontSize: 12,
@@ -316,7 +316,7 @@ export default function TaskDetailPanel({
                               e.currentTarget.style.borderColor = '#14B8A6';
                             }}
                             onMouseLeave={(e) => {
-                              e.currentTarget.style.backgroundColor = '#ffffff';
+                              e.currentTarget.style.backgroundColor = '#f7fdfc';
                               e.currentTarget.style.borderColor = '#e2e8f0';
                             }}
                             title={`Open ${att.filename}`}
@@ -349,7 +349,7 @@ export default function TaskDetailPanel({
           style={{
             padding: '16px 24px',
             borderTop: '1px solid #e2e8f0',
-            backgroundColor: '#ffffff',
+            backgroundColor: '#f7fdfc',
           }}
         >
           {(state?.error || fileError) && (
@@ -376,7 +376,7 @@ export default function TaskDetailPanel({
                 gap: 8,
                 marginBottom: 12,
                 padding: '8px 12px',
-                backgroundColor: '#f7fafc',
+                backgroundColor: '#f7fdfc',
                 borderRadius: 6,
                 border: '1px solid #e2e8f0',
               }}

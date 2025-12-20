@@ -20,7 +20,7 @@ export default function MarkAllReadButton() {
         padding: '6px 12px',
         borderRadius: 4,
         border: '1px solid #cbd5e0',
-        background: '#ffffff',
+        background: '#f7fdfc',
         color: '#4a5568',
         fontSize: 13,
         cursor: isPending ? 'not-allowed' : 'pointer',

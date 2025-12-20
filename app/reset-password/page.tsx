@@ -20,13 +20,13 @@ export default async function ResetPasswordPage({ searchParams }: ResetPasswordP
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          backgroundColor: '#f7fafc',
+          backgroundColor: '#f7fdfc',
           padding: 20,
         }}
       >
         <div
           style={{
-            backgroundColor: '#ffffff',
+            backgroundColor: '#f7fdfc',
             padding: '40px 32px',
             borderRadius: 8,
             boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
@@ -85,13 +85,13 @@ export default async function ResetPasswordPage({ searchParams }: ResetPasswordP
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          backgroundColor: '#f7fafc',
+          backgroundColor: '#f7fdfc',
           padding: 20,
         }}
       >
         <div
           style={{
-            backgroundColor: '#ffffff',
+            backgroundColor: '#f7fdfc',
             padding: '40px 32px',
             borderRadius: 8,
             boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
@@ -146,13 +146,13 @@ export default async function ResetPasswordPage({ searchParams }: ResetPasswordP
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: '#f7fafc',
+        backgroundColor: '#f7fdfc',
         padding: 20,
       }}
     >
       <div
         style={{
-          backgroundColor: '#ffffff',
+          backgroundColor: '#f7fdfc',
           padding: '40px 32px',
           borderRadius: 8,
           boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',

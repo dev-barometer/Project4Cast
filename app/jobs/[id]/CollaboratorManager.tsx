@@ -67,7 +67,7 @@ export default function CollaboratorManager({
                 justifyContent: 'space-between',
                 gap: 8,
                 padding: '8px 12px',
-                backgroundColor: '#f7fafc',
+                backgroundColor: '#f7fdfc',
                 borderRadius: 6,
                 fontSize: 14,
               }}
@@ -94,7 +94,7 @@ export default function CollaboratorManager({
                     padding: '4px 8px',
                     fontSize: 12,
                     color: '#4a5568',
-                    backgroundColor: '#ffffff',
+                    backgroundColor: '#f7fdfc',
                     cursor: 'pointer',
                     marginRight: 8,
                   }}
@@ -157,7 +157,7 @@ export default function CollaboratorManager({
                 padding: '6px 10px',
                 fontSize: 13,
                 color: '#4a5568',
-                backgroundColor: '#ffffff',
+                backgroundColor: '#f7fdfc',
                 cursor: 'pointer',
               }}
             >
@@ -185,7 +185,7 @@ export default function CollaboratorManager({
               padding: '6px 10px',
               fontSize: 13,
               color: '#14B8A6',
-              backgroundColor: '#ffffff',
+              backgroundColor: '#f7fdfc',
               cursor: 'pointer',
               textAlign: 'left',
               width: '100%',
@@ -235,7 +235,7 @@ export default function CollaboratorManager({
                   padding: '6px 10px',
                   fontSize: 13,
                   color: '#4a5568',
-                  backgroundColor: '#ffffff',
+                  backgroundColor: '#f7fdfc',
                 }}
               />
               <button
@@ -245,7 +245,7 @@ export default function CollaboratorManager({
                   borderRadius: 4,
                   padding: '6px 12px',
                   fontSize: 13,
-                  color: '#ffffff',
+                  color: '#f7fdfc',
                   backgroundColor: '#14B8A6',
                   cursor: 'pointer',
                   fontWeight: 500,
@@ -264,7 +264,7 @@ export default function CollaboratorManager({
                   padding: '6px 12px',
                   fontSize: 13,
                   color: '#4a5568',
-                  backgroundColor: '#ffffff',
+                  backgroundColor: '#f7fdfc',
                   cursor: 'pointer',
                 }}
               >

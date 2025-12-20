@@ -15,7 +15,7 @@ export default async function AcceptInvitationPage({ searchParams }: PageProps) 
   if (!token) {
     return (
       <main style={{ padding: 40, maxWidth: 600, margin: '0 auto' }}>
-        <div style={{ backgroundColor: '#ffffff', padding: 32, borderRadius: 8, boxShadow: '0 1px 3px rgba(0, 0, 0, 0.05)' }}>
+        <div style={{ backgroundColor: '#f7fdfc', padding: 32, borderRadius: 8, boxShadow: '0 1px 3px rgba(0, 0, 0, 0.05)' }}>
           <h1 style={{ fontSize: 24, fontWeight: 600, color: '#2d3748', marginBottom: 16 }}>
             Invalid Invitation
           </h1>
@@ -43,7 +43,7 @@ export default async function AcceptInvitationPage({ searchParams }: PageProps) 
   if (!invitation) {
     return (
       <main style={{ padding: 40, maxWidth: 600, margin: '0 auto' }}>
-        <div style={{ backgroundColor: '#ffffff', padding: 32, borderRadius: 8, boxShadow: '0 1px 3px rgba(0, 0, 0, 0.05)' }}>
+        <div style={{ backgroundColor: '#f7fdfc', padding: 32, borderRadius: 8, boxShadow: '0 1px 3px rgba(0, 0, 0, 0.05)' }}>
           <h1 style={{ fontSize: 24, fontWeight: 600, color: '#2d3748', marginBottom: 16 }}>
             Invitation Not Found
           </h1>
@@ -59,7 +59,7 @@ export default async function AcceptInvitationPage({ searchParams }: PageProps) 
   if (invitation.expiresAt < new Date()) {
     return (
       <main style={{ padding: 40, maxWidth: 600, margin: '0 auto' }}>
-        <div style={{ backgroundColor: '#ffffff', padding: 32, borderRadius: 8, boxShadow: '0 1px 3px rgba(0, 0, 0, 0.05)' }}>
+        <div style={{ backgroundColor: '#f7fdfc', padding: 32, borderRadius: 8, boxShadow: '0 1px 3px rgba(0, 0, 0, 0.05)' }}>
           <h1 style={{ fontSize: 24, fontWeight: 600, color: '#2d3748', marginBottom: 16 }}>
             Invitation Expired
           </h1>
@@ -75,7 +75,7 @@ export default async function AcceptInvitationPage({ searchParams }: PageProps) 
   if (invitation.status === 'ACCEPTED') {
     return (
       <main style={{ padding: 40, maxWidth: 600, margin: '0 auto' }}>
-        <div style={{ backgroundColor: '#ffffff', padding: 32, borderRadius: 8, boxShadow: '0 1px 3px rgba(0, 0, 0, 0.05)' }}>
+        <div style={{ backgroundColor: '#f7fdfc', padding: 32, borderRadius: 8, boxShadow: '0 1px 3px rgba(0, 0, 0, 0.05)' }}>
           <h1 style={{ fontSize: 24, fontWeight: 600, color: '#2d3748', marginBottom: 16 }}>
             Invitation Already Accepted
           </h1>
@@ -95,7 +95,7 @@ export default async function AcceptInvitationPage({ searchParams }: PageProps) 
   if (invitation.status === 'CANCELLED') {
     return (
       <main style={{ padding: 40, maxWidth: 600, margin: '0 auto' }}>
-        <div style={{ backgroundColor: '#ffffff', padding: 32, borderRadius: 8, boxShadow: '0 1px 3px rgba(0, 0, 0, 0.05)' }}>
+        <div style={{ backgroundColor: '#f7fdfc', padding: 32, borderRadius: 8, boxShadow: '0 1px 3px rgba(0, 0, 0, 0.05)' }}>
           <h1 style={{ fontSize: 24, fontWeight: 600, color: '#2d3748', marginBottom: 16 }}>
             Invitation Cancelled
           </h1>
@@ -114,7 +114,7 @@ export default async function AcceptInvitationPage({ searchParams }: PageProps) 
 
   return (
     <main style={{ padding: 40, maxWidth: 600, margin: '0 auto' }}>
-      <div style={{ backgroundColor: '#ffffff', padding: 32, borderRadius: 8, boxShadow: '0 1px 3px rgba(0, 0, 0, 0.05)' }}>
+      <div style={{ backgroundColor: '#f7fdfc', padding: 32, borderRadius: 8, boxShadow: '0 1px 3px rgba(0, 0, 0, 0.05)' }}>
         <h1 style={{ fontSize: 24, fontWeight: 600, color: '#2d3748', marginBottom: 8 }}>
           You&apos;ve been invited!
         </h1>

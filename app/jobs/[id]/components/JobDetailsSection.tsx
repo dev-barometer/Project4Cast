@@ -63,7 +63,7 @@ export default function JobDetailsSection({
   return (
     <div
       style={{
-        backgroundColor: '#ffffff',
+        backgroundColor: '#f7fdfc',
         borderRadius: 8,
         border: '1px solid #e2e8f0',
         overflow: 'hidden',
@@ -83,7 +83,7 @@ export default function JobDetailsSection({
             height: 32,
             borderRadius: 8,
             border: '1px solid #e2e8f0',
-            background: isExpanded ? '#E6FFFA' : '#f7fafc',
+            background: isExpanded ? '#E6FFFA' : '#f7fdfc',
             color: '#2d3748',
             fontSize: 16,
             lineHeight: 1,
@@ -114,7 +114,7 @@ export default function JobDetailsSection({
           background: 'none',
           border: 'none',
           cursor: 'pointer',
-          backgroundColor: '#f7fafc',
+          backgroundColor: '#f7fdfc',
           borderBottom: isExpanded ? '1px solid #e2e8f0' : 'none',
         }}
       >

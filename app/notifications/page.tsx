@@ -101,7 +101,7 @@ export default async function NotificationsPage() {
       {notifications.length === 0 ? (
         <div
           style={{
-            backgroundColor: '#ffffff',
+            backgroundColor: '#f7fdfc',
             borderRadius: 8,
             padding: 48,
             textAlign: 'center',
@@ -122,7 +122,7 @@ export default async function NotificationsPage() {
                 href={link}
                 style={{
                   display: 'block',
-                  backgroundColor: notification.read ? '#ffffff' : '#f0f7ff',
+                  backgroundColor: notification.read ? '#f7fdfc' : '#f0f7ff',
                   border: `1px solid ${notification.read ? '#e2e8f0' : '#cfe2ff'}`,
                   borderRadius: 8,
                   padding: 16,

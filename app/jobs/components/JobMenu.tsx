@@ -63,7 +63,7 @@ export default function JobMenu({ jobId, jobNumber, jobStatus, onMoveTo }: JobMe
             top: '100%',
             right: 0,
             marginTop: 4,
-            backgroundColor: '#ffffff',
+            backgroundColor: '#f7fdfc',
             borderRadius: 8,
             boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
             minWidth: 200,

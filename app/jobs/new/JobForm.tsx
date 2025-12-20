@@ -137,7 +137,7 @@ export default function JobForm({ clients }: JobFormProps) {
       <form
         action={formAction}
         style={{
-          backgroundColor: '#ffffff',
+          backgroundColor: '#f7fdfc',
           padding: 32,
           borderRadius: 8,
           boxShadow: '0 1px 3px rgba(0, 0, 0, 0.05)',
@@ -174,7 +174,7 @@ export default function JobForm({ clients }: JobFormProps) {
                 borderRadius: 6,
                 border: '1px solid #cbd5e0',
                 fontSize: 14,
-                backgroundColor: '#ffffff',
+                backgroundColor: '#f7fdfc',
                 color: '#2d3748',
                 fontFamily: 'monospace',
                 letterSpacing: '0.5px',
@@ -211,7 +211,7 @@ export default function JobForm({ clients }: JobFormProps) {
                 borderRadius: 6,
                 border: '1px solid #cbd5e0',
                 fontSize: 14,
-                backgroundColor: '#ffffff',
+                backgroundColor: '#f7fdfc',
                 color: '#2d3748',
               }}
             />
@@ -251,7 +251,7 @@ export default function JobForm({ clients }: JobFormProps) {
                 border: '1px solid #cbd5e0',
                 fontSize: 14,
                 color: '#4a5568',
-                backgroundColor: '#ffffff',
+                backgroundColor: '#f7fdfc',
                 cursor: 'pointer',
               }}
             >
@@ -302,7 +302,7 @@ export default function JobForm({ clients }: JobFormProps) {
                 border: '1px solid #cbd5e0',
                 fontSize: 14,
                 color: selectedClientId ? '#4a5568' : '#a0aec0',
-                backgroundColor: selectedClientId ? '#ffffff' : '#f7fafc',
+                backgroundColor: selectedClientId ? '#f7fdfc' : '#f7fdfc',
                 cursor: selectedClientId ? 'pointer' : 'not-allowed',
               }}
             >
@@ -346,7 +346,7 @@ export default function JobForm({ clients }: JobFormProps) {
                 padding: '12px 24px',
                 borderRadius: 6,
                 border: '1px solid #cbd5e0',
-                background: '#ffffff',
+                background: '#f7fdfc',
                 color: '#4a5568',
                 fontSize: 14,
                 textDecoration: 'none',
@@ -379,7 +379,7 @@ export default function JobForm({ clients }: JobFormProps) {
           >
             <div
               style={{
-                backgroundColor: '#ffffff',
+                backgroundColor: '#f7fdfc',
                 padding: 24,
                 borderRadius: 8,
                 width: '90%',
@@ -418,7 +418,7 @@ export default function JobForm({ clients }: JobFormProps) {
                       borderRadius: 6,
                       border: '1px solid #cbd5e0',
                       fontSize: 14,
-                      backgroundColor: '#ffffff',
+                      backgroundColor: '#f7fdfc',
                       color: '#2d3748',
                     }}
                   />
@@ -434,7 +434,7 @@ export default function JobForm({ clients }: JobFormProps) {
                       padding: '10px 20px',
                       borderRadius: 6,
                       border: '1px solid #cbd5e0',
-                      backgroundColor: '#ffffff',
+                      backgroundColor: '#f7fdfc',
                       color: '#4a5568',
                       fontSize: 14,
                       fontWeight: 500,
@@ -483,7 +483,7 @@ export default function JobForm({ clients }: JobFormProps) {
           >
             <div
               style={{
-                backgroundColor: '#ffffff',
+                backgroundColor: '#f7fdfc',
                 padding: 24,
                 borderRadius: 8,
                 width: '90%',
@@ -522,7 +522,7 @@ export default function JobForm({ clients }: JobFormProps) {
                       borderRadius: 6,
                       border: '1px solid #cbd5e0',
                       fontSize: 14,
-                      backgroundColor: '#ffffff',
+                      backgroundColor: '#f7fdfc',
                       color: '#2d3748',
                     }}
                   />
@@ -541,7 +541,7 @@ export default function JobForm({ clients }: JobFormProps) {
                       padding: '10px 20px',
                       borderRadius: 6,
                       border: '1px solid #cbd5e0',
-                      backgroundColor: '#ffffff',
+                      backgroundColor: '#f7fdfc',
                       color: '#4a5568',
                       fontSize: 14,
                       fontWeight: 500,

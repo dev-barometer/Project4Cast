@@ -226,7 +226,7 @@ export default function ProfilePageClient({ user, allTeams, admins, allUsers }: 
           {/* Left Column */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
             {/* Basic Information */}
-            <div style={{ backgroundColor: '#ffffff', borderRadius: 8, padding: 24, boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
+            <div style={{ backgroundColor: '#f7fdfc', borderRadius: 8, padding: 24, boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
               <h2 style={{ fontSize: 18, fontWeight: 600, color: '#2d3748', marginBottom: 20 }}>
                 Basic Information
               </h2>
@@ -272,7 +272,7 @@ export default function ProfilePageClient({ user, allTeams, admins, allUsers }: 
                       border: '1px solid #e2e8f0',
                       borderRadius: 6,
                       fontSize: 14,
-                      backgroundColor: '#f7fafc',
+                      backgroundColor: '#f7fdfc',
                       color: '#718096',
                     }}
                   />
@@ -362,7 +362,7 @@ export default function ProfilePageClient({ user, allTeams, admins, allUsers }: 
                   style={{
                     padding: '10px 20px',
                     backgroundColor: '#14B8A6',
-                    color: '#ffffff',
+                    color: '#f7fdfc',
                     border: 'none',
                     borderRadius: 6,
                     fontSize: 14,
@@ -377,7 +377,7 @@ export default function ProfilePageClient({ user, allTeams, admins, allUsers }: 
             </div>
 
             {/* Teams */}
-            <div style={{ backgroundColor: '#ffffff', borderRadius: 8, padding: 24, boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
+            <div style={{ backgroundColor: '#f7fdfc', borderRadius: 8, padding: 24, boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
               <h2 style={{ fontSize: 18, fontWeight: 600, color: '#2d3748', marginBottom: 20 }}>
                 Teams
               </h2>
@@ -430,7 +430,7 @@ export default function ProfilePageClient({ user, allTeams, admins, allUsers }: 
                   style={{
                     padding: '10px 20px',
                     backgroundColor: '#14B8A6',
-                    color: '#ffffff',
+                    color: '#f7fdfc',
                     border: 'none',
                     borderRadius: 6,
                     fontSize: 14,
@@ -448,7 +448,7 @@ export default function ProfilePageClient({ user, allTeams, admins, allUsers }: 
           {/* Right Column */}
           <div>
             {/* Change Password */}
-            <div style={{ backgroundColor: '#ffffff', borderRadius: 8, padding: 24, boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
+            <div style={{ backgroundColor: '#f7fdfc', borderRadius: 8, padding: 24, boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
               <h2 style={{ fontSize: 18, fontWeight: 600, color: '#2d3748', marginBottom: 20 }}>
                 Change Password
               </h2>
@@ -522,7 +522,7 @@ export default function ProfilePageClient({ user, allTeams, admins, allUsers }: 
                   style={{
                     padding: '10px 20px',
                     backgroundColor: '#14B8A6',
-                    color: '#ffffff',
+                    color: '#f7fdfc',
                     border: 'none',
                     borderRadius: 6,
                     fontSize: 14,
@@ -541,7 +541,7 @@ export default function ProfilePageClient({ user, allTeams, admins, allUsers }: 
 
       {/* Notifications Tab */}
       {activeTab === 'notifications' && (
-        <div style={{ backgroundColor: '#ffffff', borderRadius: 8, padding: 24, boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
+        <div style={{ backgroundColor: '#f7fdfc', borderRadius: 8, padding: 24, boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
           <h2 style={{ fontSize: 18, fontWeight: 600, color: '#2d3748', marginBottom: 20 }}>
             Notification Preferences
           </h2>
@@ -703,7 +703,7 @@ export default function ProfilePageClient({ user, allTeams, admins, allUsers }: 
               style={{
                 padding: '10px 20px',
                 backgroundColor: '#14B8A6',
-                color: '#ffffff',
+                color: '#f7fdfc',
                 border: 'none',
                 borderRadius: 6,
                 fontSize: 14,
@@ -720,7 +720,7 @@ export default function ProfilePageClient({ user, allTeams, admins, allUsers }: 
 
       {/* Activity Tab */}
       {activeTab === 'activity' && (
-        <div style={{ backgroundColor: '#ffffff', borderRadius: 8, padding: 24, boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
+        <div style={{ backgroundColor: '#f7fdfc', borderRadius: 8, padding: 24, boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
           <h2 style={{ fontSize: 18, fontWeight: 600, color: '#2d3748', marginBottom: 20 }}>
             Activity History
           </h2>
@@ -738,7 +738,7 @@ export default function ProfilePageClient({ user, allTeams, admins, allUsers }: 
                       alignItems: 'center',
                       justifyContent: 'space-between',
                       padding: '12px 16px',
-                      backgroundColor: '#f7fafc',
+                      backgroundColor: '#f7fdfc',
                       border: '1px solid #e2e8f0',
                       borderRadius: 6,
                       cursor: 'pointer',
@@ -787,7 +787,7 @@ export default function ProfilePageClient({ user, allTeams, admins, allUsers }: 
 
       {/* Account Tab */}
       {activeTab === 'account' && (
-        <div style={{ backgroundColor: '#ffffff', borderRadius: 8, padding: 24, boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
+        <div style={{ backgroundColor: '#f7fdfc', borderRadius: 8, padding: 24, boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
           <h2 style={{ fontSize: 18, fontWeight: 600, color: '#2d3748', marginBottom: 20 }}>
             Account Management
           </h2>
@@ -802,7 +802,7 @@ export default function ProfilePageClient({ user, allTeams, admins, allUsers }: 
                 style={{
                   padding: '10px 20px',
                   backgroundColor: '#e53e3e',
-                  color: '#ffffff',
+                  color: '#f7fdfc',
                   border: 'none',
                   borderRadius: 6,
                   fontSize: 14,
@@ -850,7 +850,7 @@ export default function ProfilePageClient({ user, allTeams, admins, allUsers }: 
                       style={{
                         padding: '10px 20px',
                         backgroundColor: deleteConfirmText === 'DELETE' ? '#e53e3e' : '#cbd5e0',
-                        color: '#ffffff',
+                        color: '#f7fdfc',
                         border: 'none',
                         borderRadius: 6,
                         fontSize: 14,
@@ -868,7 +868,7 @@ export default function ProfilePageClient({ user, allTeams, admins, allUsers }: 
                       }}
                       style={{
                         padding: '10px 20px',
-                        backgroundColor: '#ffffff',
+                        backgroundColor: '#f7fdfc',
                         color: '#4a5568',
                         border: '1px solid #cbd5e0',
                         borderRadius: 6,
@@ -889,7 +889,7 @@ export default function ProfilePageClient({ user, allTeams, admins, allUsers }: 
 
       {/* Admin Tab */}
       {activeTab === 'admin' && canManageAdmins && (
-        <div style={{ backgroundColor: '#ffffff', borderRadius: 8, padding: 24, boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
+        <div style={{ backgroundColor: '#f7fdfc', borderRadius: 8, padding: 24, boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
           <div style={{ marginBottom: 24 }}>
             <h2 style={{ fontSize: 20, fontWeight: 600, color: '#2d3748', marginBottom: 8 }}>
               Admin Management
@@ -902,7 +902,7 @@ export default function ProfilePageClient({ user, allTeams, admins, allUsers }: 
           </div>
 
           {/* Current Role Display */}
-          <div style={{ marginBottom: 24, padding: 16, backgroundColor: '#f7fafc', borderRadius: 6 }}>
+          <div style={{ marginBottom: 24, padding: 16, backgroundColor: '#f7fdfc', borderRadius: 6 }}>
             <div style={{ fontSize: 14, color: '#4a5568', marginBottom: 4 }}>Your Role</div>
             <div style={{ fontSize: 18, fontWeight: 600, color: isOwner ? '#742a2a' : '#2c5282' }}>
               {user.role === 'OWNER' ? '👑 Owner' : '🔧 Admin'}
@@ -913,7 +913,7 @@ export default function ProfilePageClient({ user, allTeams, admins, allUsers }: 
           <div style={{ overflowX: 'auto' }}>
             <table style={{ borderCollapse: 'collapse', width: '100%', fontSize: 14 }}>
               <thead>
-                <tr style={{ backgroundColor: '#f7fafc' }}>
+                <tr style={{ backgroundColor: '#f7fdfc' }}>
                   <th style={{ textAlign: 'left', padding: '12px 16px', borderBottom: '1px solid #e2e8f0', color: '#4a5568', fontWeight: 600, fontSize: 13 }}>
                     User
                   </th>
@@ -1011,7 +1011,7 @@ function AdminAssignForm({ userId, userEmail }: { userId: string; userEmail: str
         style={{
           padding: '6px 16px',
           backgroundColor: '#38a169',
-          color: '#ffffff',
+          color: '#f7fdfc',
           border: 'none',
           borderRadius: 4,
           fontSize: 12,
@@ -1046,7 +1046,7 @@ function AdminRemoveForm({ userId, userEmail }: { userId: string; userEmail: str
         style={{
           padding: '6px 16px',
           backgroundColor: '#e53e3e',
-          color: '#ffffff',
+          color: '#f7fdfc',
           border: 'none',
           borderRadius: 4,
           fontSize: 12,
