@@ -16,6 +16,8 @@ import {
   archiveJob,
   unarchiveJob,
   deleteJob,
+  deleteClient,
+  deleteBrand,
 } from './actions';
 
 type User = {
@@ -49,6 +51,7 @@ type Client = {
       estimate: number | null;
       billedAmount: number | null;
       paidAmount: number | null;
+      purchaseOrder: string | null;
     }>;
   }>;
 };
@@ -77,8 +80,8 @@ export default function AdminDashboardClient({
     console.log('Admin Dashboard Data:', { users: users.length, clients: clients.length, teams: teams.length });
   }, [users, clients, teams]);
 
-  const formatCurrency = (amount: number | null) => {
-    if (amount === null) return '$0.00';
+  const formatCurrency = (amount: number | null | undefined) => {
+    if (amount === null || amount === undefined) return '$0.00';
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: 'USD',
@@ -212,59 +215,59 @@ export default function AdminDashboardClient({
           {clients.length === 0 ? (
             <p style={{ color: '#718096', fontSize: 14 }}>No clients found.</p>
           ) : (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
-              {clients.map((client) => (
-                <div key={client.id}>
-                  <h3 style={{ fontSize: 18, fontWeight: 600, color: '#2d3748', marginBottom: 12 }}>
-                    {client.name}
-                  </h3>
-                  {client.brands.map((brand) => (
-                    <div key={brand.id} style={{ marginLeft: 24, marginBottom: 16 }}>
-                      <h4 style={{ fontSize: 16, fontWeight: 500, color: '#4a5568', marginBottom: 8 }}>
-                        {brand.name}
-                      </h4>
-                      <div style={{ marginLeft: 24 }}>
-                        <table style={{ borderCollapse: 'collapse', width: '100%', fontSize: 13 }}>
-                          <thead>
-                            <tr style={{ backgroundColor: '#f7fafc' }}>
-                              <th style={{ textAlign: 'left', padding: '8px 12px', borderBottom: '1px solid #e2e8f0', color: '#4a5568', fontWeight: 600, fontSize: 12 }}>
-                                Job
-                              </th>
-                              <th style={{ textAlign: 'center', padding: '8px 12px', borderBottom: '1px solid #e2e8f0', color: '#4a5568', fontWeight: 600, fontSize: 12 }}>
-                                Active
-                              </th>
-                              <th style={{ textAlign: 'left', padding: '8px 12px', borderBottom: '1px solid #e2e8f0', color: '#4a5568', fontWeight: 600, fontSize: 12 }}>
-                                Estimate
-                              </th>
-                              <th style={{ textAlign: 'center', padding: '8px 12px', borderBottom: '1px solid #e2e8f0', color: '#4a5568', fontWeight: 600, fontSize: 12 }}>
-                                Billed
-                              </th>
-                              <th style={{ textAlign: 'center', padding: '8px 12px', borderBottom: '1px solid #e2e8f0', color: '#4a5568', fontWeight: 600, fontSize: 12 }}>
-                                Paid
-                              </th>
-                              <th style={{ textAlign: 'right', padding: '8px 12px', borderBottom: '1px solid #e2e8f0', color: '#4a5568', fontWeight: 600, fontSize: 12 }}>
-                                Delete
-                              </th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {brand.jobs.map((job) => (
-                              <JobRow
-                                key={job.id}
-                                job={job}
-                                isEditing={editingJobId === job.id}
-                                onEdit={() => setEditingJobId(job.id)}
-                                onCancel={() => setEditingJobId(null)}
-                              />
-                            ))}
-                          </tbody>
-                        </table>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              ))}
-            </div>
+            <table style={{ borderCollapse: 'collapse', width: '100%', fontSize: 13 }}>
+              <thead>
+                <tr style={{ backgroundColor: '#f7fafc' }}>
+                  <th style={{ textAlign: 'left', padding: '8px 12px', borderBottom: '1px solid #e2e8f0', color: '#4a5568', fontWeight: 600, fontSize: 12 }}>
+                    Job
+                  </th>
+                  <th style={{ textAlign: 'center', padding: '8px 12px', borderBottom: '1px solid #e2e8f0', color: '#4a5568', fontWeight: 600, fontSize: 12 }}>
+                    Active
+                  </th>
+                  <th style={{ textAlign: 'left', padding: '8px 12px', borderBottom: '1px solid #e2e8f0', color: '#4a5568', fontWeight: 600, fontSize: 12 }}>
+                    P.O.
+                  </th>
+                  <th style={{ textAlign: 'left', padding: '8px 12px', borderBottom: '1px solid #e2e8f0', color: '#4a5568', fontWeight: 600, fontSize: 12 }}>
+                    Estimate
+                  </th>
+                  <th style={{ textAlign: 'center', padding: '8px 12px', borderBottom: '1px solid #e2e8f0', color: '#4a5568', fontWeight: 600, fontSize: 12 }}>
+                    Billed
+                  </th>
+                  <th style={{ textAlign: 'center', padding: '8px 12px', borderBottom: '1px solid #e2e8f0', color: '#4a5568', fontWeight: 600, fontSize: 12 }}>
+                    Paid
+                  </th>
+                  <th style={{ textAlign: 'right', padding: '8px 12px', borderBottom: '1px solid #e2e8f0', color: '#4a5568', fontWeight: 600, fontSize: 12 }}>
+                    Delete
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {clients.map((client) => (
+                  <>
+                    {/* Client Row */}
+                    <ClientRow key={`client-${client.id}`} clientId={client.id} clientName={client.name} />
+                    {client.brands.map((brand) => (
+                      <>
+                        {/* Brand Row */}
+                        <BrandRow key={`brand-${brand.id}`} brandId={brand.id} brandName={brand.name} />
+                        {/* Job Rows */}
+                        {brand.jobs.map((job) => (
+                          <JobRow
+                            key={job.id}
+                            job={job}
+                            isEditing={editingJobId === job.id}
+                            onEdit={() => setEditingJobId(job.id)}
+                            onCancel={() => setEditingJobId(null)}
+                          />
+                        ))}
+                      </>
+                    ))}
+                  </>
+                ))}
+                {/* Totals Row */}
+                <TotalsRow clients={clients} />
+              </tbody>
+            </table>
           )}
         </div>
       )}
@@ -813,9 +816,233 @@ function DeleteUserButton({ userId, userEmail }: { userId: string; userEmail: st
   );
 }
 
+// Delete Client Button Component
+function DeleteClientButton({ clientId, clientName }: { clientId: string; clientName: string }) {
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [state, formAction] = useFormState(deleteClient, { success: false, error: null });
+
+  useEffect(() => {
+    if (state?.success) {
+      window.location.reload();
+    }
+  }, [state?.success]);
+
+  if (!showConfirm) {
+    return (
+      <button
+        onClick={() => setShowConfirm(true)}
+        style={{
+          width: 24,
+          height: 24,
+          borderRadius: '50%',
+          border: 'none',
+          backgroundColor: '#fed7d7',
+          color: '#742a2a',
+          cursor: 'pointer',
+          fontSize: 16,
+          lineHeight: 1,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+        type="button"
+      >
+        –
+      </button>
+    );
+  }
+
+  return (
+    <form action={formAction} style={{ display: 'inline-block' }}>
+      <input type="hidden" name="clientId" value={clientId} />
+      {state?.error && <div style={{ fontSize: 11, color: '#e53e3e' }}>{state.error}</div>}
+      <div style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
+        <span style={{ fontSize: 11, color: '#742a2a' }}>Delete?</span>
+        <button
+          type="submit"
+          style={{
+            padding: '2px 8px',
+            backgroundColor: '#e53e3e',
+            color: '#ffffff',
+            border: 'none',
+            borderRadius: 4,
+            fontSize: 11,
+            cursor: 'pointer',
+          }}
+        >
+          Yes
+        </button>
+        <button
+          type="button"
+          onClick={() => setShowConfirm(false)}
+          style={{
+            padding: '2px 8px',
+            backgroundColor: '#cbd5e0',
+            color: '#4a5568',
+            border: 'none',
+            borderRadius: 4,
+            fontSize: 11,
+            cursor: 'pointer',
+          }}
+        >
+          No
+        </button>
+      </div>
+    </form>
+  );
+}
+
+// Delete Brand Button Component
+function DeleteBrandButton({ brandId, brandName }: { brandId: string; brandName: string }) {
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [state, formAction] = useFormState(deleteBrand, { success: false, error: null });
+
+  useEffect(() => {
+    if (state?.success) {
+      window.location.reload();
+    }
+  }, [state?.success]);
+
+  if (!showConfirm) {
+    return (
+      <button
+        onClick={() => setShowConfirm(true)}
+        style={{
+          width: 24,
+          height: 24,
+          borderRadius: '50%',
+          border: 'none',
+          backgroundColor: '#fed7d7',
+          color: '#742a2a',
+          cursor: 'pointer',
+          fontSize: 16,
+          lineHeight: 1,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+        type="button"
+      >
+        –
+      </button>
+    );
+  }
+
+  return (
+    <form action={formAction} style={{ display: 'inline-block' }}>
+      <input type="hidden" name="brandId" value={brandId} />
+      {state?.error && <div style={{ fontSize: 11, color: '#e53e3e' }}>{state.error}</div>}
+      <div style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
+        <span style={{ fontSize: 11, color: '#742a2a' }}>Delete?</span>
+        <button
+          type="submit"
+          style={{
+            padding: '2px 8px',
+            backgroundColor: '#e53e3e',
+            color: '#ffffff',
+            border: 'none',
+            borderRadius: 4,
+            fontSize: 11,
+            cursor: 'pointer',
+          }}
+        >
+          Yes
+        </button>
+        <button
+          type="button"
+          onClick={() => setShowConfirm(false)}
+          style={{
+            padding: '2px 8px',
+            backgroundColor: '#cbd5e0',
+            color: '#4a5568',
+            border: 'none',
+            borderRadius: 4,
+            fontSize: 11,
+            cursor: 'pointer',
+          }}
+        >
+          No
+        </button>
+      </div>
+    </form>
+  );
+}
+
+// Client Row Component
+function ClientRow({ clientId, clientName }: { clientId: string; clientName: string }) {
+  return (
+    <tr style={{ backgroundColor: '#f7fafc', borderBottom: '2px solid #e2e8f0' }}>
+      <td style={{ padding: '12px', fontWeight: 600, fontSize: 16, color: '#2d3748' }} colSpan={6}>
+        {clientName}
+      </td>
+      <td style={{ padding: '12px', textAlign: 'right' }}>
+        <DeleteClientButton clientId={clientId} clientName={clientName} />
+      </td>
+    </tr>
+  );
+}
+
+// Brand Row Component
+function BrandRow({ brandId, brandName }: { brandId: string; brandName: string }) {
+  return (
+    <tr style={{ backgroundColor: '#fafbfc', borderBottom: '1px solid #e2e8f0' }}>
+      <td style={{ padding: '10px 12px 10px 24px', fontWeight: 500, fontSize: 14, color: '#4a5568' }} colSpan={6}>
+        {brandName}
+      </td>
+      <td style={{ padding: '10px 12px', textAlign: 'right' }}>
+        <DeleteBrandButton brandId={brandId} brandName={brandName} />
+      </td>
+    </tr>
+  );
+}
+
+// Totals Row Component
+function TotalsRow({ clients }: { clients: Client[] }) {
+  // Calculate totals across all jobs
+  let totalEstimate = 0;
+  let totalBilled = 0;
+  let totalPaid = 0;
+
+  clients.forEach((client) => {
+    client.brands.forEach((brand) => {
+      brand.jobs.forEach((job) => {
+        totalEstimate += job.estimate || 0;
+        totalBilled += job.billedAmount || 0;
+        totalPaid += job.paidAmount || 0;
+      });
+    });
+  });
+
+  const formatCurrency = (amount: number | null | undefined) => {
+    if (amount === null || amount === undefined) return '$0.00';
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+    }).format(amount);
+  };
+
+  return (
+    <tr style={{ backgroundColor: '#f7fafc', borderTop: '2px solid #e2e8f0', fontWeight: 600 }}>
+      <td style={{ padding: '12px', color: '#2d3748', fontSize: 14 }}>Total</td>
+      <td style={{ padding: '12px', textAlign: 'center' }}></td>
+      <td style={{ padding: '12px' }}></td>
+      <td style={{ padding: '12px', color: '#2d3748', fontSize: 14 }}>
+        {formatCurrency(totalEstimate)}
+      </td>
+      <td style={{ padding: '12px', textAlign: 'center', color: '#4299e1', fontSize: 14 }}>
+        {formatCurrency(totalBilled)}
+      </td>
+      <td style={{ padding: '12px', textAlign: 'center', color: '#38a169', fontSize: 14 }}>
+        {formatCurrency(totalPaid)}
+      </td>
+      <td style={{ padding: '12px', textAlign: 'right' }}></td>
+    </tr>
+  );
+}
+
 // Job Row Component
 function JobRow({ job, isEditing, onEdit, onCancel }: { 
-  job: { id: string; jobNumber: string; title: string; isArchived: boolean; estimate: number | null; billedAmount: number | null; paidAmount: number | null };
+  job: { id: string; jobNumber: string; title: string; isArchived: boolean; estimate: number | null; billedAmount: number | null; paidAmount: number | null; purchaseOrder: string | null };
   isEditing: boolean;
   onEdit: () => void;
   onCancel: () => void;
@@ -829,19 +1056,20 @@ function JobRow({ job, isEditing, onEdit, onCancel }: {
 
   return (
     <tr style={{ borderBottom: '1px solid #f0f4f8', opacity: isArchived ? 0.5 : 1 }}>
-      <td style={{ padding: '8px 12px', color: '#2d3748' }}>
-        <div style={{ fontWeight: 500 }}>{job.jobNumber}</div>
-        <div style={{ fontSize: 11, color: '#718096' }}>{job.title}</div>
-        {isArchived && <div style={{ fontSize: 10, color: '#718096', fontStyle: 'italic' }}>Archived</div>}
+      <td style={{ padding: '8px 12px 8px 36px', color: '#2d3748' }}>
+        <span style={{ fontWeight: 500 }}>{job.jobNumber}</span> {job.title}
       </td>
       <td style={{ padding: '8px 12px', textAlign: 'center' }}>
         <ActiveToggle jobId={job.id} isActive={!isArchived} />
+      </td>
+      <td style={{ padding: '8px 12px' }}>
+        <PurchaseOrderField jobId={job.id} purchaseOrder={job.purchaseOrder} />
       </td>
       <td style={{ padding: '8px 12px', color: '#4a5568', cursor: 'pointer' }} onClick={onEdit}>
         {job.estimate ? `$${job.estimate.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : '$0.00'}
       </td>
       <td style={{ padding: '8px 12px', textAlign: 'center' }}>
-        <BilledToggle jobId={job.id} isBilled={job.billedAmount !== null && job.billedAmount > 0} />
+        <BilledToggle jobId={job.id} isBilled={job.billedAmount !== null && job.billedAmount > 0} estimate={job.estimate} />
       </td>
       <td style={{ padding: '8px 12px', textAlign: 'center' }}>
         <PaidToggle jobId={job.id} isPaid={isPaid} billedAmount={job.billedAmount} />
@@ -854,7 +1082,7 @@ function JobRow({ job, isEditing, onEdit, onCancel }: {
 }
 
 // Job Edit Form Component
-function JobEditForm({ job, onCancel }: { job: { id: string; jobNumber: string; title: string; estimate: number | null; billedAmount: number | null; paidAmount: number | null }; onCancel: () => void }) {
+function JobEditForm({ job, onCancel }: { job: { id: string; jobNumber: string; title: string; estimate: number | null; billedAmount: number | null; paidAmount: number | null; purchaseOrder: string | null }; onCancel: () => void }) {
   const [state, formAction] = useFormState(updateJobFinancials, { success: false, error: null });
 
   useEffect(() => {
@@ -865,7 +1093,7 @@ function JobEditForm({ job, onCancel }: { job: { id: string; jobNumber: string; 
 
   return (
     <tr>
-      <td colSpan={6} style={{ padding: '12px', backgroundColor: '#f7fafc' }}>
+      <td colSpan={7} style={{ padding: '12px', backgroundColor: '#f7fafc' }}>
         <form action={formAction} style={{ display: 'flex', gap: 12, alignItems: 'end' }}>
           <input type="hidden" name="jobId" value={job.id} />
           <div style={{ flex: 1 }}>
@@ -992,8 +1220,46 @@ function ActiveToggle({ jobId, isActive }: { jobId: string; isActive: boolean })
   );
 }
 
+// Purchase Order Field Component
+function PurchaseOrderField({ jobId, purchaseOrder }: { jobId: string; purchaseOrder: string | null }) {
+  const [value, setValue] = useState(purchaseOrder || '');
+  const [state, formAction] = useFormState(updateJobFinancials, { success: false, error: null });
+
+  useEffect(() => {
+    if (state?.success) {
+      // Don't reload, just update the value
+    }
+  }, [state?.success]);
+
+  const handleBlur = () => {
+    if (value !== (purchaseOrder || '')) {
+      const formData = new FormData();
+      formData.append('jobId', jobId);
+      formData.append('purchaseOrder', value);
+      formAction(formData);
+    }
+  };
+
+  return (
+    <input
+      type="text"
+      value={value}
+      onChange={(e) => setValue(e.target.value)}
+      onBlur={handleBlur}
+      placeholder="P.O. Number"
+      style={{
+        width: '100%',
+        padding: '4px 8px',
+        border: '1px solid #cbd5e0',
+        borderRadius: 4,
+        fontSize: 12,
+      }}
+    />
+  );
+}
+
 // Billed Toggle Component
-function BilledToggle({ jobId, isBilled }: { jobId: string; isBilled: boolean }) {
+function BilledToggle({ jobId, isBilled, estimate }: { jobId: string; isBilled: boolean; estimate: number | null }) {
   const [state, formAction] = useFormState(updateJobFinancials, { success: false, error: null });
 
   useEffect(() => {
@@ -1005,8 +1271,13 @@ function BilledToggle({ jobId, isBilled }: { jobId: string; isBilled: boolean })
   const toggleBilled = (e: React.ChangeEvent<HTMLInputElement>) => {
     const formData = new FormData();
     formData.append('jobId', jobId);
-    // If checking, set to 0 (will be updated when estimate is set), if unchecking, clear it
-    formData.append('billedAmount', e.target.checked ? '0' : '');
+    if (e.target.checked) {
+      // When checking, set billedAmount to estimate
+      formData.append('setBilledToEstimate', 'true');
+    } else {
+      // When unchecking, clear billedAmount
+      formData.append('billedAmount', '');
+    }
     formAction(formData);
   };
 

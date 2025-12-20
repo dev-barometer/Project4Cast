@@ -133,6 +133,7 @@ model Job {
   estimate      Float?           // Estimated cost/project value
   billedAmount  Float?           // Amount billed to client
   paidAmount    Float?           // Amount received from client
+  purchaseOrder String?          // Purchase order number
 
   brandId       String
   brand         Brand            @relation(fields: [brandId], references: [id])

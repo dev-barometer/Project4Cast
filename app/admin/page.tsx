@@ -67,6 +67,7 @@ export default async function AdminPage() {
                 estimate: true,
                 billedAmount: true,
                 paidAmount: true,
+                purchaseOrder: true,
               },
               orderBy: { jobNumber: 'asc' },
             },

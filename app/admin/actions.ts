@@ -38,16 +38,41 @@ export async function updateJobFinancials(prevState: any, formData: FormData) {
     const estimateStr = formData.get('estimate') as string;
     const billedAmountStr = formData.get('billedAmount') as string;
     const paidAmountStr = formData.get('paidAmount') as string;
+    const purchaseOrderStr = formData.get('purchaseOrder') as string;
     const archiveStr = formData.get('archive') as string;
+    const setBilledToEstimate = formData.get('setBilledToEstimate') === 'true';
 
     if (!jobId) {
       return { success: false, error: 'Job ID is required' };
+    }
+
+    // If setBilledToEstimate flag is set, fetch current estimate and set billedAmount to it
+    if (setBilledToEstimate) {
+      const job = await prisma.job.findUnique({
+        where: { id: jobId },
+        select: { estimate: true },
+      });
+      if (job?.estimate !== null && job?.estimate !== undefined) {
+        const updateData = {
+          billedAmount: job.estimate,
+        };
+        await prisma.job.update({
+          where: { id: jobId },
+          data: updateData,
+        });
+        revalidatePath('/admin');
+        revalidatePath(`/jobs/${jobId}`);
+        return { success: true, error: null };
+      } else {
+        return { success: false, error: 'Cannot set billed amount: estimate is not set' };
+      }
     }
 
     const updateData: {
       estimate?: number | null;
       billedAmount?: number | null;
       paidAmount?: number | null;
+      purchaseOrder?: string | null;
       isArchived?: boolean;
     } = {};
 
@@ -87,6 +112,10 @@ export async function updateJobFinancials(prevState: any, formData: FormData) {
       if (archiveStr === 'false') {
         updateData.isArchived = false;
       }
+    }
+
+    if (purchaseOrderStr !== null) {
+      updateData.purchaseOrder = purchaseOrderStr === '' ? null : purchaseOrderStr;
     }
 
     // Handle explicit archive flag
