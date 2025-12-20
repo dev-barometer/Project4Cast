@@ -89,7 +89,7 @@ export default async function AdminPage() {
           },
         },
       },
-      orderBy: { createdAt: 'desc' },
+      orderBy: { jobNumber: 'desc' },
     }),
     // Attachments
     prisma.attachment.findMany({
