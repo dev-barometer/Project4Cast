@@ -734,6 +734,21 @@ function DeleteUserButton({ userId, userEmail }: { userId: string; userEmail: st
     }
   }, [state?.success]);
 
+  // If there's an error (like self-deletion), show it and reset confirm state
+  useEffect(() => {
+    if (state?.error) {
+      setShowConfirm(false);
+    }
+  }, [state?.error]);
+
+  if (state?.error) {
+    return (
+      <div style={{ fontSize: 11, color: '#e53e3e', maxWidth: 250, lineHeight: 1.4, textAlign: 'right' }}>
+        {state.error}
+      </div>
+    );
+  }
+
   if (!showConfirm) {
     return (
       <button
@@ -762,7 +777,6 @@ function DeleteUserButton({ userId, userEmail }: { userId: string; userEmail: st
   return (
     <form action={formAction} style={{ display: 'inline-block' }}>
       <input type="hidden" name="userId" value={userId} />
-      {state?.error && <div style={{ fontSize: 11, color: '#e53e3e' }}>{state.error}</div>}
       <div style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
         <span style={{ fontSize: 11, color: '#742a2a' }}>Delete?</span>
         <button

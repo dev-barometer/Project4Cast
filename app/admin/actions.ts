@@ -114,11 +114,16 @@ export async function updateJobFinancials(prevState: any, formData: FormData) {
 
 export async function deleteUser(prevState: any, formData: FormData) {
   try {
-    await requireAdminOrOwner();
+    const adminId = await requireAdminOrOwner();
     
     const userId = formData.get('userId') as string;
     if (!userId) {
       return { success: false, error: 'User ID is required' };
+    }
+
+    // Prevent self-deletion with fun message
+    if (userId === adminId) {
+      return { success: false, error: "Tsk tsk tsk, you can't delete yourself silly. Contact the Admin if you really mean it." };
     }
 
     // Prevent deleting owner
