@@ -159,6 +159,13 @@ export default function ProfilePageClient({ user, allTeams, admins, allUsers }: 
 
   const userTeamIds = user.teamMemberships.map(tm => tm.team.id);
 
+  // Define tabs array with proper typing
+  type TabType = 'profile' | 'notifications' | 'activity' | 'account' | 'admin';
+  const baseTabs: TabType[] = ['profile', 'notifications', 'activity', 'account'];
+  const tabs: TabType[] = canManageAdmins 
+    ? [...baseTabs, 'admin']
+    : baseTabs;
+
   return (
     <div style={{ padding: '40px', maxWidth: 1400, margin: '0 auto' }}>
       <h1 style={{ fontSize: 28, fontWeight: 600, color: '#2d3748', marginBottom: 32 }}>
@@ -167,7 +174,7 @@ export default function ProfilePageClient({ user, allTeams, admins, allUsers }: 
 
       {/* Tabs */}
       <div style={{ display: 'flex', gap: 8, marginBottom: 24, borderBottom: '1px solid #e2e8f0' }}>
-        {(['profile', 'notifications', 'activity', 'account', ...(canManageAdmins ? ['admin'] : [])] as const).map((tab) => (
+        {tabs.map((tab: TabType) => (
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
