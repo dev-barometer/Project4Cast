@@ -42,9 +42,8 @@ export default async function AdminPage() {
         email: true,
         name: true,
         role: true,
-        createdAt: true,
       },
-      orderBy: { createdAt: 'desc' },
+      orderBy: { email: 'asc' },
     }),
     // Clients
     prisma.client.findMany({

@@ -12,8 +12,7 @@ type User = {
   id: string;
   email: string;
   name: string | null;
-  role: 'ADMIN' | 'USER';
-  createdAt: Date;
+  role: 'OWNER' | 'ADMIN' | 'USER';
 };
 
 type Client = {
@@ -361,9 +360,6 @@ export default function AdminDashboardClient({
                   <th style={{ textAlign: 'left', padding: '12px 16px', borderBottom: '1px solid #e2e8f0', color: '#4a5568', fontWeight: 600, fontSize: 13 }}>
                     Role
                   </th>
-                  <th style={{ textAlign: 'left', padding: '12px 16px', borderBottom: '1px solid #e2e8f0', color: '#4a5568', fontWeight: 600, fontSize: 13 }}>
-                    Joined
-                  </th>
                 </tr>
               </thead>
               <tbody>
@@ -381,15 +377,12 @@ export default function AdminDashboardClient({
                           borderRadius: 4,
                           fontSize: 12,
                           fontWeight: 500,
-                          backgroundColor: user.role === 'ADMIN' ? '#fed7d7' : '#e6f2ff',
-                          color: user.role === 'ADMIN' ? '#742a2a' : '#2c5282',
+                          backgroundColor: user.role === 'OWNER' ? '#fed7d7' : user.role === 'ADMIN' ? '#e6f2ff' : '#f0f4f8',
+                          color: user.role === 'OWNER' ? '#742a2a' : user.role === 'ADMIN' ? '#2c5282' : '#4a5568',
                         }}
                       >
-                        {user.role}
+                        {user.role === 'OWNER' ? '👑 Owner' : user.role === 'ADMIN' ? '🔧 Admin' : '👤 User'}
                       </span>
-                    </td>
-                    <td style={{ padding: '12px 16px', color: '#718096', fontSize: 13 }}>
-                      {new Date(user.createdAt).toLocaleDateString()}
                     </td>
                   </tr>
                 ))}
