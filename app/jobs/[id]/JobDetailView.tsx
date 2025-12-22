@@ -99,6 +99,7 @@ export default function JobDetailView({
   currentUserId,
   isAdmin,
 }: JobDetailViewProps) {
+  // User can edit if they're admin/owner OR if they're a collaborator (not VIEWER)
   const canEdit = isAdmin || job.collaborators.some(c => c.userId === currentUserId && c.role !== 'VIEWER');
   const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
   const [showTaskForm, setShowTaskForm] = useState(false);

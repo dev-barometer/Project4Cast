@@ -28,17 +28,19 @@ export async function createJob(prevState: any, formData: FormData) {
 
   // Status is always PLANNING for new jobs (no validation needed)
 
-  // Require email verification to create jobs
+  // Require authentication and email verification to create jobs
   const session = await auth();
-  if (session?.user?.id) {
-    try {
-      await requireEmailVerification(session.user.id);
-    } catch (error: any) {
-      if (error.message === 'EMAIL_NOT_VERIFIED') {
-        return { error: 'Please verify your email address before creating jobs' };
-      }
-      throw error;
+  if (!session?.user?.id) {
+    return { error: 'You must be logged in to create a job' };
+  }
+
+  try {
+    await requireEmailVerification(session.user.id);
+  } catch (error: any) {
+    if (error.message === 'EMAIL_NOT_VERIFIED') {
+      return { error: 'Please verify your email address before creating jobs' };
     }
+    throw error;
   }
 
   // Check if job number already exists
@@ -59,6 +61,13 @@ export async function createJob(prevState: any, formData: FormData) {
         brandId,
         status: 'PLANNING',
         brief: null,
+        // Automatically add the creator as a collaborator with OWNER role
+        collaborators: {
+          create: {
+            userId: session.user.id,
+            role: 'OWNER',
+          },
+        },
       },
     });
 

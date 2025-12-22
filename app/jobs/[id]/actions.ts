@@ -865,20 +865,21 @@ export async function updateJobBrief(formData: FormData) {
     return { success: false, error: 'You must be logged in' };
   }
 
-  // Check if user has access to this job (must be a collaborator or admin)
+  // Check if user has access to this job (must be a collaborator or admin/owner)
   const user = await prisma.user.findUnique({
     where: { id: session.user.id },
     select: { role: true },
   });
 
-  const isAdmin = user?.role === 'ADMIN';
+  const isAdmin = user?.role === 'ADMIN' || user?.role === 'OWNER';
 
   if (!isAdmin) {
-    // Check if user is a collaborator
+    // Check if user is a collaborator (any role except VIEWER can edit)
     const collaborator = await prisma.jobCollaborator.findFirst({
       where: {
         jobId,
         userId: session.user.id,
+        role: { not: 'VIEWER' }, // VIEWER role cannot edit
       },
     });
 
@@ -916,20 +917,21 @@ export async function updateJobResources(formData: FormData) {
     return { success: false, error: 'You must be logged in' };
   }
 
-  // Check if user has access to this job (must be a collaborator or admin)
+  // Check if user has access to this job (must be a collaborator or admin/owner)
   const user = await prisma.user.findUnique({
     where: { id: session.user.id },
     select: { role: true },
   });
 
-  const isAdmin = user?.role === 'ADMIN';
+  const isAdmin = user?.role === 'ADMIN' || user?.role === 'OWNER';
 
   if (!isAdmin) {
-    // Check if user is a collaborator
+    // Check if user is a collaborator (any role except VIEWER can edit)
     const collaborator = await prisma.jobCollaborator.findFirst({
       where: {
         jobId,
         userId: session.user.id,
+        role: { not: 'VIEWER' }, // VIEWER role cannot edit
       },
     });
 
