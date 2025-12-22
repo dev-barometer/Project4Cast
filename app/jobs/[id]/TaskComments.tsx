@@ -5,6 +5,13 @@
 import { addTaskComment } from './actions';
 import { useState, useRef, useEffect } from 'react';
 import { useFormState } from 'react-dom';
+import MentionAutocomplete from '@/app/components/MentionAutocomplete';
+
+type User = {
+  id: string;
+  name: string | null;
+  email: string;
+};
 
 type Comment = {
   id: string;
@@ -21,7 +28,8 @@ type TaskCommentsProps = {
   taskId: string;
   jobId: string;
   comments: Comment[];
-  currentUserId: string; // For now, we'll pass the first user's ID
+  currentUserId: string;
+  allUsers?: User[];
 };
 
 export default function TaskComments({
@@ -29,6 +37,7 @@ export default function TaskComments({
   jobId,
   comments,
   currentUserId,
+  allUsers = [],
 }: TaskCommentsProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [state, formAction] = useFormState(addTaskComment, { success: false, error: null });
@@ -119,25 +128,33 @@ export default function TaskComments({
             <input type="hidden" name="taskId" value={taskId} />
             <input type="hidden" name="jobId" value={jobId} />
             <input type="hidden" name="authorId" value={currentUserId} />
-            <textarea
-              ref={textareaRef}
-              name="body"
-              placeholder="Add a comment..."
-              required
-              rows={3}
-              style={{
-                width: '100%',
-                padding: '8px 10px',
-                borderRadius: 4,
-                border: '1px solid #cbd5e0',
-                fontSize: 13,
-                backgroundColor: '#f7fdfc',
-                color: '#2d3748',
-                fontFamily: 'inherit',
-                resize: 'vertical',
-                marginBottom: 8,
-              }}
-            />
+            <div style={{ position: 'relative', marginBottom: 8 }}>
+              <textarea
+                ref={textareaRef}
+                name="body"
+                placeholder="Add a comment... (type @ to mention someone)"
+                required
+                rows={3}
+                style={{
+                  width: '100%',
+                  padding: '8px 10px',
+                  borderRadius: 4,
+                  border: '1px solid #cbd5e0',
+                  fontSize: 13,
+                  backgroundColor: '#f7fdfc',
+                  color: '#2d3748',
+                  fontFamily: 'inherit',
+                  resize: 'vertical',
+                }}
+              />
+              {allUsers.length > 0 && (
+                <MentionAutocomplete
+                  textareaRef={textareaRef}
+                  users={allUsers}
+                  onSelect={() => {}}
+                />
+              )}
+            </div>
             <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
               <button
                 type="button"

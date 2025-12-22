@@ -5,6 +5,13 @@ import { addTaskComment } from '../actions';
 import { useFormState } from 'react-dom';
 import { getFileUrl } from '@/lib/file-url-utils';
 import { MAX_FILE_SIZE, isValidFileType } from '@/lib/file-upload';
+import MentionAutocomplete from '@/app/components/MentionAutocomplete';
+
+type User = {
+  id: string;
+  name: string | null;
+  email: string;
+};
 
 type TaskDetailPanelProps = {
   task: {
@@ -37,6 +44,7 @@ type TaskDetailPanelProps = {
   jobId: string;
   currentUserId: string;
   canEdit: boolean;
+  allUsers?: User[];
 };
 
 export default function TaskDetailPanel({
@@ -44,6 +52,7 @@ export default function TaskDetailPanel({
   jobId,
   currentUserId,
   canEdit,
+  allUsers = [],
 }: TaskDetailPanelProps) {
   const [state, formAction] = useFormState(addTaskComment, { success: false, error: null });
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -467,25 +476,33 @@ export default function TaskDetailPanel({
                 📎
               </button>
 
-              {/* Textarea */}
-              <textarea
-                ref={textareaRef}
-                name="body"
-                placeholder="Add comment here..."
-                required
-                rows={3}
-                style={{
-                  flex: 1,
-                  padding: '10px 12px',
-                  borderRadius: 8,
-                  border: '1px solid #e2e8f0',
-                  fontSize: 14,
-                  backgroundColor: '#e5f8fa',
-                  color: '#2d3748',
-                  
-                  resize: 'none',
-                }}
-              />
+              {/* Textarea with Mention Autocomplete */}
+              <div style={{ flex: 1, position: 'relative' }}>
+                <textarea
+                  ref={textareaRef}
+                  name="body"
+                  placeholder="Add comment here... (type @ to mention someone)"
+                  required
+                  rows={3}
+                  style={{
+                    width: '100%',
+                    padding: '10px 12px',
+                    borderRadius: 8,
+                    border: '1px solid #e2e8f0',
+                    fontSize: 14,
+                    backgroundColor: '#e5f8fa',
+                    color: '#2d3748',
+                    resize: 'none',
+                  }}
+                />
+                {allUsers.length > 0 && (
+                  <MentionAutocomplete
+                    textareaRef={textareaRef}
+                    users={allUsers}
+                    onSelect={() => {}}
+                  />
+                )}
+              </div>
 
               {/* Submit Button (+) */}
               <button

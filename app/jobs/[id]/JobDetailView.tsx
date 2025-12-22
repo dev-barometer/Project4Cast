@@ -438,6 +438,7 @@ export default function JobDetailView({
               jobId={job.id}
               currentUserId={currentUserId}
               canEdit={canEdit}
+              allUsers={allUsers}
             />
           </div>
         </div>
