@@ -20,6 +20,8 @@ import {
   deleteJob,
   deleteClient,
   deleteBrand,
+  verifyUserEmail,
+  resendUserVerificationEmail,
 } from './actions';
 import { createInvitation } from '@/app/invitations/actions';
 
@@ -29,6 +31,7 @@ type User = {
   name: string | null;
   role: 'OWNER' | 'ADMIN' | 'USER';
   isPaused: boolean;
+  emailVerified: Date | null;
   teamMemberships: Array<{
     id: string;
     team: {
@@ -189,6 +192,9 @@ export default function AdminDashboardClient({
                     <th style={{ textAlign: 'left', padding: '12px 16px', borderBottom: '1px solid #e2e8f0', color: '#4a5568', fontWeight: 600, fontSize: 13, minWidth: 200 }}>
                       Teams
                     </th>
+                    <th style={{ textAlign: 'left', padding: '12px 16px', borderBottom: '1px solid #e2e8f0', color: '#4a5568', fontWeight: 600, fontSize: 13 }}>
+                      Email Verified
+                    </th>
                     <th style={{ textAlign: 'right', padding: '12px 16px', borderBottom: '1px solid #e2e8f0', color: '#4a5568', fontWeight: 600, fontSize: 13 }}>
                     </th>
                   </tr>
@@ -209,6 +215,9 @@ export default function AdminDashboardClient({
                     </td>
                     <td style={{ padding: '12px 16px', fontSize: 13 }}>
                       <UserTeamsList userId={user.id} teams={user.teamMemberships.map(tm => tm.team)} allTeams={teams} />
+                    </td>
+                    <td style={{ padding: '12px 16px', fontSize: 13 }}>
+                      <EmailVerificationStatus userId={user.id} emailVerified={user.emailVerified} />
                     </td>
                     <td style={{ padding: '12px 16px', textAlign: 'right' }}>
                       {user.role !== 'OWNER' && (
@@ -1686,4 +1695,102 @@ function DeleteJobButton({ jobId, jobNumber }: { jobId: string; jobNumber: strin
     </form>
   );
 }
+
+// Email Verification Status Component
+function EmailVerificationStatus({ userId, emailVerified }: { userId: string; emailVerified: Date | null }) {
+  const [verifyState, verifyAction] = useFormState(verifyUserEmail, { success: false, error: null });
+  const [resendState, resendAction] = useFormState(resendUserVerificationEmail, { success: false, error: null });
+  const [isVerifying, setIsVerifying] = useState(false);
+  const [isResending, setIsResending] = useState(false);
+
+  useEffect(() => {
+    if (verifyState?.success) {
+      setIsVerifying(false);
+      window.location.reload();
+    }
+  }, [verifyState?.success]);
+
+  useEffect(() => {
+    if (resendState?.success) {
+      setIsResending(false);
+    }
+  }, [resendState?.success]);
+
+  const handleVerify = () => {
+    setIsVerifying(true);
+    const formData = new FormData();
+    formData.append('userId', userId);
+    verifyAction(formData);
+  };
+
+  const handleResend = () => {
+    setIsResending(true);
+    const formData = new FormData();
+    formData.append('userId', userId);
+    resendAction(formData);
+  };
+
+  if (emailVerified) {
+    return (
+      <span style={{ fontSize: 12, color: '#22543d', fontWeight: 500 }}>
+        ✓ Verified
+      </span>
+    );
+  }
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+      <span style={{ fontSize: 12, color: '#742a2a', fontWeight: 500 }}>
+        ✗ Not Verified
+      </span>
+      <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
+        <button
+          onClick={handleVerify}
+          disabled={isVerifying}
+          style={{
+            padding: '4px 8px',
+            fontSize: 11,
+            backgroundColor: '#14B8A6',
+            color: 'white',
+            border: 'none',
+            borderRadius: 4,
+            cursor: isVerifying ? 'not-allowed' : 'pointer',
+            opacity: isVerifying ? 0.6 : 1,
+          }}
+        >
+          {isVerifying ? 'Verifying...' : 'Verify'}
+        </button>
+        <button
+          onClick={handleResend}
+          disabled={isResending}
+          style={{
+            padding: '4px 8px',
+            fontSize: 11,
+            backgroundColor: '#f7fdfc',
+            color: '#4a5568',
+            border: '1px solid #cbd5e0',
+            borderRadius: 4,
+            cursor: isResending ? 'not-allowed' : 'pointer',
+            opacity: isResending ? 0.6 : 1,
+          }}
+        >
+          {isResending ? 'Sending...' : 'Resend'}
+        </button>
+      </div>
+      {(verifyState?.error || resendState?.error) && (
+        <span style={{ fontSize: 10, color: '#742a2a' }}>
+          {verifyState?.error || resendState?.error}
+        </span>
+      )}
+      {resendState?.success && (
+        <span style={{ fontSize: 10, color: '#22543d' }}>
+          Verification email sent!
+        </span>
+      )}
+    </div>
+  );
+}
+
+
+
 

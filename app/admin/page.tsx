@@ -36,6 +36,7 @@ export default async function AdminPage() {
         name: true,
         role: true,
         isPaused: true,
+        emailVerified: true,
         teamMemberships: {
           select: {
             id: true,
@@ -95,3 +96,6 @@ export default async function AdminPage() {
     />
   );
 }
+
+
+

@@ -9,6 +9,7 @@ import { revalidatePath } from 'next/cache';
 import bcrypt from 'bcryptjs';
 import { randomBytes } from 'crypto';
 import { sendPasswordResetEmail } from '@/lib/email';
+import { resendVerificationEmail } from '@/app/verify-email/actions';
 
 async function requireAdminOrOwner() {
   const session = await auth();
@@ -687,3 +688,71 @@ export async function deleteClient(prevState: any, formData: FormData) {
     return { success: false, error: error.message || 'Failed to delete client' };
   }
 }
+
+// Manually verify a user's email (admin action)
+export async function verifyUserEmail(prevState: any, formData: FormData) {
+  try {
+    await requireAdminOrOwner();
+    
+    const userId = formData.get('userId') as string;
+    if (!userId) {
+      return { success: false, error: 'User ID is required' };
+    }
+
+    // Check if user exists
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { emailVerified: true },
+    });
+
+    if (!user) {
+      return { success: false, error: 'User not found' };
+    }
+
+    if (user.emailVerified) {
+      return { success: false, error: 'Email is already verified' };
+    }
+
+    // Manually verify the email
+    await prisma.user.update({
+      where: { id: userId },
+      data: { emailVerified: new Date() },
+    });
+
+    // Delete any pending verification tokens
+    await prisma.emailVerificationToken.deleteMany({
+      where: { userId },
+    });
+
+    revalidatePath('/admin');
+    return { success: true, error: null };
+  } catch (error: any) {
+    return { success: false, error: error.message || 'Failed to verify email' };
+  }
+}
+
+// Resend verification email for a user (admin action)
+export async function resendUserVerificationEmail(prevState: any, formData: FormData) {
+  try {
+    await requireAdminOrOwner();
+    
+    const userId = formData.get('userId') as string;
+    if (!userId) {
+      return { success: false, error: 'User ID is required' };
+    }
+
+    // Use the existing resendVerificationEmail function
+    const result = await resendVerificationEmail(userId);
+    
+    if (result.success) {
+      revalidatePath('/admin');
+    }
+    
+    return result;
+  } catch (error: any) {
+    return { success: false, error: error.message || 'Failed to resend verification email' };
+  }
+}
+
+
+
