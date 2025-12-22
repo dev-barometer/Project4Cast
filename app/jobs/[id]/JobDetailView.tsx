@@ -6,6 +6,7 @@ import TaskRow from './TaskRow';
 import TaskForm from './TaskForm';
 import JobDetailsSection from './components/JobDetailsSection';
 import TaskDetailPanel from './components/TaskDetailPanel';
+import EditableJobTitle from './EditableJobTitle';
 import { addTask } from './actions';
 
 type JobDetailViewProps = {
@@ -172,35 +173,17 @@ export default function JobDetailView({
             flexWrap: 'wrap',
           }}
         >
-          <span
-            style={{
-              fontSize: '2.5rem',
-              fontWeight: 700,
-              color: '#2d3748',
-              
-              letterSpacing: '-0.02em',
-              lineHeight: 1.1,
-            }}
-          >
-            {job.jobNumber}
-          </span>
-          <span
-            style={{
-              fontSize: '1.25rem',
-              fontWeight: 600,
-              color: '#2d3748',
-              
-              lineHeight: 1.3,
-            }}
-          >
-            {job.title}
-          </span>
+          <EditableJobTitle
+            jobId={job.id}
+            initialJobNumber={job.jobNumber}
+            initialTitle={job.title}
+            canEdit={canEdit}
+          />
           {job.brand && (
             <span
               style={{
                 fontSize: 14,
                 color: '#718096',
-                
                 lineHeight: 1.3,
               }}
             >

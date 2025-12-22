@@ -902,6 +902,78 @@ export async function updateJobBrief(formData: FormData) {
   }
 }
 
+// Server action to update job number and title
+export async function updateJobNumberAndTitle(formData: FormData) {
+  const jobId = formData.get('jobId')?.toString();
+  const jobNumber = formData.get('jobNumber')?.toString().trim();
+  const title = formData.get('title')?.toString().trim();
+
+  if (!jobId) {
+    return { success: false, error: 'Job ID is required' };
+  }
+
+  if (!jobNumber || !title) {
+    return { success: false, error: 'Job number and title are required' };
+  }
+
+  // Validate job number format: XXX-000 (3 uppercase letters, hyphen, 3 numbers)
+  const jobNumberPattern = /^[A-Z]{3}-[0-9]{3}$/;
+  if (!jobNumberPattern.test(jobNumber)) {
+    return { success: false, error: 'Job number must be in format XXX-000 (3 uppercase letters, hyphen, 3 numbers)' };
+  }
+
+  // Check if user is authenticated
+  const session = await auth();
+  if (!session?.user?.id) {
+    return { success: false, error: 'You must be logged in' };
+  }
+
+  // Check if user has access to this job (must be a collaborator or admin/owner)
+  const user = await prisma.user.findUnique({
+    where: { id: session.user.id },
+    select: { role: true },
+  });
+
+  const isAdmin = user?.role === 'ADMIN' || user?.role === 'OWNER';
+
+  if (!isAdmin) {
+    // Check if user is a collaborator (any role except VIEWER can edit)
+    const collaborator = await prisma.jobCollaborator.findFirst({
+      where: {
+        jobId,
+        userId: session.user.id,
+        role: { not: 'VIEWER' }, // VIEWER role cannot edit
+      },
+    });
+
+    if (!collaborator) {
+      return { success: false, error: 'You do not have permission to edit this job' };
+    }
+  }
+
+  // Check if job number already exists (for a different job)
+  const existingJob = await prisma.job.findUnique({
+    where: { jobNumber },
+  });
+
+  if (existingJob && existingJob.id !== jobId) {
+    return { success: false, error: 'Job number already exists' };
+  }
+
+  try {
+    await prisma.job.update({
+      where: { id: jobId },
+      data: { jobNumber, title },
+    });
+
+    revalidatePath(`/jobs/${jobId}`);
+    return { success: true, error: null };
+  } catch (error: any) {
+    console.error('Error updating job number and title:', error);
+    return { success: false, error: error.message || 'Failed to update job' };
+  }
+}
+
 // Server action to update job resources URL
 export async function updateJobResources(formData: FormData) {
   const jobId = formData.get('jobId')?.toString();
