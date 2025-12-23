@@ -5,6 +5,7 @@ import { auth } from '@/auth';
 import Header from './components/Header';
 import { prisma } from '@/lib/prisma';
 import EmailVerificationWrapper from './components/EmailVerificationWrapper';
+import EnvironmentBanner from './components/EnvironmentBanner';
 
 export const metadata: Metadata = {
   title: "Project Management",
@@ -36,6 +37,7 @@ export default async function RootLayout({
   return (
     <html lang="en" className={GeistSans.className}>
       <body>
+        <EnvironmentBanner />
         {session?.user && <Header user={session.user} unreadNotificationCount={unreadNotificationCount} />}
         <EmailVerificationWrapper>
           {children}
