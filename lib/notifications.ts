@@ -149,6 +149,18 @@ export async function notifyCommentMention({
   actorId?: string | null;
   actorName?: string | null;
 }) {
+  // Check user's notification preferences
+  const preferences = await prisma.userNotificationPreferences.findUnique({
+    where: { userId },
+  });
+
+  // Default to true if preferences don't exist (backward compatibility)
+  const shouldNotify = preferences?.commentMentionInApp !== false;
+
+  if (!shouldNotify) {
+    return; // User has disabled comment mention notifications
+  }
+
   const context = taskTitle || jobTitle || 'a task';
   const actor = actorName || 'Someone';
   await createNotification({
@@ -162,6 +174,9 @@ export async function notifyCommentMention({
     actorId: actorId || null,
   });
 }
+
+
+
 
 
 
