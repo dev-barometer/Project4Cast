@@ -1026,4 +1026,157 @@ export async function updateJobResources(formData: FormData) {
   }
 }
 
+// Server action to move a task to another job
+export async function moveTask(formData: FormData) {
+  const taskId = formData.get('taskId')?.toString();
+  const newJobId = formData.get('newJobId')?.toString();
+  const currentJobId = formData.get('currentJobId')?.toString();
+
+  if (!taskId || !newJobId || !currentJobId) {
+    return { success: false, error: 'Task ID, new job ID, and current job ID are required' };
+  }
+
+  // Check if user is authenticated
+  const session = await auth();
+  if (!session?.user?.id) {
+    return { success: false, error: 'You must be logged in' };
+  }
+
+  // Check if user has permission to edit both jobs
+  const user = await prisma.user.findUnique({
+    where: { id: session.user.id },
+    select: { role: true },
+  });
+
+  const isAdmin = user?.role === 'ADMIN' || user?.role === 'OWNER';
+
+  // Check permissions for current job
+  if (!isAdmin) {
+    const currentJobCollaborator = await prisma.jobCollaborator.findFirst({
+      where: {
+        jobId: currentJobId,
+        userId: session.user.id,
+        role: { not: 'VIEWER' },
+      },
+    });
+    if (!currentJobCollaborator) {
+      return { success: false, error: 'You do not have permission to move tasks from this job' };
+    }
+  }
+
+  // Check permissions for new job
+  if (!isAdmin) {
+    const newJobCollaborator = await prisma.jobCollaborator.findFirst({
+      where: {
+        jobId: newJobId,
+        userId: session.user.id,
+        role: { not: 'VIEWER' },
+      },
+    });
+    if (!newJobCollaborator) {
+      return { success: false, error: 'You do not have permission to move tasks to this job' };
+    }
+  }
+
+  try {
+    // Move the task to the new job
+    await prisma.task.update({
+      where: { id: taskId },
+      data: { jobId: newJobId },
+    });
+
+    // Automatically add task assignees as collaborators to the new job
+    const task = await prisma.task.findUnique({
+      where: { id: taskId },
+      include: { assignees: true },
+    });
+
+    if (task && task.assignees.length > 0) {
+      const assigneeUserIds = task.assignees.map(a => a.userId);
+      
+      // Get existing collaborators for the new job
+      const existingCollaborators = await prisma.jobCollaborator.findMany({
+        where: {
+          jobId: newJobId,
+          userId: { in: assigneeUserIds },
+        },
+        select: { userId: true },
+      });
+
+      const existingUserIds = existingCollaborators.map(c => c.userId);
+      const newCollaboratorIds = assigneeUserIds.filter(id => !existingUserIds.includes(id));
+
+      // Add new collaborators
+      if (newCollaboratorIds.length > 0) {
+        await prisma.jobCollaborator.createMany({
+          data: newCollaboratorIds.map(userId => ({
+            jobId: newJobId,
+            userId,
+            role: 'COLLABORATOR',
+          })),
+        });
+      }
+    }
+
+    revalidatePath(`/jobs/${currentJobId}`);
+    revalidatePath(`/jobs/${newJobId}`);
+    return { success: true, error: null };
+  } catch (error: any) {
+    console.error('Error moving task:', error);
+    return { success: false, error: error.message || 'Failed to move task' };
+  }
+}
+
+// Server action to delete (soft delete) a task
+export async function deleteTask(formData: FormData) {
+  const taskId = formData.get('taskId')?.toString();
+  const jobId = formData.get('jobId')?.toString();
+
+  if (!taskId || !jobId) {
+    return { success: false, error: 'Task ID and job ID are required' };
+  }
+
+  // Check if user is authenticated
+  const session = await auth();
+  if (!session?.user?.id) {
+    return { success: false, error: 'You must be logged in' };
+  }
+
+  // Check if user has permission to edit this job
+  const user = await prisma.user.findUnique({
+    where: { id: session.user.id },
+    select: { role: true },
+  });
+
+  const isAdmin = user?.role === 'ADMIN' || user?.role === 'OWNER';
+
+  if (!isAdmin) {
+    const collaborator = await prisma.jobCollaborator.findFirst({
+      where: {
+        jobId,
+        userId: session.user.id,
+        role: { not: 'VIEWER' },
+      },
+    });
+    if (!collaborator) {
+      return { success: false, error: 'You do not have permission to delete tasks from this job' };
+    }
+  }
+
+  try {
+    // Temporarily hard delete until migration adds deletedAt column
+    // Once migration runs, change this back to soft delete:
+    // data: { deletedAt: new Date() }
+    await prisma.task.delete({
+      where: { id: taskId },
+    });
+
+    revalidatePath(`/jobs/${jobId}`);
+    return { success: true, error: null };
+  } catch (error: any) {
+    console.error('Error deleting task:', error);
+    return { success: false, error: error.message || 'Failed to delete task' };
+  }
+}
+
 

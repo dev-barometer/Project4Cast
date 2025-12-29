@@ -5,6 +5,8 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { updateTask, addAssignee, removeAssignee } from './actions';
+import TaskComments from './TaskComments';
+import TaskMenu from './components/TaskMenu';
 
 type Task = {
   id: string;
@@ -55,8 +57,13 @@ type TaskRowProps = {
   jobId: string;
   allUsers: User[];
   currentUserId: string;
-  isSelected?: boolean;
-  onSelect?: () => void;
+  hasUnreadComments?: boolean; // Whether there are unread comment notifications
+  allJobs?: Array<{
+    id: string;
+    jobNumber: string;
+    title: string;
+  }>;
+  canEdit?: boolean;
 };
 
 export default function TaskRow({
@@ -64,8 +71,9 @@ export default function TaskRow({
   jobId,
   allUsers,
   currentUserId,
-  isSelected = false,
-  onSelect,
+  hasUnreadComments = false,
+  allJobs = [],
+  canEdit = false,
 }: TaskRowProps) {
   // Get list of user IDs already assigned to this task
   const assignedUserIds = task.assignees.map((a) => a.userId);
@@ -73,27 +81,30 @@ export default function TaskRow({
   // Filter out users who are already assigned
   const availableUsers = allUsers.filter((user) => !assignedUserIds.includes(user.id));
   const isDone = task.status === 'DONE';
+  
+  // Auto-expand if there are unread comments
+  const [showComments, setShowComments] = useState(hasUnreadComments);
+  
+  // Update when hasUnreadComments changes
+  useEffect(() => {
+    if (hasUnreadComments) {
+      setShowComments(true);
+    }
+  }, [hasUnreadComments]);
 
   return (
+    <>
     <tr
-      onClick={(e) => {
-        // Only select if clicking on the row itself, not on form elements
-        if ((e.target as HTMLElement).tagName !== 'INPUT' && 
-            (e.target as HTMLElement).tagName !== 'SELECT' && 
-            (e.target as HTMLElement).tagName !== 'BUTTON' &&
-            (e.target as HTMLElement).tagName !== 'TEXTAREA' &&
-            !(e.target as HTMLElement).closest('form')) {
-          onSelect?.();
-        }
-      }}
       style={{
         borderBottom: '1px solid #f0f4f8',
-        cursor: onSelect ? 'pointer' : 'default',
-        backgroundColor: isSelected ? '#cbfdee' : 'transparent',
-        transition: 'background-color 0.2s',
+        backgroundColor: 'transparent',
       }}
     >
-      {/* Done checkbox - before title */}
+      {/* Three-dot menu - before checkbox */}
+      <td style={{ padding: '8px 12px', width: 40, textAlign: 'center' }}>
+        <TaskMenu taskId={task.id} jobId={jobId} allJobs={allJobs} canEdit={canEdit} />
+      </td>
+      {/* Done checkbox */}
       <td style={{ padding: '8px 12px', width: 40, textAlign: 'center' }}>
         <form action={updateTask} style={{ display: 'inline', margin: 0 }}>
           <input type="hidden" name="taskId" value={task.id} />
@@ -249,7 +260,100 @@ export default function TaskRow({
           )}
         </div>
       </td>
+
+      {/* Comments arrow button - all the way to the right */}
+      <td style={{ padding: '8px 12px', width: 40, textAlign: 'right' }}>
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            setShowComments(!showComments);
+          }}
+          style={{
+            background: 'none',
+            border: 'none',
+            cursor: 'pointer',
+            padding: '4px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            color: task.comments.length > 0 ? '#14B8A6' : '#cbd5e0',
+          }}
+          title={
+            showComments 
+              ? 'Hide comments' 
+              : task.comments.length === 0 
+                ? 'Add comment' 
+                : `${task.comments.length} ${task.comments.length === 1 ? 'comment' : 'comments'}`
+          }
+        >
+          {/* Arrow icon - filled if comments exist, outline if none */}
+          {task.comments.length > 0 ? (
+            // Filled arrow (has comments)
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 16 16"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+              style={{
+                transform: showComments ? 'rotate(90deg)' : 'rotate(0deg)',
+                transition: 'transform 0.2s',
+              }}
+            >
+              <path
+                d="M6 4L10 8L6 12"
+                stroke="#14B8A6"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                fill="none"
+              />
+            </svg>
+          ) : (
+            // Outline arrow (no comments)
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 16 16"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+              style={{
+                transform: showComments ? 'rotate(90deg)' : 'rotate(0deg)',
+                transition: 'transform 0.2s',
+              }}
+            >
+              <path
+                d="M6 4L10 8L6 12"
+                stroke="#cbd5e0"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                fill="none"
+              />
+            </svg>
+          )}
+        </button>
+      </td>
     </tr>
+    {/* Expandable comments row */}
+    {showComments && (
+      <tr>
+        <td colSpan={5} style={{ padding: 0, borderBottom: '1px solid #e2e8f0' }}>
+          <div style={{ padding: '16px 24px', backgroundColor: '#f7fdfc' }}>
+            <TaskComments
+              taskId={task.id}
+              jobId={jobId}
+              comments={task.comments}
+              currentUserId={currentUserId}
+              allUsers={allUsers}
+              alwaysExpanded={true}
+            />
+          </div>
+        </td>
+      </tr>
+    )}
+    </>
   );
 }
 

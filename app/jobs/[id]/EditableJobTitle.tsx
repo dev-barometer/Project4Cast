@@ -65,7 +65,7 @@ export default function EditableJobTitle({ jobId, initialJobNumber, initialTitle
   }
 
   return (
-    <div style={{ position: 'relative', display: 'flex', alignItems: 'baseline', gap: 12, flexWrap: 'wrap', width: '100%' }}>
+    <div style={{ position: 'relative', display: 'flex', alignItems: 'baseline', gap: 12, flexWrap: 'wrap' }}>
       {isEditing ? (
         <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 12 }}>
           {message && (
@@ -178,36 +178,37 @@ export default function EditableJobTitle({ jobId, initialJobNumber, initialTitle
           >
             {title}
           </span>
-          <button
-            onClick={() => setIsEditing(true)}
-            style={{
-              width: 32,
-              height: 32,
-              borderRadius: '50%',
-              border: '1px solid #cbd5e0',
-              background: '#f7fdfc',
-              color: '#4a5568',
-              fontSize: 14,
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              padding: 0,
-              marginLeft: 'auto',
-              transition: 'all 0.2s',
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = '#e5f8fa';
-              e.currentTarget.style.borderColor = '#14B8A6';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = '#f7fdfc';
-              e.currentTarget.style.borderColor = '#cbd5e0';
-            }}
-            title="Edit job number and title"
-          >
-            ✏️
-          </button>
+          {canEdit && (
+            <button
+              onClick={() => setIsEditing(true)}
+              style={{
+                width: 32,
+                height: 32,
+                borderRadius: '50%',
+                border: '1px solid #cbd5e0',
+                background: '#f7fdfc',
+                color: '#4a5568',
+                fontSize: 14,
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                padding: 0,
+                transition: 'all 0.2s',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = '#e5f8fa';
+                e.currentTarget.style.borderColor = '#14B8A6';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = '#f7fdfc';
+                e.currentTarget.style.borderColor = '#cbd5e0';
+              }}
+              title="Edit job number and title"
+            >
+              ✏️
+            </button>
+          )}
         </>
       )}
     </div>

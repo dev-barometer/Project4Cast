@@ -167,6 +167,9 @@ model Task {
   status      TaskStatus    @default(TODO)
   priority    TaskPriority  @default(MEDIUM)
   dueDate     DateTime?
+  // Temporarily commented out until migration runs
+  // createdAt   DateTime      @default(now())
+  // deletedAt   DateTime?      // Soft delete - when task is deleted
 
   jobId       String?       // Optional - tasks can exist without a job
   job         Job?          @relation(fields: [jobId], references: [id])

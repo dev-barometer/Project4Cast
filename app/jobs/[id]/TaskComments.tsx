@@ -5,6 +5,7 @@
 import { addTaskComment } from './actions';
 import { useState, useRef, useEffect } from 'react';
 import { useFormState } from 'react-dom';
+import { useRouter } from 'next/navigation';
 import MentionAutocomplete from '@/app/components/MentionAutocomplete';
 
 type User = {
@@ -30,6 +31,7 @@ type TaskCommentsProps = {
   comments: Comment[];
   currentUserId: string;
   allUsers?: User[];
+  alwaysExpanded?: boolean; // When true, always show content (no internal toggle)
 };
 
 export default function TaskComments({
@@ -38,42 +40,50 @@ export default function TaskComments({
   comments,
   currentUserId,
   allUsers = [],
+  alwaysExpanded = false,
 }: TaskCommentsProps) {
-  const [isExpanded, setIsExpanded] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(alwaysExpanded);
   const [state, formAction] = useFormState(addTaskComment, { success: false, error: null });
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const router = useRouter();
 
-  // Clear form when comment is successfully added
+  // Clear form and refresh page when comment is successfully added
   useEffect(() => {
     if (state?.success && textareaRef.current) {
       textareaRef.current.value = '';
-      // Reset the form state after clearing (this will be reset on next render anyway)
+      // Refresh the page to show the new comment
+      router.refresh();
     }
-  }, [state?.success]);
+  }, [state?.success, router]);
+
+  // If alwaysExpanded is true, always show content
+  const shouldShowContent = alwaysExpanded || isExpanded;
 
   return (
-    <div style={{ marginTop: 8 }}>
-      {/* Toggle button */}
-      <button
-        type="button"
-        onClick={() => setIsExpanded(!isExpanded)}
-        style={{
-          background: 'none',
-          border: 'none',
-          color: '#14B8A6',
-          cursor: 'pointer',
-          fontSize: 12,
-          padding: '4px 0',
-          textDecoration: 'underline',
-        }}
-      >
-        {comments.length === 0
-          ? 'Add comment'
-          : `${comments.length} ${comments.length === 1 ? 'comment' : 'comments'}`}
-      </button>
+    <div style={{ marginTop: alwaysExpanded ? 0 : 8 }}>
+      {/* Toggle button - only show if not alwaysExpanded */}
+      {!alwaysExpanded && (
+        <button
+          type="button"
+          onClick={() => setIsExpanded(!isExpanded)}
+          style={{
+            background: 'none',
+            border: 'none',
+            color: '#14B8A6',
+            cursor: 'pointer',
+            fontSize: 12,
+            padding: '4px 0',
+            textDecoration: 'underline',
+          }}
+        >
+          {comments.length === 0
+            ? 'Add comment'
+            : `${comments.length} ${comments.length === 1 ? 'comment' : 'comments'}`}
+        </button>
+      )}
 
       {/* Comments section */}
-      {isExpanded && (
+      {shouldShowContent && (
         <div style={{ marginTop: 12, padding: 12, backgroundColor: '#f7fdfc', borderRadius: 6 }}>
           {/* Error message */}
           {state?.error && (
@@ -156,21 +166,23 @@ export default function TaskComments({
               )}
             </div>
             <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
-              <button
-                type="button"
-                onClick={() => setIsExpanded(false)}
-                style={{
-                  padding: '6px 12px',
-                  borderRadius: 4,
-                  border: '1px solid #cbd5e0',
-                  background: '#f7fdfc',
-                  color: '#4a5568',
-                  fontSize: 12,
-                  cursor: 'pointer',
-                }}
-              >
-                Cancel
-              </button>
+              {!alwaysExpanded && (
+                <button
+                  type="button"
+                  onClick={() => setIsExpanded(false)}
+                  style={{
+                    padding: '6px 12px',
+                    borderRadius: 4,
+                    border: '1px solid #cbd5e0',
+                    background: '#f7fdfc',
+                    color: '#4a5568',
+                    fontSize: 12,
+                    cursor: 'pointer',
+                  }}
+                >
+                  Cancel
+                </button>
+              )}
               <button
                 type="submit"
                 style={{

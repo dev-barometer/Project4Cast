@@ -40,6 +40,7 @@ type JobDetailsSectionProps = {
   currentUserId: string;
   canEdit: boolean;
   showToggleInTopRight?: boolean;
+  alwaysExpanded?: boolean; // When true, always show content (no vertical collapse)
 };
 
 export default function JobDetailsSection({
@@ -52,101 +53,78 @@ export default function JobDetailsSection({
   currentUserId,
   canEdit,
   showToggleInTopRight = false,
+  alwaysExpanded = false,
 }: JobDetailsSectionProps) {
-  const [isExpanded, setIsExpanded] = useState(false); // Collapsed by default
+  const [isExpanded, setIsExpanded] = useState(alwaysExpanded); // Expanded if alwaysExpanded is true
 
   const toggleExpanded = (e: React.MouseEvent) => {
     e.stopPropagation(); // Prevent event from bubbling up
-    setIsExpanded(!isExpanded);
+    if (!alwaysExpanded) {
+      setIsExpanded(!isExpanded);
+    }
   };
 
   return (
     <div
       style={{
         backgroundColor: '#f7fdfc',
-        borderRadius: 8,
-        border: '1px solid #e2e8f0',
+        borderRadius: alwaysExpanded ? 0 : 8,
+        border: alwaysExpanded ? 'none' : '1px solid #e2e8f0',
         overflow: 'hidden',
         position: 'relative',
+        height: alwaysExpanded ? '100%' : 'auto',
+        display: 'flex',
+        flexDirection: 'column',
       }}
     >
-      {/* Toggle Button in Top Right (replaces × close button) */}
-      {showToggleInTopRight && (
+      {/* Header - only show if not always expanded */}
+      {!alwaysExpanded && (
         <button
-          type="button"
           onClick={toggleExpanded}
           style={{
-            position: 'absolute',
-            top: 12,
-            right: 12,
-            width: 32,
-            height: 32,
-            borderRadius: 8,
-            border: '1px solid #e2e8f0',
-            background: isExpanded ? '#cbfdee' : '#f7fdfc',
-            color: '#2d3748',
-            fontSize: 16,
-            lineHeight: 1,
-            cursor: 'pointer',
+            width: '100%',
             display: 'flex',
             alignItems: 'center',
-            justifyContent: 'center',
-            padding: 0,
-            zIndex: 20,
-            transition: 'all 0.2s',
+            justifyContent: 'space-between',
+            padding: '16px 20px',
+            paddingRight: showToggleInTopRight ? '60px' : '20px', // Make room for top-right toggle
+            background: 'none',
+            border: 'none',
+            cursor: 'pointer',
+            backgroundColor: '#f7fdfc',
+            borderBottom: isExpanded ? '1px solid #e2e8f0' : 'none',
           }}
-          title={isExpanded ? 'Collapse job details' : 'Expand job details'}
         >
-          {isExpanded ? '◀' : '▶'}
+          <h3
+            style={{
+              fontSize: 16,
+              fontWeight: 600,
+              color: '#2d3748',
+              margin: 0,
+              
+            }}
+          >
+            Job Details
+          </h3>
+          {!showToggleInTopRight && (
+            <span
+              style={{
+                fontSize: 14,
+                color: '#718096',
+                transform: isExpanded ? 'rotate(90deg)' : 'rotate(0deg)',
+                transition: 'transform 0.2s',
+                display: 'inline-block',
+              }}
+            >
+              ▶
+            </span>
+          )}
         </button>
       )}
 
-      {/* Header with toggle */}
-      <button
-        onClick={toggleExpanded}
-        style={{
-          width: '100%',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          padding: '16px 20px',
-          paddingRight: showToggleInTopRight ? '60px' : '20px', // Make room for top-right toggle
-          background: 'none',
-          border: 'none',
-          cursor: 'pointer',
-          backgroundColor: '#f7fdfc',
-          borderBottom: isExpanded ? '1px solid #e2e8f0' : 'none',
-        }}
-      >
-        <h3
-          style={{
-            fontSize: 16,
-            fontWeight: 600,
-            color: '#2d3748',
-            margin: 0,
-            
-          }}
-        >
-          Job Details
-        </h3>
-        {!showToggleInTopRight && (
-          <span
-            style={{
-              fontSize: 14,
-              color: '#718096',
-              transform: isExpanded ? 'rotate(90deg)' : 'rotate(0deg)',
-              transition: 'transform 0.2s',
-              display: 'inline-block',
-            }}
-          >
-            ▶
-          </span>
-        )}
-      </button>
-
-      {/* Content */}
-      {isExpanded && (
-        <div style={{ padding: '24px 20px' }}>
+      {/* Content - always show if alwaysExpanded, otherwise conditional */}
+      {(alwaysExpanded || isExpanded) && (
+        <div style={{ padding: '24px 20px', flex: 1, overflowY: 'auto' }}>
           {/* Brief */}
           <div style={{ marginBottom: 32 }}>
             <EditableJobBrief jobId={jobId} initialBrief={brief} canEdit={canEdit} />

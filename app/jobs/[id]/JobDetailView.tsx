@@ -5,7 +5,6 @@ import { useFormState } from 'react-dom';
 import TaskRow from './TaskRow';
 import TaskForm from './TaskForm';
 import JobDetailsSection from './components/JobDetailsSection';
-import TaskDetailPanel from './components/TaskDetailPanel';
 import EditableJobTitle from './EditableJobTitle';
 import { addTask } from './actions';
 
@@ -92,6 +91,12 @@ type JobDetailViewProps = {
   }>;
   currentUserId: string;
   isAdmin: boolean;
+  tasksWithUnreadComments?: Set<string>; // Task IDs with unread comment notifications
+  allJobs?: Array<{
+    id: string;
+    jobNumber: string;
+    title: string;
+  }>;
 };
 
 export default function JobDetailView({
@@ -99,10 +104,11 @@ export default function JobDetailView({
   allUsers,
   currentUserId,
   isAdmin,
+  tasksWithUnreadComments = new Set(),
+  allJobs = [],
 }: JobDetailViewProps) {
   // User can edit if they're admin/owner OR if they're a collaborator (not VIEWER)
   const canEdit = isAdmin || job.collaborators.some(c => c.userId === currentUserId && c.role !== 'VIEWER');
-  const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
   const [showTaskForm, setShowTaskForm] = useState(false);
   const [isRightPanelOpen, setIsRightPanelOpen] = useState(false);
   const formRef = useRef<HTMLFormElement>(null);
@@ -119,28 +125,6 @@ export default function JobDetailView({
     }
   }, [state?.success]);
 
-  // Get selected task
-  const selectedTask = selectedTaskId
-    ? job.tasks.find(t => t.id === selectedTaskId) || null
-    : null;
-
-  // Auto-open right panel when a task is selected
-  useEffect(() => {
-    if (selectedTaskId) {
-      setIsRightPanelOpen(true);
-    }
-  }, [selectedTaskId]);
-
-  // Handle task selection - toggle selection if clicking same task
-  const handleTaskSelect = (taskId: string) => {
-    if (selectedTaskId === taskId) {
-      // Deselecting - keep panel open to show job details
-      setSelectedTaskId(null);
-    } else {
-      // Selecting new task - will auto-open panel via useEffect
-      setSelectedTaskId(taskId);
-    }
-  };
 
   // Combine all attachments (job + task attachments) for Job Details section
   const allAttachments = [
@@ -169,6 +153,7 @@ export default function JobDetailView({
           style={{
             display: 'flex',
             alignItems: 'baseline',
+            justifyContent: 'space-between',
             gap: 12,
             flexWrap: 'wrap',
           }}
@@ -179,18 +164,30 @@ export default function JobDetailView({
             initialTitle={job.title}
             canEdit={canEdit}
           />
-          {job.brand && (
-            <span
-              style={{
-                fontSize: 14,
-                color: '#718096',
-                lineHeight: 1.3,
-              }}
-            >
-              {job.brand.name}
-              {job.brand.client && ` • ${job.brand.client.name}`}
-            </span>
-          )}
+          <div style={{ display: 'flex', alignItems: 'baseline', gap: 12, marginLeft: 'auto' }}>
+            {job.brand?.client && (
+              <span
+                style={{
+                  fontSize: 14,
+                  color: '#718096',
+                  lineHeight: 1.3,
+                }}
+              >
+                {job.brand.client.name}
+              </span>
+            )}
+            {job.brand && !job.brand.client && (
+              <span
+                style={{
+                  fontSize: 14,
+                  color: '#718096',
+                  lineHeight: 1.3,
+                }}
+              >
+                {job.brand.name}
+              </span>
+            )}
+          </div>
         </div>
       </div>
 
@@ -334,7 +331,22 @@ export default function JobDetailView({
                       color: '#718096',
                       textTransform: 'uppercase',
                     }}
-                  ></th>
+                  >
+                    {/* Menu column */}
+                  </th>
+                  <th
+                    style={{
+                      padding: '12px 16px',
+                      width: 40,
+                      textAlign: 'left',
+                      fontSize: 12,
+                      fontWeight: 600,
+                      color: '#718096',
+                      textTransform: 'uppercase',
+                    }}
+                  >
+                    {/* Checkbox column */}
+                  </th>
                   <th
                     style={{
                       padding: '12px 16px',
@@ -371,6 +383,19 @@ export default function JobDetailView({
                   >
                     Assignees
                   </th>
+                  <th
+                    style={{
+                      padding: '12px 16px',
+                      textAlign: 'right',
+                      fontSize: 12,
+                      fontWeight: 600,
+                      color: '#718096',
+                      textTransform: 'uppercase',
+                      width: 40,
+                    }}
+                  >
+                    {/* Arrow column - empty header */}
+                  </th>
                 </tr>
               </thead>
               <tbody>
@@ -381,8 +406,9 @@ export default function JobDetailView({
                     jobId={job.id}
                     allUsers={allUsers}
                     currentUserId={currentUserId}
-                    isSelected={selectedTaskId === task.id}
-                    onSelect={() => handleTaskSelect(task.id)}
+                    hasUnreadComments={tasksWithUnreadComments.has(task.id)}
+                    allJobs={allJobs}
+                    canEdit={canEdit}
                   />
                 ))}
               </tbody>
@@ -390,7 +416,7 @@ export default function JobDetailView({
           )}
         </div>
 
-        {/* Right: Job Details (Top) + Task Details (Bottom) - Accordion from Right */}
+        {/* Right: Job Details Panel - Accordion from Right */}
         <div
           style={{
             position: 'absolute',
@@ -409,12 +435,12 @@ export default function JobDetailView({
             boxShadow: isRightPanelOpen ? '-2px 0 8px rgba(0, 0, 0, 0.1)' : 'none',
           }}
         >
-          {/* Top: Job Details (Collapsible) */}
+          {/* Job Details - Takes full space */}
           <div
             style={{
-              borderBottom: '1px solid #e2e8f0',
+              flex: 1,
+              overflowY: 'auto',
               position: 'relative',
-              zIndex: 1,
             }}
             onClick={(e) => e.stopPropagation()}
           >
@@ -427,18 +453,8 @@ export default function JobDetailView({
               allUsers={allUsers}
               currentUserId={currentUserId}
               canEdit={canEdit}
-              showToggleInTopRight={true}
-            />
-          </div>
-
-          {/* Bottom: Task Details Panel */}
-          <div style={{ flex: 1, overflow: 'hidden' }}>
-            <TaskDetailPanel
-              task={selectedTask}
-              jobId={job.id}
-              currentUserId={currentUserId}
-              canEdit={canEdit}
-              allUsers={allUsers}
+              showToggleInTopRight={false}
+              alwaysExpanded={true}
             />
           </div>
         </div>

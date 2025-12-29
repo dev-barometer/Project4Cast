@@ -147,6 +147,7 @@ export default async function JobDetailPage({ params }: JobPageProps) {
     }>;
   }> = [];
   let dbError: string | null = null;
+  let tasksWithUnreadComments = new Set<string>(); // Initialize with empty Set
 
   try {
     const result = await Promise.all([
@@ -159,6 +160,10 @@ export default async function JobDetailPage({ params }: JobPageProps) {
             },
           },
           tasks: {
+            // Temporarily removed deletedAt filter until migration runs
+            // where: {
+            //   deletedAt: null, // Only show non-deleted tasks
+            // },
             include: {
               assignees: {
                 include: {
@@ -182,6 +187,13 @@ export default async function JobDetailPage({ params }: JobPageProps) {
                 },
               },
             },
+            orderBy: [
+              { status: 'asc' }, // DONE tasks last
+              { priority: 'desc' }, // Urgent first
+              { dueDate: 'asc' }, // Earliest due date first
+              // Temporarily removed createdAt ordering until migration runs
+              // { createdAt: 'asc' }, // Oldest first (chronological)
+            ],
           },
           collaborators: {
             include: {
@@ -244,16 +256,55 @@ export default async function JobDetailPage({ params }: JobPageProps) {
               },
             },
           }),
+      // Fetch unread comment notifications for this user (we'll filter by task IDs after getting the job)
+      prisma.notification.findMany({
+        where: {
+          userId: currentUserId,
+          read: false,
+          type: 'COMMENT_MENTION',
+        },
+        select: {
+          taskId: true,
+        },
+      }),
     ]);
     job = result[0] as JobWithRelations | null;
     allUsers = result[1];
-    allJobs = result[2] as typeof allJobs;
+    allJobs = result[2] as Array<{
+      id: string;
+      jobNumber: string;
+      title: string;
+      status: string;
+      brand: {
+        name: string;
+        client: {
+          name: string;
+        } | null;
+      } | null;
+      tasks: Array<{
+        id: string;
+        status: 'TODO' | 'IN_PROGRESS' | 'BLOCKED' | 'DONE';
+        dueDate: Date | string | null;
+      }>;
+    }>;
+    const allUnreadCommentNotifications = result[3] as Array<{ taskId: string | null }>;
+    
+    // Get task IDs for this job
+    const jobTaskIds = job?.tasks.map(t => t.id) || [];
+    
+    // Create a Set of task IDs with unread comments for this job only
+    tasksWithUnreadComments = new Set(
+      allUnreadCommentNotifications
+        .filter(n => n.taskId && jobTaskIds.includes(n.taskId))
+        .map(n => n.taskId!)
+    );
   } catch (error: any) {
     console.error('Database error:', error);
     dbError = error.message || 'Failed to connect to database';
     job = null;
     allUsers = [];
     allJobs = [];
+    tasksWithUnreadComments = new Set<string>(); // Reset to empty Set on error
   }
 
   // Show database error if connection failed
@@ -328,6 +379,12 @@ export default async function JobDetailPage({ params }: JobPageProps) {
         allUsers={allUsers}
         currentUserId={currentUserId}
         isAdmin={isAdmin}
+        tasksWithUnreadComments={tasksWithUnreadComments}
+        allJobs={allJobs.map(j => ({
+          id: j.id,
+          jobNumber: j.jobNumber,
+          title: j.title,
+        }))}
       />
     </>
   );
