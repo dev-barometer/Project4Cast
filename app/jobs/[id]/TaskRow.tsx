@@ -348,6 +348,7 @@ export default function TaskRow({
               currentUserId={currentUserId}
               allUsers={allUsers}
               alwaysExpanded={true}
+              attachments={task.attachments}
             />
           </div>
         </td>

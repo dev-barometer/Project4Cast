@@ -6,10 +6,24 @@ import Header from './components/Header';
 import { prisma } from '@/lib/prisma';
 import EmailVerificationWrapper from './components/EmailVerificationWrapper';
 import EnvironmentBanner from './components/EnvironmentBanner';
+import ServiceWorkerRegistration from './sw-register';
 
 export const metadata: Metadata = {
-  title: "Project Management",
+  title: "Project4Cast",
   description: "Project4Cast - Project management platform",
+  manifest: "/manifest.json",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "Project4Cast",
+  },
+  viewport: {
+    width: "device-width",
+    initialScale: 1,
+    maximumScale: 1,
+    userScalable: false,
+    viewportFit: "cover",
+  },
 };
 
 export default async function RootLayout({
@@ -36,7 +50,16 @@ export default async function RootLayout({
 
   return (
     <html lang="en" className={GeistSans.className}>
+      <head>
+        <link rel="manifest" href="/manifest.json" />
+        <meta name="theme-color" content="#14B8A6" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+        <meta name="apple-mobile-web-app-title" content="Project4Cast" />
+        <link rel="apple-touch-icon" href="/icon-192.png" />
+      </head>
       <body>
+        <ServiceWorkerRegistration />
         <EnvironmentBanner />
         {session?.user && <Header user={session.user} unreadNotificationCount={unreadNotificationCount} />}
         <EmailVerificationWrapper>
