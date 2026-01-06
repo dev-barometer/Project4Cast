@@ -96,7 +96,12 @@ export default async function HomePage() {
   }
 
   return (
-    <div style={{ display: 'flex', height: 'calc(100vh - 60px)', overflow: 'hidden' }}>
+    <div style={{ 
+      display: 'flex', 
+      height: 'calc(100vh - 60px)', 
+      overflow: 'hidden', 
+      position: 'relative',
+    }}>
       <JobSidebar jobs={jobs} isAdmin={isAdmin} />
       <div
         style={{
@@ -105,8 +110,11 @@ export default async function HomePage() {
           alignItems: 'center',
           justifyContent: 'center',
           backgroundColor: '#f7fdfc',
-          padding: 40,
+          padding: '40px 20px',
+          minWidth: 0,
+          paddingTop: '64px', // Space for hamburger button on mobile
         }}
+        className="main-content-area"
       >
         {dbError ? (
           <div

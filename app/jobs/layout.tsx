@@ -6,7 +6,16 @@ export default function JobsLayout({
   children: ReactNode;
 }) {
   return (
-    <div style={{ display: 'flex', height: 'calc(100vh - 60px)', overflow: 'hidden' }}>
+    <div 
+      className="jobs-layout"
+      style={{ 
+        display: 'flex', 
+        flexDirection: 'row',
+        height: 'calc(100vh - 60px)', 
+        overflow: 'hidden',
+        position: 'relative',
+      }}
+    >
       {children}
     </div>
   );

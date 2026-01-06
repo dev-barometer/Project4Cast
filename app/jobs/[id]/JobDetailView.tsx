@@ -111,7 +111,18 @@ export default function JobDetailView({
   const canEdit = isAdmin || job.collaborators.some(c => c.userId === currentUserId && c.role !== 'VIEWER');
   const [showTaskForm, setShowTaskForm] = useState(false);
   const [isRightPanelOpen, setIsRightPanelOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
   const formRef = useRef<HTMLFormElement>(null);
+
+  // Check if mobile
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
   
   // Use useFormState for better error handling
   const [state, formAction] = useFormState(addTask, { success: false, error: null });
@@ -145,7 +156,7 @@ export default function JobDetailView({
       {/* Top Section: Job Title Area (Full Width) */}
       <div
         style={{
-          padding: '32px 40px',
+          padding: isMobile ? '16px' : '32px 40px',
           borderBottom: '1px solid #e2e8f0',
         }}
       >
@@ -206,9 +217,12 @@ export default function JobDetailView({
           style={{
             flex: 1,
             overflowY: 'auto',
-            padding: '32px 40px',
-            transition: 'margin-right 0.3s ease-in-out',
-            marginRight: isRightPanelOpen ? '400px' : '0',
+            padding: isMobile ? '16px' : '32px 40px',
+            paddingTop: isMobile ? '64px' : undefined, // Space for hamburger button
+            transition: isMobile ? 'none' : 'margin-right 0.3s ease-in-out',
+            marginRight: isMobile ? '0' : (isRightPanelOpen ? '400px' : '0'),
+            width: isMobile ? '100%' : 'auto',
+            WebkitOverflowScrolling: 'touch',
           }}
         >
           <div
@@ -232,23 +246,25 @@ export default function JobDetailView({
                 Tasks
               </h2>
               {canEdit && (
-                <button
+                  <button
                   type="button"
                   onClick={() => setShowTaskForm((prev) => !prev)}
                   style={{
-                    width: 32,
-                    height: 32,
+                    width: isMobile ? 40 : 32,
+                    height: isMobile ? 40 : 32,
                     borderRadius: 8,
                     border: '1px solid #e2e8f0',
                     background: '#f7fdfc',
                     color: '#2d3748',
-                    fontSize: 18,
+                    fontSize: isMobile ? 20 : 18,
                     lineHeight: 1,
                     cursor: 'pointer',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
                     padding: 0,
+                    minWidth: isMobile ? 40 : 32,
+                    minHeight: isMobile ? 40 : 32,
                   }}
                   title={showTaskForm ? 'Hide task form' : 'Add task'}
                 >
@@ -261,13 +277,13 @@ export default function JobDetailView({
               type="button"
               onClick={() => setIsRightPanelOpen(!isRightPanelOpen)}
               style={{
-                width: 32,
-                height: 32,
+                width: isMobile ? 40 : 32,
+                height: isMobile ? 40 : 32,
                 borderRadius: 8,
                 border: '1px solid #e2e8f0',
                 background: isRightPanelOpen ? '#cbfdee' : '#f7fdfc',
                 color: '#2d3748',
-                fontSize: 16,
+                fontSize: isMobile ? 18 : 16,
                 lineHeight: 1,
                 cursor: 'pointer',
                 display: 'flex',
@@ -275,6 +291,7 @@ export default function JobDetailView({
                 justifyContent: 'center',
                 padding: 0,
                 transition: 'all 0.2s',
+                minWidth: isMobile ? 40 : 32,
               }}
               title={isRightPanelOpen ? 'Hide job details' : 'Show job details'}
             >
@@ -318,121 +335,156 @@ export default function JobDetailView({
               No tasks yet. {canEdit && 'Add one above.'}
             </p>
           ) : (
-            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-              <thead>
-                <tr style={{ borderBottom: '1px solid #e2e8f0' }}>
-                  <th
-                    style={{
-                      padding: '12px 16px',
-                      width: 40,
-                      textAlign: 'left',
-                      fontSize: 12,
-                      fontWeight: 600,
-                      color: '#718096',
-                      textTransform: 'uppercase',
-                    }}
-                  >
-                    {/* Menu column */}
-                  </th>
-                  <th
-                    style={{
-                      padding: '12px 16px',
-                      width: 40,
-                      textAlign: 'left',
-                      fontSize: 12,
-                      fontWeight: 600,
-                      color: '#718096',
-                      textTransform: 'uppercase',
-                    }}
-                  >
-                    {/* Checkbox column */}
-                  </th>
-                  <th
-                    style={{
-                      padding: '12px 16px',
-                      textAlign: 'left',
-                      fontSize: 12,
-                      fontWeight: 600,
-                      color: '#718096',
-                      textTransform: 'uppercase',
-                    }}
-                  >
-                    Title
-                  </th>
-                  <th
-                    style={{
-                      padding: '12px 16px',
-                      textAlign: 'left',
-                      fontSize: 12,
-                      fontWeight: 600,
-                      color: '#718096',
-                      textTransform: 'uppercase',
-                    }}
-                  >
-                    Due Date
-                  </th>
-                  <th
-                    style={{
-                      padding: '12px 16px',
-                      textAlign: 'left',
-                      fontSize: 12,
-                      fontWeight: 600,
-                      color: '#718096',
-                      textTransform: 'uppercase',
-                    }}
-                  >
-                    Assignees
-                  </th>
-                  <th
-                    style={{
-                      padding: '12px 16px',
-                      textAlign: 'right',
-                      fontSize: 12,
-                      fontWeight: 600,
-                      color: '#718096',
-                      textTransform: 'uppercase',
-                      width: 40,
-                    }}
-                  >
-                    {/* Arrow column - empty header */}
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {job.tasks.map((task) => (
-                  <TaskRow
-                    key={task.id}
-                    task={task}
-                    jobId={job.id}
-                    allUsers={allUsers}
-                    currentUserId={currentUserId}
-                    hasUnreadComments={tasksWithUnreadComments.has(task.id)}
-                    allJobs={allJobs}
-                    canEdit={canEdit}
-                  />
-                ))}
-              </tbody>
-            </table>
+            <div style={{ 
+              overflowX: 'auto', 
+              width: '100%', 
+              WebkitOverflowScrolling: 'touch',
+              marginLeft: isMobile ? '-16px' : 0,
+              marginRight: isMobile ? '-16px' : 0,
+              paddingLeft: isMobile ? '16px' : 0,
+              paddingRight: isMobile ? '16px' : 0,
+            }}>
+              <table style={{ 
+                width: '100%', 
+                borderCollapse: 'collapse', 
+                minWidth: isMobile ? '600px' : 'auto',
+                tableLayout: isMobile ? 'fixed' : 'auto',
+              }}>
+                <thead>
+                  <tr style={{ borderBottom: '1px solid #e2e8f0' }}>
+                    <th
+                      style={{
+                        padding: isMobile ? '8px 4px' : '12px 16px',
+                        width: isMobile ? 32 : 40,
+                        textAlign: 'left',
+                        fontSize: isMobile ? 10 : 12,
+                        fontWeight: 600,
+                        color: '#718096',
+                        textTransform: 'uppercase',
+                      }}
+                    >
+                      {/* Menu column */}
+                    </th>
+                    <th
+                      style={{
+                        padding: isMobile ? '8px 4px' : '12px 16px',
+                        width: isMobile ? 32 : 40,
+                        textAlign: 'left',
+                        fontSize: isMobile ? 10 : 12,
+                        fontWeight: 600,
+                        color: '#718096',
+                        textTransform: 'uppercase',
+                      }}
+                    >
+                      {/* Checkbox column */}
+                    </th>
+                    <th
+                      style={{
+                        padding: isMobile ? '8px 4px' : '12px 16px',
+                        textAlign: 'left',
+                        fontSize: isMobile ? 10 : 12,
+                        fontWeight: 600,
+                        color: '#718096',
+                        textTransform: 'uppercase',
+                      }}
+                    >
+                      Title
+                    </th>
+                    {!isMobile && (
+                      <>
+                        <th
+                          style={{
+                            padding: '12px 16px',
+                            textAlign: 'left',
+                            fontSize: 12,
+                            fontWeight: 600,
+                            color: '#718096',
+                            textTransform: 'uppercase',
+                          }}
+                        >
+                          Due Date
+                        </th>
+                        <th
+                          style={{
+                            padding: '12px 16px',
+                            textAlign: 'left',
+                            fontSize: 12,
+                            fontWeight: 600,
+                            color: '#718096',
+                            textTransform: 'uppercase',
+                          }}
+                        >
+                          Assignees
+                        </th>
+                      </>
+                    )}
+                    <th
+                      style={{
+                        padding: isMobile ? '8px 4px' : '12px 16px',
+                        textAlign: 'right',
+                        fontSize: isMobile ? 10 : 12,
+                        fontWeight: 600,
+                        color: '#718096',
+                        textTransform: 'uppercase',
+                        width: isMobile ? 32 : 40,
+                      }}
+                    >
+                      {/* Arrow column - empty header */}
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {job.tasks.map((task) => (
+                    <TaskRow
+                      key={task.id}
+                      task={task}
+                      jobId={job.id}
+                      allUsers={allUsers}
+                      currentUserId={currentUserId}
+                      hasUnreadComments={tasksWithUnreadComments.has(task.id)}
+                      allJobs={allJobs}
+                      canEdit={canEdit}
+                      isMobile={isMobile}
+                    />
+                  ))}
+                </tbody>
+              </table>
+            </div>
           )}
         </div>
 
         {/* Right: Job Details Panel - Accordion from Right */}
+        {isMobile && isRightPanelOpen && (
+          <div
+            onClick={() => setIsRightPanelOpen(false)}
+            style={{
+              position: 'fixed',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              backgroundColor: 'rgba(0, 0, 0, 0.5)',
+              zIndex: 997,
+            }}
+          />
+        )}
         <div
           style={{
-            position: 'absolute',
+            position: isMobile ? 'fixed' : 'absolute',
             right: 0,
-            top: 0,
+            top: isMobile ? 0 : 0,
             bottom: 0,
-            width: '400px',
+            width: isMobile ? '100%' : '400px',
+            maxWidth: isMobile ? '100%' : '400px',
             display: 'flex',
             flexDirection: 'column',
             overflow: 'hidden',
             backgroundColor: '#f7fdfc',
-            borderLeft: '1px solid #e2e8f0',
+            borderLeft: isMobile ? 'none' : '1px solid #e2e8f0',
             transform: isRightPanelOpen ? 'translateX(0)' : 'translateX(100%)',
             transition: 'transform 0.3s ease-in-out',
-            zIndex: 10,
-            boxShadow: isRightPanelOpen ? '-2px 0 8px rgba(0, 0, 0, 0.1)' : 'none',
+            zIndex: isMobile ? 998 : 10,
+            boxShadow: isRightPanelOpen ? (isMobile ? '0 -2px 8px rgba(0, 0, 0, 0.2)' : '-2px 0 8px rgba(0, 0, 0, 0.1)') : 'none',
           }}
         >
           {/* Job Details - Takes full space */}
@@ -444,6 +496,31 @@ export default function JobDetailView({
             }}
             onClick={(e) => e.stopPropagation()}
           >
+            {/* Mobile close button */}
+            {isMobile && (
+              <div style={{ padding: '16px', borderBottom: '1px solid #e2e8f0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <h3 style={{ fontSize: 18, fontWeight: 600, color: '#2d3748', margin: 0 }}>Job Details</h3>
+                <button
+                  onClick={() => setIsRightPanelOpen(false)}
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    fontSize: 28,
+                    color: '#718096',
+                    cursor: 'pointer',
+                    padding: '8px',
+                    lineHeight: 1,
+                    minWidth: 44,
+                    minHeight: 44,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
+                >
+                  ×
+                </button>
+              </div>
+            )}
             <JobDetailsSection
               jobId={job.id}
               brief={job.brief}

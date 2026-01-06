@@ -64,6 +64,7 @@ type TaskRowProps = {
     title: string;
   }>;
   canEdit?: boolean;
+  isMobile?: boolean;
 };
 
 export default function TaskRow({
@@ -74,6 +75,7 @@ export default function TaskRow({
   hasUnreadComments = false,
   allJobs = [],
   canEdit = false,
+  isMobile = false,
 }: TaskRowProps) {
   // Get list of user IDs already assigned to this task
   const assignedUserIds = task.assignees.map((a) => a.userId);
@@ -101,11 +103,11 @@ export default function TaskRow({
       }}
     >
       {/* Three-dot menu - before checkbox */}
-      <td style={{ padding: '8px 12px', width: 40, textAlign: 'center' }}>
+      <td style={{ padding: isMobile ? '8px 4px' : '8px 12px', width: isMobile ? 32 : 40, textAlign: 'center' }}>
         <TaskMenu taskId={task.id} jobId={jobId} allJobs={allJobs} canEdit={canEdit} />
       </td>
       {/* Done checkbox */}
-      <td style={{ padding: '8px 12px', width: 40, textAlign: 'center' }}>
+      <td style={{ padding: isMobile ? '8px 4px' : '8px 12px', width: isMobile ? 32 : 40, textAlign: 'center' }}>
         <form action={updateTask} style={{ display: 'inline', margin: 0 }}>
           <input type="hidden" name="taskId" value={task.id} />
           <input type="hidden" name="jobId" value={jobId} />
@@ -128,10 +130,12 @@ export default function TaskRow({
               e.currentTarget.form?.requestSubmit();
             }}
             style={{
-              width: 18,
-              height: 18,
+              width: isMobile ? 22 : 18,
+              height: isMobile ? 22 : 18,
               cursor: 'pointer',
               accentColor: '#14B8A6',
+              minWidth: isMobile ? 22 : 18,
+              minHeight: isMobile ? 22 : 18,
             }}
             title={isDone ? 'Mark as not done' : 'Mark as done'}
           />
@@ -139,7 +143,7 @@ export default function TaskRow({
       </td>
 
       {/* Title - editable input */}
-      <td style={{ padding: '8px 12px', color: '#2d3748' }}>
+      <td style={{ padding: isMobile ? '8px 4px' : '8px 12px', color: '#2d3748' }}>
         <form action={updateTask} style={{ display: 'inline' }}>
           <input type="hidden" name="taskId" value={task.id} />
           <input type="hidden" name="jobId" value={jobId} />
@@ -164,46 +168,50 @@ export default function TaskRow({
               border: 'none',
               background: 'transparent',
               color: isDone ? '#a0aec0' : '#2d3748',
-              fontSize: 14,
-              padding: '4px 8px',
+              fontSize: isMobile ? 16 : 14, // Prevent zoom on iOS
+              padding: isMobile ? '8px 8px' : '4px 8px',
               borderRadius: 4,
               width: '100%',
               cursor: 'text',
               textDecoration: isDone ? 'line-through' : 'none',
+              minHeight: isMobile ? 44 : 'auto', // Touch-friendly height
             }}
           />
         </form>
       </td>
 
-      {/* Due Date - editable */}
-      <td style={{ padding: '8px 12px', color: '#4a5568' }}>
-        <form action={updateTask} style={{ display: 'inline' }}>
-          <input type="hidden" name="taskId" value={task.id} />
-          <input type="hidden" name="jobId" value={jobId} />
-          <input
-            type="date"
-            name="dueDate"
-            defaultValue={task.dueDate ? new Date(task.dueDate).toISOString().split('T')[0] : ''}
-            onBlur={(e) => {
-              // Submit when user clicks away
-              e.currentTarget.form?.requestSubmit();
-            }}
-            style={{
-              border: '1px solid #cbd5e0',
-              borderRadius: 4,
-              padding: '4px 8px',
-              fontSize: 13,
-              color: '#4a5568',
-              backgroundColor: '#f7fdfc',
-              cursor: 'text',
-              width: '100%',
-            }}
-          />
-        </form>
-      </td>
+      {/* Due Date - editable (hidden on mobile) */}
+      {!isMobile && (
+        <td style={{ padding: '8px 12px', color: '#4a5568' }}>
+          <form action={updateTask} style={{ display: 'inline' }}>
+            <input type="hidden" name="taskId" value={task.id} />
+            <input type="hidden" name="jobId" value={jobId} />
+            <input
+              type="date"
+              name="dueDate"
+              defaultValue={task.dueDate ? new Date(task.dueDate).toISOString().split('T')[0] : ''}
+              onBlur={(e) => {
+                // Submit when user clicks away
+                e.currentTarget.form?.requestSubmit();
+              }}
+              style={{
+                border: '1px solid #cbd5e0',
+                borderRadius: 4,
+                padding: '4px 8px',
+                fontSize: 13,
+                color: '#4a5568',
+                backgroundColor: '#f7fdfc',
+                cursor: 'text',
+                width: '100%',
+              }}
+            />
+          </form>
+        </td>
+      )}
 
-      {/* Assignees - editable with add/remove */}
-      <td style={{ padding: '8px 12px', color: '#4a5568' }}>
+      {/* Assignees - editable with add/remove (hidden on mobile) */}
+      {!isMobile && (
+        <td style={{ padding: '8px 12px', color: '#4a5568' }}>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, alignItems: 'center' }}>
           {/* Show current assignees with remove buttons */}
           {task.assignees.map((assignee) => (
@@ -259,10 +267,11 @@ export default function TaskRow({
             <span style={{ color: '#a0aec0', fontSize: 12 }}>—</span>
           )}
         </div>
-      </td>
+        </td>
+      )}
 
       {/* Comments arrow button - all the way to the right */}
-      <td style={{ padding: '8px 12px', width: 40, textAlign: 'right' }}>
+      <td style={{ padding: isMobile ? '8px 4px' : '8px 12px', width: isMobile ? 32 : 40, textAlign: 'right' }}>
         <button
           type="button"
           onClick={(e) => {

@@ -63,7 +63,24 @@ export default function JobSidebar({ jobs, isAdmin, currentJobId }: JobSidebarPr
   const [expandedGroups, setExpandedGroups] = useState<Set<string>>(new Set());
   const [showInactive, setShowInactive] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+
+  // Check if mobile and handle sidebar state
+  useEffect(() => {
+    const checkMobile = () => {
+      const mobile = window.innerWidth < 768;
+      setIsMobile(mobile);
+      if (!mobile) {
+        setSidebarOpen(true); // Always show on desktop
+      }
+    };
+
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   // Use prop if provided, otherwise extract from pathname
   const activeJobId = currentJobId || pathname?.split('/jobs/')[1]?.split('/')[0];
@@ -153,17 +170,83 @@ export default function JobSidebar({ jobs, isAdmin, currentJobId }: JobSidebarPr
     };
   }, [menuOpen]);
 
+  // Calculate header height for positioning
+  const [headerHeight, setHeaderHeight] = useState(60);
+  
+  useEffect(() => {
+    const updateHeaderHeight = () => {
+      const header = document.getElementById('main-header');
+      if (header) {
+        setHeaderHeight(header.offsetHeight);
+      }
+    };
+    updateHeaderHeight();
+    window.addEventListener('resize', updateHeaderHeight);
+    return () => window.removeEventListener('resize', updateHeaderHeight);
+  }, []);
+
   return (
-    <div
-      style={{
-        width: 320,
-        backgroundColor: '#e5f8fa',
-        display: 'flex',
-        flexDirection: 'column',
-        height: '100%',
-        overflow: 'hidden',
-      }}
-    >
+    <>
+      {/* Mobile hamburger button */}
+      {isMobile && (
+        <button
+          onClick={() => setSidebarOpen(!sidebarOpen)}
+          style={{
+            position: 'fixed',
+            top: headerHeight + 12,
+            left: 12,
+            zIndex: 1000,
+            width: 40,
+            height: 40,
+            borderRadius: 8,
+            border: '1px solid #e2e8f0',
+            background: '#fff',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            cursor: 'pointer',
+            boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+          }}
+        >
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+            <path d="M3 5h14M3 10h14M3 15h14" stroke="#2d3748" strokeWidth="2" strokeLinecap="round"/>
+          </svg>
+        </button>
+      )}
+      
+      {/* Mobile overlay */}
+      {isMobile && sidebarOpen && (
+        <div
+          onClick={() => setSidebarOpen(false)}
+          style={{
+            position: 'fixed',
+            top: headerHeight,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+            zIndex: 998,
+          }}
+        />
+      )}
+
+      <div
+        style={{
+          width: isMobile ? '280px' : '320px',
+          backgroundColor: '#e5f8fa',
+          display: 'flex',
+          flexDirection: 'column',
+          height: isMobile ? `calc(100vh - ${headerHeight}px)` : '100%',
+          overflow: 'hidden',
+          position: isMobile ? 'fixed' : 'relative',
+          left: isMobile ? (sidebarOpen ? 0 : '-280px') : 0,
+          top: isMobile ? headerHeight : 0,
+          bottom: 0,
+          zIndex: 999,
+          transition: 'left 0.3s ease-in-out',
+          boxShadow: isMobile && sidebarOpen ? '2px 0 8px rgba(0,0,0,0.1)' : 'none',
+        }}
+      >
       {/* Header */}
       <div
         style={{
@@ -173,7 +256,23 @@ export default function JobSidebar({ jobs, isAdmin, currentJobId }: JobSidebarPr
       >
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingLeft: 0 }}>
           <h2 style={{ fontSize: 16, fontWeight: 600, color: '#5a6579', margin: 0, fontFamily: 'Inter, sans-serif' }}>Jobs</h2>
-          <div style={{ position: 'relative' }} ref={menuRef}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            {isMobile && (
+              <button
+                onClick={() => setSidebarOpen(false)}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  cursor: 'pointer',
+                  padding: '4px',
+                  fontSize: 20,
+                  color: '#5a6579',
+                }}
+              >
+                ×
+              </button>
+            )}
+            <div style={{ position: 'relative' }} ref={menuRef}>
             <button
               onClick={() => setMenuOpen(!menuOpen)}
               style={{
@@ -344,17 +443,23 @@ export default function JobSidebar({ jobs, isAdmin, currentJobId }: JobSidebarPr
                         opacity: isInactive ? 0.6 : 1,
                       }}
                     >
-                      <Link
-                        href={`/jobs/${job.id}`}
-                        style={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          flex: 1,
-                          minWidth: 0,
-                          textDecoration: 'none',
-                          gap: 8,
-                        }}
-                      >
+                        <Link
+                          href={`/jobs/${job.id}`}
+                          onClick={() => {
+                            // Close sidebar on mobile when job is selected
+                            if (isMobile) {
+                              setSidebarOpen(false);
+                            }
+                          }}
+                          style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            flex: 1,
+                            minWidth: 0,
+                            textDecoration: 'none',
+                            gap: 8,
+                          }}
+                        >
                         <div style={{ flex: 1, minWidth: 0 }}>
                           <div
                             style={{
@@ -474,6 +579,12 @@ export default function JobSidebar({ jobs, isAdmin, currentJobId }: JobSidebarPr
                       >
                         <Link
                           href={`/jobs/${job.id}`}
+                          onClick={() => {
+                            // Close sidebar on mobile when job is selected
+                            if (isMobile) {
+                              setSidebarOpen(false);
+                            }
+                          }}
                           style={{
                             display: 'flex',
                             alignItems: 'center',
@@ -573,6 +684,7 @@ export default function JobSidebar({ jobs, isAdmin, currentJobId }: JobSidebarPr
           </Link>
         </div>
       )}
-    </div>
+      </div>
+    </>
   );
 }

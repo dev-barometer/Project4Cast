@@ -98,3 +98,82 @@ button:active {
     opacity: 1;
   }
 }
+
+/* Mobile responsive styles */
+@media (max-width: 767px) {
+  /* Jobs layout - stack vertically on mobile */
+  .jobs-layout {
+    flex-direction: column !important;
+    height: auto !important;
+    min-height: calc(100vh - 60px) !important;
+  }
+
+  /* Make main content full width on mobile */
+  .jobs-layout > div:last-child {
+    width: 100% !important;
+    margin-left: 0 !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+
+  /* Adjust padding for mobile */
+  .jobs-layout h1, .jobs-layout h2 {
+    font-size: 1.25rem !important;
+  }
+
+  /* Make tables scrollable on mobile */
+  table {
+    font-size: 12px !important;
+  }
+  
+  /* Ensure table containers are scrollable */
+  div[style*="overflowX"] {
+    -webkit-overflow-scrolling: touch !important;
+    scrollbar-width: thin;
+  }
+  
+  div[style*="overflowX"]::-webkit-scrollbar {
+    height: 8px;
+  }
+  
+  div[style*="overflowX"]::-webkit-scrollbar-track {
+    background: #f1f1f1;
+  }
+  
+  div[style*="overflowX"]::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 4px;
+  }
+
+  /* Touch-friendly buttons */
+  button {
+    min-height: 44px !important;
+    min-width: 44px !important;
+  }
+
+  /* Adjust input sizes for mobile */
+  input, textarea, select {
+    font-size: 16px !important; /* Prevents zoom on iOS */
+  }
+
+  /* Reduce padding on mobile */
+  [style*="padding: 32px 40px"] {
+    padding: 16px !important;
+  }
+
+  /* Make sure sidebar doesn't interfere */
+  body {
+    overflow-x: hidden;
+  }
+  
+  /* Main content area spacing on mobile */
+  .main-content-area {
+    padding-top: 64px !important;
+  }
+  
+  /* Ensure proper spacing when sidebar is closed */
+  .jobs-layout > div:last-child {
+    padding-left: 16px !important;
+    padding-right: 16px !important;
+  }
+}
