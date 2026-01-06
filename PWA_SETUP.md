@@ -60,3 +60,4 @@ The current service worker provides basic caching. You can enhance it to:
 - The app will work offline for cached pages
 - You can update the manifest.json to customize colors, name, etc.
 
+
