@@ -5,7 +5,6 @@ import { auth } from '@/auth';
 import Header from './components/Header';
 import { prisma } from '@/lib/prisma';
 import EmailVerificationWrapper from './components/EmailVerificationWrapper';
-import EnvironmentBanner from './components/EnvironmentBanner';
 import ServiceWorkerRegistration from './sw-register';
 import AutoRefresh from './components/AutoRefresh';
 
@@ -61,7 +60,6 @@ export default async function RootLayout({
       </head>
       <body>
         <ServiceWorkerRegistration />
-        <EnvironmentBanner />
         {session?.user && <Header user={session.user} unreadNotificationCount={unreadNotificationCount} />}
         {session?.user && <AutoRefresh intervalMinutes={5} enabled={true} />}
         <EmailVerificationWrapper>
