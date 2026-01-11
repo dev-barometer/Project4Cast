@@ -141,7 +141,7 @@ export default function JobSidebar({ jobs, isAdmin, currentJobId }: JobSidebarPr
   };
 
   // Auto-expand groups that contain the current job
-  useMemo(() => {
+  useEffect(() => {
     if (activeJobId && groupBy !== 'none') {
       const newExpanded = new Set(expandedGroups);
       Object.entries(groupedJobs).forEach(([key, groupJobs]) => {
@@ -151,7 +151,7 @@ export default function JobSidebar({ jobs, isAdmin, currentJobId }: JobSidebarPr
       });
       setExpandedGroups(newExpanded);
     }
-  }, [activeJobId, groupBy, groupedJobs]);
+  }, [activeJobId, groupBy, groupedJobs, expandedGroups]);
 
   // Close menu when clicking outside
   useEffect(() => {
