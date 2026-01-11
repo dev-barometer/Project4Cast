@@ -227,6 +227,30 @@ export async function updateTask(formData: FormData) {
     data: updateData,
   });
 
+  // If task was just completed, mark all related notifications as read for the current user
+  if (isCompleting) {
+    try {
+      const session = await auth();
+      const currentUserId = session?.user?.id;
+      
+      if (currentUserId) {
+        // Mark all unread notifications for this task as read for the current user
+        await prisma.notification.updateMany({
+          where: {
+            taskId: taskId,
+            userId: currentUserId,
+            read: false,
+          },
+          data: {
+            read: true,
+          },
+        });
+      }
+    } catch (error) {
+      console.error('Error marking task notifications as read:', error);
+    }
+  }
+
   // If task was just completed, notify relevant users
   if (isCompleting && currentTask) {
     try {
@@ -267,6 +291,8 @@ export async function updateTask(formData: FormData) {
   }
   revalidatePath('/tasks');
   revalidatePath('/my-tasks');
+  revalidatePath('/notifications');
+  revalidatePath('/'); // Update header notification badge
 }
 
 // Server action to add an assignee to a task (handles optional jobId)
