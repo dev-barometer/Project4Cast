@@ -317,6 +317,15 @@ export default function JobDetailView({
               <form 
                 ref={formRef}
                 action={formAction}
+                onSubmit={(e) => {
+                  // Prevent duplicate submissions
+                  const form = e.currentTarget;
+                  const submitButton = form.querySelector('button[type="submit"]') as HTMLButtonElement;
+                  if (submitButton) {
+                    submitButton.disabled = true;
+                    submitButton.textContent = 'Creating...';
+                  }
+                }}
               >
                 <TaskForm
                   jobId={job.id}

@@ -24,6 +24,7 @@ export default function TaskForm({ jobId, allUsers, currentUserId, forceExpanded
   const [title, setTitle] = useState('');
   const [dueDate, setDueDate] = useState('');
   const [selectedAssignees, setSelectedAssignees] = useState<string[]>([]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const toggleAssignee = (userId: string) => {
     setSelectedAssignees(prev => 
