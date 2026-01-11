@@ -94,15 +94,12 @@ export default async function MyTasksPage() {
       .map(n => n.taskId!)
   );
 
-  // Separate tasks into done and not done
+  // Filter out completed tasks - only show tasks that are not done
+  const activeTasks = tasks.filter((t) => t.status !== 'DONE');
+  
+  // Separate tasks into done and not done for stats
   const doneTasks = tasks.filter((t) => t.status === 'DONE');
   const notDoneTasks = tasks.filter((t) => t.status !== 'DONE');
-
-  // Count by priority
-  const urgentCount = notDoneTasks.filter((t) => t.priority === 'URGENT').length;
-  const highCount = notDoneTasks.filter((t) => t.priority === 'HIGH').length;
-  const mediumCount = notDoneTasks.filter((t) => t.priority === 'MEDIUM').length;
-  const lowCount = notDoneTasks.filter((t) => t.priority === 'LOW').length;
 
   // Count overdue tasks
   const now = new Date();
@@ -122,43 +119,17 @@ export default async function MyTasksPage() {
         />
       </div>
 
-      {/* Summary Stats */}
-      {tasks.length > 0 && (
-        <div style={{ marginBottom: 24, display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 16 }}>
-          <div style={{ backgroundColor: '#f7fdfc', padding: 16, borderRadius: 8, boxShadow: '0 1px 3px rgba(0, 0, 0, 0.05)' }}>
-            <div style={{ fontSize: 24, fontWeight: 600, color: '#2d3748' }}>{notDoneTasks.length}</div>
-            <div style={{ fontSize: 13, color: '#718096', marginTop: 4 }}>Not Done</div>
-          </div>
-          <div style={{ backgroundColor: '#f7fdfc', padding: 16, borderRadius: 8, boxShadow: '0 1px 3px rgba(0, 0, 0, 0.05)' }}>
-            <div style={{ fontSize: 24, fontWeight: 600, color: '#2d3748' }}>{doneTasks.length}</div>
-            <div style={{ fontSize: 13, color: '#718096', marginTop: 4 }}>Done</div>
-          </div>
-          {overdueTasks.length > 0 && (
-            <div style={{ backgroundColor: '#fed7d7', padding: 16, borderRadius: 8, boxShadow: '0 1px 3px rgba(0, 0, 0, 0.05)' }}>
-              <div style={{ fontSize: 24, fontWeight: 600, color: '#742a2a' }}>{overdueTasks.length}</div>
-              <div style={{ fontSize: 13, color: '#742a2a', marginTop: 4 }}>Overdue</div>
-            </div>
-          )}
-          {urgentCount > 0 && (
-            <div style={{ backgroundColor: '#fed7d7', padding: 16, borderRadius: 8, boxShadow: '0 1px 3px rgba(0, 0, 0, 0.05)' }}>
-              <div style={{ fontSize: 24, fontWeight: 600, color: '#742a2a' }}>{urgentCount}</div>
-              <div style={{ fontSize: 13, color: '#742a2a', marginTop: 4 }}>Urgent</div>
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* Tasks table */}
-      {tasks.length === 0 ? (
+      {/* Tasks table - only show active (not done) tasks */}
+      {activeTasks.length === 0 ? (
         <div style={{ backgroundColor: '#f7fdfc', padding: 48, borderRadius: 8, boxShadow: '0 1px 3px rgba(0, 0, 0, 0.05)', textAlign: 'center' }}>
-          <p style={{ color: '#718096', fontSize: 16, marginBottom: 8 }}>No tasks assigned to you yet.</p>
+          <p style={{ color: '#718096', fontSize: 16, marginBottom: 8 }}>No active tasks assigned to you.</p>
           <p style={{ color: '#a0aec0', fontSize: 14 }}>
             Create a task above or wait to be assigned to tasks on jobs.
           </p>
         </div>
       ) : (
         <SortableTaskTable
-          tasks={tasks.map((task) => ({
+          tasks={activeTasks.map((task) => ({
             id: task.id,
             title: task.title,
             status: task.status,
@@ -174,23 +145,29 @@ export default async function MyTasksPage() {
           allUsers={allUsers}
           currentUserId={currentUserId}
           showJobColumn={true}
-          showClientBrandColumn={true}
-          filterCurrentUserFromAssignees={true}
+          showClientBrandColumn={false}
+          filterCurrentUserFromAssignees={false}
+          showAssigneesColumn={false}
           highlightOverdue={true}
         />
       )}
 
-      {/* Summary */}
+      {/* Summary Stats - moved to bottom */}
       {tasks.length > 0 && (
-        <div style={{ marginTop: 24, padding: 16, backgroundColor: '#f7fdfc', borderRadius: 8, fontSize: 14, color: '#4a5568' }}>
-          <strong>Total tasks:</strong> {tasks.length} ·{' '}
-          <strong>Done:</strong> {doneTasks.length} ·{' '}
-          <strong>Not done:</strong> {notDoneTasks.length}
+        <div style={{ marginTop: 24, display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 16 }}>
+          <div style={{ backgroundColor: '#f7fdfc', padding: 16, borderRadius: 8, boxShadow: '0 1px 3px rgba(0, 0, 0, 0.05)' }}>
+            <div style={{ fontSize: 24, fontWeight: 600, color: '#2d3748' }}>{notDoneTasks.length}</div>
+            <div style={{ fontSize: 13, color: '#718096', marginTop: 4 }}>Not Done</div>
+          </div>
+          <div style={{ backgroundColor: '#f7fdfc', padding: 16, borderRadius: 8, boxShadow: '0 1px 3px rgba(0, 0, 0, 0.05)' }}>
+            <div style={{ fontSize: 24, fontWeight: 600, color: '#2d3748' }}>{doneTasks.length}</div>
+            <div style={{ fontSize: 13, color: '#718096', marginTop: 4 }}>Done</div>
+          </div>
           {overdueTasks.length > 0 && (
-            <> · <strong style={{ color: '#e53e3e' }}>Overdue:</strong> <span style={{ color: '#e53e3e' }}>{overdueTasks.length}</span></>
-          )}
-          {urgentCount > 0 && (
-            <> · <strong style={{ color: '#742a2a' }}>Urgent:</strong> <span style={{ color: '#742a2a' }}>{urgentCount}</span></>
+            <div style={{ backgroundColor: '#fed7d7', padding: 16, borderRadius: 8, boxShadow: '0 1px 3px rgba(0, 0, 0, 0.05)' }}>
+              <div style={{ fontSize: 24, fontWeight: 600, color: '#742a2a' }}>{overdueTasks.length}</div>
+              <div style={{ fontSize: 13, color: '#742a2a', marginTop: 4 }}>Overdue</div>
+            </div>
           )}
         </div>
       )}

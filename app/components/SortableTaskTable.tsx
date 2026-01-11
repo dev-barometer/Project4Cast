@@ -74,6 +74,7 @@ type SortableTaskTableProps = {
   showJobColumn?: boolean;
   showClientBrandColumn?: boolean;
   filterCurrentUserFromAssignees?: boolean;
+  showAssigneesColumn?: boolean; // If false, hide the assignees column entirely
   highlightOverdue?: boolean; // If true, highlight overdue tasks with red background
 };
 
@@ -84,6 +85,7 @@ export default function SortableTaskTable({
   showJobColumn = true,
   showClientBrandColumn = true,
   filterCurrentUserFromAssignees = false,
+  showAssigneesColumn = true,
   highlightOverdue = false,
 }: SortableTaskTableProps) {
   const [sortField, setSortField] = useState<SortField | null>(null);
@@ -289,12 +291,14 @@ export default function SortableTaskTable({
             >
               Due Date
             </SortableHeader>
-            <SortableHeader
-              field="assignees"
-              style={{ textAlign: 'left', padding: '8px 12px', borderBottom: '1px solid #e2e8f0', color: '#4a5568', fontWeight: 600, fontSize: 13 }}
-            >
-              {filterCurrentUserFromAssignees ? 'Other Assignees' : 'Assignees'}
-            </SortableHeader>
+            {showAssigneesColumn && (
+              <SortableHeader
+                field="assignees"
+                style={{ textAlign: 'left', padding: '8px 12px', borderBottom: '1px solid #e2e8f0', color: '#4a5568', fontWeight: 600, fontSize: 13 }}
+              >
+                {filterCurrentUserFromAssignees ? 'Other Assignees' : 'Assignees'}
+              </SortableHeader>
+            )}
           </tr>
         </thead>
         <tbody>
@@ -318,6 +322,7 @@ export default function SortableTaskTable({
                 showJobColumn={showJobColumn}
                 showClientBrandColumn={showClientBrandColumn}
                 filterCurrentUserFromAssignees={filterCurrentUserFromAssignees}
+                showAssigneesColumn={showAssigneesColumn}
                 rowStyle={rowStyle}
                 hasUnreadComments={task.hasUnreadComments || false}
               />

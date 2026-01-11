@@ -72,6 +72,7 @@ type EditableTaskRowProps = {
   showJobColumn?: boolean; // Whether to show the job column
   showClientBrandColumn?: boolean; // Whether to show client/brand column
   filterCurrentUserFromAssignees?: boolean; // If true, only show other assignees (for My Tasks page)
+  showAssigneesColumn?: boolean; // Whether to show the assignees column
   rowStyle?: React.CSSProperties; // Optional custom row styling (e.g., for overdue highlighting)
   hasUnreadComments?: boolean; // Whether there are unread comment notifications
 };
@@ -83,6 +84,7 @@ export default function EditableTaskRow({
   showJobColumn = true,
   showClientBrandColumn = true,
   filterCurrentUserFromAssignees = false,
+  showAssigneesColumn = true,
   rowStyle,
   hasUnreadComments = false,
 }: EditableTaskRowProps) {
@@ -319,7 +321,8 @@ export default function EditableTaskRow({
         </form>
       </td>
 
-      {/* Assignees - editable with add/remove */}
+      {/* Assignees - editable with add/remove - only show if showAssigneesColumn is true */}
+      {showAssigneesColumn && (
       <td style={{ padding: '8px 12px', color: '#4a5568' }}>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, alignItems: 'center' }}>
           {/* Show current assignees with remove buttons */}
@@ -377,6 +380,7 @@ export default function EditableTaskRow({
           )}
         </div>
       </td>
+      )}
     </tr>
     {/* Comments row - expandable */}
     {showComments && (
@@ -388,7 +392,7 @@ export default function EditableTaskRow({
           (showJobColumn ? 1 : 0) + // job
           (showClientBrandColumn ? 1 : 0) + // client/brand
           1 + // due date
-          1 // assignees
+          (showAssigneesColumn ? 1 : 0) // assignees
         } style={{ padding: 0, backgroundColor: '#f7fdfc' }}>
           <div style={{ padding: '16px 12px', borderTop: '1px solid #e2e8f0' }}>
             {comments.length === 0 ? (
