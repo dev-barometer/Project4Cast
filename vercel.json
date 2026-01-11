@@ -1,3 +1,10 @@
-{}
+{
+  "crons": [
+    {
+      "path": "/api/cron/cleanup-read-notifications",
+      "schedule": "0 2 * * *"
+    }
+  ]
+}
 
 

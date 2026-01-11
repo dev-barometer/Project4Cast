@@ -7,6 +7,7 @@ import { redirect } from 'next/navigation';
 import Link from 'next/link';
 import { markNotificationAsRead, markAllNotificationsAsRead } from './actions';
 import MarkAllReadButton from './MarkAllReadButton';
+import ReadNotificationsAccordion from './ReadNotificationsAccordion';
 
 export default async function NotificationsPage() {
   const session = await auth();
@@ -50,7 +51,10 @@ export default async function NotificationsPage() {
     take: 100, // Limit to 100 most recent
   });
 
-  const unreadCount = notifications.filter((n: typeof notifications[0]) => !n.read).length;
+  // Separate read and unread notifications
+  const unreadNotifications = notifications.filter((n: typeof notifications[0]) => !n.read);
+  const readNotifications = notifications.filter((n: typeof notifications[0]) => n.read);
+  const unreadCount = unreadNotifications.length;
 
   // Format notification message with link
   const getNotificationLink = (notification: typeof notifications[0]) => {
@@ -112,7 +116,8 @@ export default async function NotificationsPage() {
         </div>
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-          {notifications.map((notification: typeof notifications[0]) => {
+          {/* Unread notifications */}
+          {unreadNotifications.map((notification: typeof notifications[0]) => {
             const link = getNotificationLink(notification);
             const actorName = notification.actor?.name || notification.actor?.email || 'Someone';
 
@@ -122,8 +127,8 @@ export default async function NotificationsPage() {
                 href={link}
                 style={{
                   display: 'block',
-                  backgroundColor: notification.read ? '#f7fdfc' : '#f0f7ff',
-                  border: `1px solid ${notification.read ? '#e2e8f0' : '#cfe2ff'}`,
+                  backgroundColor: '#f0f7ff',
+                  border: '1px solid #cfe2ff',
                   borderRadius: 8,
                   padding: 16,
                   textDecoration: 'none',
@@ -133,21 +138,19 @@ export default async function NotificationsPage() {
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                   <div style={{ flex: 1 }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
-                      {!notification.read && (
-                        <span
-                          style={{
-                            width: 8,
-                            height: 8,
-                            borderRadius: '50%',
-                            backgroundColor: '#14B8A6',
-                            display: 'inline-block',
-                          }}
-                        />
-                      )}
+                      <span
+                        style={{
+                          width: 8,
+                          height: 8,
+                          borderRadius: '50%',
+                          backgroundColor: '#14B8A6',
+                          display: 'inline-block',
+                        }}
+                      />
                       <h3
                         style={{
                           fontSize: 14,
-                          fontWeight: notification.read ? 400 : 600,
+                          fontWeight: 600,
                           color: '#2d3748',
                           margin: 0,
                         }}
@@ -167,6 +170,13 @@ export default async function NotificationsPage() {
               </Link>
             );
           })}
+
+          {/* Read notifications accordion */}
+          <ReadNotificationsAccordion
+            notifications={readNotifications}
+            getNotificationLink={getNotificationLink}
+            formatTimeAgo={formatTimeAgo}
+          />
         </div>
       )}
     </main>
