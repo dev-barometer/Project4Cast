@@ -493,6 +493,7 @@ export async function addTask(prevState: any, formData: FormData) {
   const priority = formData.get('priority')?.toString() || 'MEDIUM';
   const dueDate = formData.get('dueDate')?.toString();
   const assigneeIds = formData.getAll('assigneeIds').map(id => id.toString()).filter(Boolean);
+  const taskIdempotencyKey = formData.get('idempotencyKey')?.toString(); // Optional idempotency key
 
   if (!title) {
     return { success: false, error: 'Task title is required' };
@@ -507,6 +508,29 @@ export async function addTask(prevState: any, formData: FormData) {
     const validPriority = ['LOW', 'MEDIUM', 'HIGH', 'URGENT'].includes(priority) 
       ? priority as 'LOW' | 'MEDIUM' | 'HIGH' | 'URGENT'
       : 'MEDIUM';
+
+    // Check for duplicate task (same title, job, and created within last 5 seconds)
+    // This helps prevent accidental double-submissions
+    if (taskIdempotencyKey) {
+      const recentDuplicate = await prisma.task.findFirst({
+        where: {
+          jobId,
+          title,
+          createdAt: {
+            gte: new Date(Date.now() - 5000), // Within last 5 seconds
+          },
+        },
+        orderBy: {
+          createdAt: 'desc',
+        },
+      });
+
+      if (recentDuplicate) {
+        // Task was just created, return success without creating duplicate
+        revalidatePath(`/jobs/${jobId}`);
+        return { success: true, error: null };
+      }
+    }
 
     // Create task with optional jobId and assignees if provided
     const task = await prisma.task.create({

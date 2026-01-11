@@ -325,6 +325,12 @@ export default function JobDetailView({
                     submitButton.disabled = true;
                     submitButton.textContent = 'Creating...';
                   }
+                  // Add idempotency key to prevent duplicate task creation
+                  const idempotencyInput = document.createElement('input');
+                  idempotencyInput.type = 'hidden';
+                  idempotencyInput.name = 'idempotencyKey';
+                  idempotencyInput.value = `${Date.now()}-${Math.random()}`;
+                  form.appendChild(idempotencyInput);
                 }}
               >
                 <TaskForm
