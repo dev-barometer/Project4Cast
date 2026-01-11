@@ -21,6 +21,26 @@ const nextConfig = {
         ],
       },
       {
+        // Version file should never be cached
+        source: '/version.json',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0',
+          },
+        ],
+      },
+      {
+        // Service worker should be revalidated
+        source: '/sw.js',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0',
+          },
+        ],
+      },
+      {
         // Allow caching for static assets only
         source: '/_next/static/:path*',
         headers: [

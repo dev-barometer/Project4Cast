@@ -1,29 +1,53 @@
 // Service Worker for Project4Cast PWA
 // Using network-first strategy to always get fresh data
-const CACHE_NAME = 'project4cast-v1';
+// Cache name includes timestamp to force cache invalidation on updates
+const CACHE_NAME = `project4cast-${Date.now()}`;
+const VERSION_CHECK_URL = '/version.json';
 
-// Install event - minimal caching
+// Install event - clear old caches and activate immediately
 self.addEventListener('install', (event) => {
   self.skipWaiting(); // Activate immediately
+  
+  // Clear all old caches
+  event.waitUntil(
+    caches.keys().then((cacheNames) => {
+      return Promise.all(
+        cacheNames.map((cacheName) => {
+          return caches.delete(cacheName);
+        })
+      );
+    })
+  );
 });
 
-// Fetch event - network first, cache as fallback
+// Fetch event - always fetch from network, minimal caching
 self.addEventListener('fetch', (event) => {
-  // Skip caching for API routes and dynamic content
-  if (event.request.url.includes('/api/') || 
-      event.request.url.includes('/_next/') ||
+  const url = new URL(event.request.url);
+  
+  // Always fetch from network for:
+  // - API routes
+  // - Version check file
+  // - Next.js internals
+  // - Non-GET requests
+  if (url.pathname.includes('/api/') || 
+      url.pathname === '/version.json' ||
+      url.pathname.includes('/_next/') ||
       event.request.method !== 'GET') {
-    // Always fetch from network for API calls and Next.js internals
     event.respondWith(fetch(event.request));
     return;
   }
 
-  // For static assets, try network first, then cache
+  // For all other requests, always try network first
+  // Only use cache if network completely fails (offline)
   event.respondWith(
-    fetch(event.request)
+    fetch(event.request, { cache: 'no-store' })
       .then((response) => {
-        // Only cache successful responses
-        if (response.status === 200) {
+        // Don't cache HTML pages - always get fresh content
+        if (response.headers.get('content-type')?.includes('text/html')) {
+          return response;
+        }
+        // Only cache static assets as fallback for offline use
+        if (response.status === 200 && url.pathname.match(/\.(js|css|png|jpg|jpeg|gif|svg|ico|woff|woff2|ttf|eot)$/)) {
           const responseToCache = response.clone();
           caches.open(CACHE_NAME).then((cache) => {
             cache.put(event.request, responseToCache);
@@ -32,23 +56,27 @@ self.addEventListener('fetch', (event) => {
         return response;
       })
       .catch(() => {
-        // Network failed, try cache as fallback
-        return caches.match(event.request);
+        // Network failed, try cache as fallback (offline scenario)
+        return caches.match(event.request).then((cachedResponse) => {
+          return cachedResponse || new Response('Offline', { status: 503 });
+        });
       })
   );
 });
 
-// Activate event - clean up old caches
+// Activate event - clean up ALL old caches
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then((cacheNames) => {
+      // Delete ALL caches to ensure fresh content
       return Promise.all(
         cacheNames.map((cacheName) => {
-          if (cacheName !== CACHE_NAME) {
-            return caches.delete(cacheName);
-          }
+          return caches.delete(cacheName);
         })
       );
+    }).then(() => {
+      // Claim all clients to ensure new service worker takes control immediately
+      return self.clients.claim();
     })
   );
 });
