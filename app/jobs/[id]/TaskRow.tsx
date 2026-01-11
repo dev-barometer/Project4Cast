@@ -142,6 +142,81 @@ export default function TaskRow({
         </form>
       </td>
 
+      {/* Comments arrow button - between checkbox and title */}
+      <td style={{ padding: isMobile ? '8px 4px' : '8px 12px', width: isMobile ? 32 : 40, textAlign: 'center' }}>
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            setShowComments(!showComments);
+          }}
+          style={{
+            background: 'none',
+            border: 'none',
+            cursor: 'pointer',
+            padding: '4px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            color: task.comments.length > 0 ? '#14B8A6' : '#cbd5e0',
+          }}
+          title={
+            showComments 
+              ? 'Hide comments' 
+              : task.comments.length === 0 
+                ? 'Add comment' 
+                : `${task.comments.length} ${task.comments.length === 1 ? 'comment' : 'comments'}`
+          }
+        >
+          {/* Arrow icon - filled if comments exist, outline if none */}
+          {task.comments.length > 0 ? (
+            // Filled arrow (has comments)
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 16 16"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+              style={{
+                transform: showComments ? 'rotate(90deg)' : 'rotate(0deg)',
+                transition: 'transform 0.2s',
+              }}
+            >
+              <path
+                d="M6 4L10 8L6 12"
+                stroke="#14B8A6"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                fill="none"
+              />
+            </svg>
+          ) : (
+            // Outline arrow (no comments)
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 16 16"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+              style={{
+                transform: showComments ? 'rotate(90deg)' : 'rotate(0deg)',
+                transition: 'transform 0.2s',
+              }}
+            >
+              <path
+                d="M6 4L10 8L6 12"
+                stroke="#cbd5e0"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                fill="none"
+              />
+            </svg>
+          )}
+        </button>
+      </td>
+
       {/* Title - editable input */}
       <td style={{ padding: isMobile ? '8px 4px' : '8px 12px', color: '#2d3748' }}>
         <form action={updateTask} style={{ display: 'inline' }}>
@@ -270,85 +345,11 @@ export default function TaskRow({
         </td>
       )}
 
-      {/* Comments arrow button - all the way to the right */}
-      <td style={{ padding: isMobile ? '8px 4px' : '8px 12px', width: isMobile ? 32 : 40, textAlign: 'right' }}>
-        <button
-          type="button"
-          onClick={(e) => {
-            e.stopPropagation();
-            setShowComments(!showComments);
-          }}
-          style={{
-            background: 'none',
-            border: 'none',
-            cursor: 'pointer',
-            padding: '4px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            color: task.comments.length > 0 ? '#14B8A6' : '#cbd5e0',
-          }}
-          title={
-            showComments 
-              ? 'Hide comments' 
-              : task.comments.length === 0 
-                ? 'Add comment' 
-                : `${task.comments.length} ${task.comments.length === 1 ? 'comment' : 'comments'}`
-          }
-        >
-          {/* Arrow icon - filled if comments exist, outline if none */}
-          {task.comments.length > 0 ? (
-            // Filled arrow (has comments)
-            <svg
-              width="16"
-              height="16"
-              viewBox="0 0 16 16"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-              style={{
-                transform: showComments ? 'rotate(90deg)' : 'rotate(0deg)',
-                transition: 'transform 0.2s',
-              }}
-            >
-              <path
-                d="M6 4L10 8L6 12"
-                stroke="#14B8A6"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                fill="none"
-              />
-            </svg>
-          ) : (
-            // Outline arrow (no comments)
-            <svg
-              width="16"
-              height="16"
-              viewBox="0 0 16 16"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-              style={{
-                transform: showComments ? 'rotate(90deg)' : 'rotate(0deg)',
-                transition: 'transform 0.2s',
-              }}
-            >
-              <path
-                d="M6 4L10 8L6 12"
-                stroke="#cbd5e0"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                fill="none"
-              />
-            </svg>
-          )}
-        </button>
-      </td>
     </tr>
     {/* Expandable comments row */}
     {showComments && (
       <tr>
-        <td colSpan={5} style={{ padding: 0, borderBottom: '1px solid #e2e8f0' }}>
+        <td colSpan={6} style={{ padding: 0, borderBottom: '1px solid #e2e8f0' }}>
           <div style={{ padding: '16px 24px', backgroundColor: '#f7fdfc' }}>
             <TaskComments
               taskId={task.id}

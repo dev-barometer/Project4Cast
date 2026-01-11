@@ -390,6 +390,19 @@ export default function JobDetailView({
                     <th
                       style={{
                         padding: isMobile ? '8px 4px' : '12px 16px',
+                        width: isMobile ? 32 : 40,
+                        textAlign: 'left',
+                        fontSize: isMobile ? 10 : 12,
+                        fontWeight: 600,
+                        color: '#718096',
+                        textTransform: 'uppercase',
+                      }}
+                    >
+                      {/* Arrow column */}
+                    </th>
+                    <th
+                      style={{
+                        padding: isMobile ? '8px 4px' : '12px 16px',
                         textAlign: 'left',
                         fontSize: isMobile ? 10 : 12,
                         fontWeight: 600,
@@ -427,19 +440,6 @@ export default function JobDetailView({
                         </th>
                       </>
                     )}
-                    <th
-                      style={{
-                        padding: isMobile ? '8px 4px' : '12px 16px',
-                        textAlign: 'right',
-                        fontSize: isMobile ? 10 : 12,
-                        fontWeight: 600,
-                        color: '#718096',
-                        textTransform: 'uppercase',
-                        width: isMobile ? 32 : 40,
-                      }}
-                    >
-                      {/* Arrow column - empty header */}
-                    </th>
                   </tr>
                 </thead>
                 <tbody>

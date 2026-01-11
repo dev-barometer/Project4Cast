@@ -1,29 +1,39 @@
 // Service Worker for Project4Cast PWA
+// Using network-first strategy to always get fresh data
 const CACHE_NAME = 'project4cast-v1';
-const urlsToCache = [
-  '/',
-  '/jobs',
-  '/my-tasks',
-  '/tasks',
-];
 
-// Install event - cache resources
+// Install event - minimal caching
 self.addEventListener('install', (event) => {
-  event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then((cache) => {
-        return cache.addAll(urlsToCache);
-      })
-  );
+  self.skipWaiting(); // Activate immediately
 });
 
-// Fetch event - serve from cache, fallback to network
+// Fetch event - network first, cache as fallback
 self.addEventListener('fetch', (event) => {
+  // Skip caching for API routes and dynamic content
+  if (event.request.url.includes('/api/') || 
+      event.request.url.includes('/_next/') ||
+      event.request.method !== 'GET') {
+    // Always fetch from network for API calls and Next.js internals
+    event.respondWith(fetch(event.request));
+    return;
+  }
+
+  // For static assets, try network first, then cache
   event.respondWith(
-    caches.match(event.request)
+    fetch(event.request)
       .then((response) => {
-        // Return cached version or fetch from network
-        return response || fetch(event.request);
+        // Only cache successful responses
+        if (response.status === 200) {
+          const responseToCache = response.clone();
+          caches.open(CACHE_NAME).then((cache) => {
+            cache.put(event.request, responseToCache);
+          });
+        }
+        return response;
+      })
+      .catch(() => {
+        // Network failed, try cache as fallback
+        return caches.match(event.request);
       })
   );
 });
@@ -42,5 +52,6 @@ self.addEventListener('activate', (event) => {
     })
   );
 });
+
 
 
