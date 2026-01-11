@@ -373,7 +373,7 @@ export default async function JobDetailPage({ params }: JobPageProps) {
 
   return (
     <>
-      <JobSidebar jobs={allJobs} isAdmin={isAdmin} currentJobId={job.id} />
+      {/* <JobSidebar jobs={allJobs} isAdmin={isAdmin} currentJobId={job.id} /> */}
       <JobDetailView
         job={job}
         allUsers={allUsers}

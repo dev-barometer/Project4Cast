@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo, useRef, useEffect } from 'react';
+import React, { useState, useMemo, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { ThreeDotMenuHorizontal } from '@/app/components/ThreeDotMenu';
@@ -186,7 +186,7 @@ export default function JobSidebar({ jobs, isAdmin, currentJobId }: JobSidebarPr
   }, []);
 
   return (
-    <>
+    <React.Fragment>
       {/* Mobile hamburger button */}
       {isMobile && (
         <button
@@ -413,6 +413,7 @@ export default function JobSidebar({ jobs, isAdmin, currentJobId }: JobSidebarPr
                 </button>
               </div>
             )}
+            </div>
           </div>
         </div>
       </div>
@@ -685,6 +686,6 @@ export default function JobSidebar({ jobs, isAdmin, currentJobId }: JobSidebarPr
         </div>
       )}
       </div>
-    </>
+    </React.Fragment>
   );
 }

@@ -4,7 +4,6 @@
 
 import { uploadJobAttachment, uploadTaskAttachment, deleteAttachment } from './actions';
 import { useState, useRef, useEffect } from 'react';
-import { useFormState } from 'react-dom';
 import { getFileUrl } from '@/lib/file-url-utils';
 import { MAX_FILE_SIZE, isValidFileType } from '@/lib/file-upload';
 
@@ -186,7 +185,7 @@ export default function AttachmentManager({
       {isExpanded && (
         <div style={{ marginTop: 12, padding: 12, backgroundColor: '#f7fdfc', borderRadius: 6 }}>
           {/* Error message */}
-          {state?.error && (
+          {fileError && (
             <div
               style={{
                 backgroundColor: '#fed7d7',
@@ -197,7 +196,7 @@ export default function AttachmentManager({
                 fontSize: 12,
               }}
             >
-              <strong>Error:</strong> {state.error}
+                <strong>Error:</strong> {fileError}
             </div>
           )}
 

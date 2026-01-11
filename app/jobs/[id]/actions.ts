@@ -512,16 +512,12 @@ export async function addTask(prevState: any, formData: FormData) {
     // Check for duplicate task (same title, job, and created within last 5 seconds)
     // This helps prevent accidental double-submissions
     if (taskIdempotencyKey) {
+      // Check for duplicate task (same title and jobId)
+      // Note: createdAt field is not available in Task model, so we can't filter by time
       const recentDuplicate = await prisma.task.findFirst({
         where: {
           jobId,
           title,
-          createdAt: {
-            gte: new Date(Date.now() - 5000), // Within last 5 seconds
-          },
-        },
-        orderBy: {
-          createdAt: 'desc',
         },
       });
 
