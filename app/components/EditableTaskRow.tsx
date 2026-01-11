@@ -35,6 +35,28 @@ type Task = {
       email: string;
     } | null;
   }>;
+  comments?: Array<{
+    id: string;
+    body: string;
+    createdAt: Date | string;
+    author: {
+      id: string;
+      name: string | null;
+      email: string;
+    } | null;
+  }>;
+  attachments?: Array<{
+    id: string;
+    filename: string;
+    url: string;
+    mimeType: string;
+    uploadedAt: Date | string;
+    uploadedBy: {
+      id: string;
+      name: string | null;
+      email: string;
+    } | null;
+  }>;
 };
 
 type User = {
@@ -51,6 +73,7 @@ type EditableTaskRowProps = {
   showClientBrandColumn?: boolean; // Whether to show client/brand column
   filterCurrentUserFromAssignees?: boolean; // If true, only show other assignees (for My Tasks page)
   rowStyle?: React.CSSProperties; // Optional custom row styling (e.g., for overdue highlighting)
+  hasUnreadComments?: boolean; // Whether there are unread comment notifications
 };
 
 export default function EditableTaskRow({ 
@@ -61,6 +84,7 @@ export default function EditableTaskRow({
   showClientBrandColumn = true,
   filterCurrentUserFromAssignees = false,
   rowStyle,
+  hasUnreadComments = false,
 }: EditableTaskRowProps) {
   // Get list of user IDs already assigned to this task
   const assignedUserIds = task.assignees.map((a) => a.userId);
@@ -75,7 +99,19 @@ export default function EditableTaskRow({
     ? task.assignees.filter((a) => a.userId !== currentUserId)
     : task.assignees;
 
+  // Comments state - auto-expand if there are unread comments
+  const comments = task.comments || [];
+  const [showComments, setShowComments] = useState(hasUnreadComments || false);
+  
+  // Update when hasUnreadComments changes
+  useEffect(() => {
+    if (hasUnreadComments) {
+      setShowComments(true);
+    }
+  }, [hasUnreadComments]);
+
   return (
+    <>
     <tr style={{ borderBottom: '1px solid #f0f4f8', ...rowStyle }}>
       {/* Done checkbox - before title */}
       <td style={{ padding: '8px 12px', width: 40, textAlign: 'center' }}>
@@ -109,6 +145,79 @@ export default function EditableTaskRow({
             title={isDone ? 'Mark as not done' : 'Mark as done'}
           />
         </form>
+      </td>
+
+      {/* Comments arrow button - between checkbox and title */}
+      <td style={{ padding: '8px 12px', width: 40, textAlign: 'center' }}>
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            setShowComments(!showComments);
+          }}
+          style={{
+            background: 'none',
+            border: 'none',
+            cursor: 'pointer',
+            padding: '4px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            color: comments.length > 0 ? '#14B8A6' : '#cbd5e0',
+          }}
+          title={
+            showComments 
+              ? 'Hide comments' 
+              : comments.length === 0 
+                ? 'No comments' 
+                : `${comments.length} ${comments.length === 1 ? 'comment' : 'comments'}`
+          }
+        >
+          {/* Arrow icon */}
+          {comments.length > 0 ? (
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 16 16"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+              style={{
+                transform: showComments ? 'rotate(90deg)' : 'rotate(0deg)',
+                transition: 'transform 0.2s',
+              }}
+            >
+              <path
+                d="M6 4L10 8L6 12"
+                stroke="#14B8A6"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                fill="none"
+              />
+            </svg>
+          ) : (
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 16 16"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+              style={{
+                transform: showComments ? 'rotate(90deg)' : 'rotate(0deg)',
+                transition: 'transform 0.2s',
+              }}
+            >
+              <path
+                d="M6 4L10 8L6 12"
+                stroke="#cbd5e0"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                fill="none"
+              />
+            </svg>
+          )}
+        </button>
       </td>
 
       {/* Title - editable input */}
@@ -269,6 +378,52 @@ export default function EditableTaskRow({
         </div>
       </td>
     </tr>
+    {/* Comments row - expandable */}
+    {showComments && (
+      <tr>
+        <td colSpan={
+          1 + // checkbox
+          1 + // comments arrow
+          1 + // title
+          (showJobColumn ? 1 : 0) + // job
+          (showClientBrandColumn ? 1 : 0) + // client/brand
+          1 + // due date
+          1 // assignees
+        } style={{ padding: 0, backgroundColor: '#f7fdfc' }}>
+          <div style={{ padding: '16px 12px', borderTop: '1px solid #e2e8f0' }}>
+            {comments.length === 0 ? (
+              <p style={{ color: '#a0aec0', fontSize: 13, fontStyle: 'italic', margin: 0 }}>No comments yet.</p>
+            ) : (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                {comments.map((comment) => (
+                  <div key={comment.id} style={{ paddingBottom: 12, borderBottom: '1px solid #e2e8f0' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
+                      <span style={{ fontWeight: 500, fontSize: 13, color: '#2d3748' }}>
+                        {comment.author?.name || comment.author?.email || 'Unknown'}
+                      </span>
+                      <span style={{ fontSize: 12, color: '#a0aec0' }}>
+                        {new Date(comment.createdAt).toLocaleDateString()} {new Date(comment.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                      </span>
+                    </div>
+                    <div style={{ fontSize: 13, color: '#4a5568', whiteSpace: 'pre-wrap' }}>
+                      {comment.body}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+            {jobId && (
+              <div style={{ marginTop: 12, fontSize: 12, color: '#718096' }}>
+                <Link href={`/jobs/${jobId}`} style={{ color: '#14B8A6', textDecoration: 'none' }}>
+                  View in job → Add comment
+                </Link>
+              </div>
+            )}
+          </div>
+        </td>
+      </tr>
+    )}
+    </>
   );
 }
 

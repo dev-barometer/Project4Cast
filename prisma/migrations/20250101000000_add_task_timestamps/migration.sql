@@ -6,3 +6,4 @@ ADD COLUMN "deletedAt" TIMESTAMP(3);
 UPDATE "Task" SET "createdAt" = CURRENT_TIMESTAMP WHERE "createdAt" IS NULL;
 
 
+

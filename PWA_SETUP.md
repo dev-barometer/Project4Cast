@@ -61,3 +61,4 @@ The current service worker provides basic caching. You can enhance it to:
 - You can update the manifest.json to customize colors, name, etc.
 
 
+

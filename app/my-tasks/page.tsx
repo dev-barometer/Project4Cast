@@ -19,7 +19,7 @@ export default async function MyTasksPage() {
   }
 
   // Fetch tasks assigned to the current user and all users/jobs for the form
-  const [tasks, allUsers, allJobs] = await Promise.all([
+  const [tasks, allUsers, allJobs, unreadCommentNotifications] = await Promise.all([
     prisma.task.findMany({
       where: {
         assignees: {
@@ -43,6 +43,19 @@ export default async function MyTasksPage() {
             user: true,
           },
         },
+        comments: {
+          include: {
+            author: true,
+          },
+          orderBy: {
+            createdAt: 'asc',
+          },
+        },
+        attachments: {
+          include: {
+            uploadedBy: true,
+          },
+        },
       },
       orderBy: [
         { priority: 'desc' }, // Urgent first
@@ -61,7 +74,25 @@ export default async function MyTasksPage() {
       },
       orderBy: { jobNumber: 'asc' },
     }),
+    // Fetch unread comment notifications for this user
+    prisma.notification.findMany({
+      where: {
+        userId: currentUserId,
+        read: false,
+        type: 'COMMENT_MENTION',
+      },
+      select: {
+        taskId: true,
+      },
+    }),
   ]);
+
+  // Create a Set of task IDs with unread comments
+  const tasksWithUnreadComments = new Set(
+    unreadCommentNotifications
+      .filter(n => n.taskId)
+      .map(n => n.taskId!)
+  );
 
   // Separate tasks into done and not done
   const doneTasks = tasks.filter((t) => t.status === 'DONE');
@@ -136,6 +167,9 @@ export default async function MyTasksPage() {
             jobId: task.jobId,
             job: task.job,
             assignees: task.assignees,
+            comments: task.comments,
+            attachments: task.attachments,
+            hasUnreadComments: tasksWithUnreadComments.has(task.id),
           }))}
           allUsers={allUsers}
           currentUserId={currentUserId}

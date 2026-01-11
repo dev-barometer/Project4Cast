@@ -661,9 +661,10 @@ export async function addTaskComment(prevState: any, formData: FormData) {
     const body = formData.get('body')?.toString().trim();
     const authorId = formData.get('authorId')?.toString();
 
-    if (!taskId || !jobId || !body || !authorId) {
+    if (!taskId || !body || !authorId) {
       return { error: 'Missing required fields', success: false };
     }
+    // jobId is optional (for standalone tasks)
 
     const comment = await prisma.comment.create({
       data: {

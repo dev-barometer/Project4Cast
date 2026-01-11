@@ -36,6 +36,29 @@ type Task = {
       email: string;
     } | null;
   }>;
+  comments?: Array<{
+    id: string;
+    body: string;
+    createdAt: Date | string;
+    author: {
+      id: string;
+      name: string | null;
+      email: string;
+    } | null;
+  }>;
+  attachments?: Array<{
+    id: string;
+    filename: string;
+    url: string;
+    mimeType: string;
+    uploadedAt: Date | string;
+    uploadedBy: {
+      id: string;
+      name: string | null;
+      email: string;
+    } | null;
+  }>;
+  hasUnreadComments?: boolean;
 };
 
 type User = {
@@ -235,6 +258,9 @@ export default function SortableTaskTable({
             <th style={{ textAlign: 'center', padding: '8px 12px', borderBottom: '1px solid #e2e8f0', color: '#4a5568', fontWeight: 600, fontSize: 13, width: 40 }}>
               {/* Checkbox column - no header */}
             </th>
+            <th style={{ textAlign: 'center', padding: '8px 12px', borderBottom: '1px solid #e2e8f0', color: '#4a5568', fontWeight: 600, fontSize: 13, width: 40 }}>
+              {/* Comments arrow column - no header */}
+            </th>
             <SortableHeader
               field="title"
               style={{ textAlign: 'left', padding: '8px 12px', borderBottom: '1px solid #e2e8f0', color: '#4a5568', fontWeight: 600, fontSize: 13 }}
@@ -293,6 +319,7 @@ export default function SortableTaskTable({
                 showClientBrandColumn={showClientBrandColumn}
                 filterCurrentUserFromAssignees={filterCurrentUserFromAssignees}
                 rowStyle={rowStyle}
+                hasUnreadComments={task.hasUnreadComments || false}
               />
             );
           })}
