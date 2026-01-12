@@ -816,7 +816,10 @@ export async function editTaskComment(prevState: any, formData: FormData) {
       data: { body },
     });
 
-    revalidatePath(`/jobs/${jobId || comment.task.jobId}`);
+    const finalJobId = jobId || comment.task?.jobId;
+    if (finalJobId) {
+      revalidatePath(`/jobs/${finalJobId}`);
+    }
     return { success: true, error: null };
   } catch (error: any) {
     console.error('Error editing comment:', error);
@@ -856,7 +859,10 @@ export async function deleteTaskComment(prevState: any, formData: FormData) {
       where: { id: commentId },
     });
 
-    revalidatePath(`/jobs/${jobId || comment.task.jobId}`);
+    const finalJobId = jobId || comment.task?.jobId;
+    if (finalJobId) {
+      revalidatePath(`/jobs/${finalJobId}`);
+    }
     return { success: true, error: null };
   } catch (error: any) {
     console.error('Error deleting comment:', error);
