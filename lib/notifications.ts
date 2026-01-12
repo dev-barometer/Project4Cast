@@ -52,10 +52,13 @@ export function parseMentions(text: string): string[] {
   // Match @mentions - supports:
   // - @username (word characters, dots, hyphens)
   // - @email@domain.com (full email addresses)
-  // - @First Last (names with spaces)
-  // Matches @ followed by word characters, dots, hyphens, @ (for emails), or spaces
-  // Updated regex to match @username followed by optional space or end of string
-  const mentionRegex = /@([\w.@-]+(?:\s+[\w.@-]+)*)/g;
+  // - @First Last (names with spaces, but stops at punctuation or end of word)
+  // The regex matches @ followed by word characters, but stops at:
+  // - End of string
+  // - Whitespace followed by non-word characters
+  // - Punctuation (except @, ., - which are allowed in names/emails)
+  // We use word boundaries and lookahead to stop at the right place
+  const mentionRegex = /@[\w.@-]+(?:\s+[\w.@-]+)*(?=\s|$|[^\w.@-])/g;
   const matches = text.match(mentionRegex);
   
   console.log('[parseMentions] Text:', text);
@@ -66,8 +69,11 @@ export function parseMentions(text: string): string[] {
     return [];
   }
   
+  // Clean up mentions - remove trailing spaces and trim
+  const cleanedMentions = matches.map(m => m.trim());
+  
   // Return unique mentions
-  const uniqueMentions = Array.from(new Set(matches));
+  const uniqueMentions = Array.from(new Set(cleanedMentions));
   console.log('[parseMentions] Unique mentions:', uniqueMentions);
   return uniqueMentions;
 }
