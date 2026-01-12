@@ -25,7 +25,17 @@ export async function createNotification({
   actorId?: string | null;
 }) {
   try {
-    await prisma.notification.create({
+    console.log('[createNotification] Creating notification:', {
+      userId,
+      type,
+      title,
+      message,
+      taskId,
+      jobId,
+      commentId,
+      actorId,
+    });
+    const notification = await prisma.notification.create({
       data: {
         userId,
         type,
@@ -37,8 +47,17 @@ export async function createNotification({
         actorId: actorId || null,
       },
     });
-  } catch (error) {
-    console.error('Error creating notification:', error);
+    console.log('[createNotification] Notification created successfully:', notification.id);
+    return notification;
+  } catch (error: any) {
+    console.error('[createNotification] Error creating notification:', error);
+    console.error('[createNotification] Error details:', {
+      message: error.message,
+      code: error.code,
+      meta: error.meta,
+    });
+    // Re-throw the error so callers know it failed
+    throw error;
   }
 }
 

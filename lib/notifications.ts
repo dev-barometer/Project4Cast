@@ -198,17 +198,27 @@ export async function notifyCommentMention({
     const context = taskTitle || jobTitle || 'a task';
     const actor = actorName || 'Someone';
     console.log('[notifyCommentMention] Creating in-app notification for user:', userId, 'actor:', actor);
-    await createNotification({
-      userId,
-      type: 'COMMENT_MENTION',
-      title: `@${actor} mentioned you`,
-      message: `in a comment on ${context}`,
-      taskId: taskId || null,
-      jobId: jobId || null,
-      commentId,
-      actorId: actorId || null,
-    });
-    console.log('[notifyCommentMention] In-app notification created successfully');
+    try {
+      await createNotification({
+        userId,
+        type: 'COMMENT_MENTION',
+        title: `@${actor} mentioned you`,
+        message: `in a comment on ${context}`,
+        taskId: taskId || null,
+        jobId: jobId || null,
+        commentId,
+        actorId: actorId || null,
+      });
+      console.log('[notifyCommentMention] In-app notification created successfully');
+    } catch (notifError: any) {
+      console.error('[notifyCommentMention] Failed to create notification:', notifError);
+      console.error('[notifyCommentMention] Error details:', {
+        message: notifError.message,
+        code: notifError.code,
+        meta: notifError.meta,
+      });
+      // Don't throw - we still want to try sending email even if in-app fails
+    }
   } else {
     console.log('[notifyCommentMention] In-app notifications disabled for user:', userId);
   }

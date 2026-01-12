@@ -762,9 +762,16 @@ export async function addTaskComment(prevState: any, formData: FormData) {
       } else {
         console.log('[addTaskComment] No mentions found in comment');
       }
-    } catch (mentionError) {
+    } catch (mentionError: any) {
       console.error('[addTaskComment] Error processing mentions:', mentionError);
       console.error('[addTaskComment] Error stack:', mentionError instanceof Error ? mentionError.stack : 'No stack trace');
+      console.error('[addTaskComment] Error details:', {
+        message: mentionError.message,
+        code: mentionError.code,
+        meta: mentionError.meta,
+      });
+      // Don't fail the comment creation if mention processing fails
+      // But log it so we can debug
     }
 
     revalidatePath(`/jobs/${jobId}`);
