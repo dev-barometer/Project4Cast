@@ -55,10 +55,10 @@ export function parseMentions(text: string): string[] {
   // - @First Last (names with spaces, but stops at punctuation or end of word)
   // The regex matches @ followed by word characters, but stops at:
   // - End of string
-  // - Whitespace followed by non-word characters
+  // - Multiple spaces (2+) which indicates end of mention
   // - Punctuation (except @, ., - which are allowed in names/emails)
-  // We use word boundaries and lookahead to stop at the right place
-  const mentionRegex = /@[\w.@-]+(?:\s+[\w.@-]+)*(?=\s|$|[^\w.@-])/g;
+  // We use lookahead to stop at the right place
+  const mentionRegex = /@[\w.@-]+(?:\s+[\w.@-]+)*(?=\s{2,}|$|[^\w.@-\s])/g;
   const matches = text.match(mentionRegex);
   
   console.log('[parseMentions] Text:', text);
