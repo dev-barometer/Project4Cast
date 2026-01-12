@@ -413,7 +413,8 @@ export default function TaskComments({
                     </div>
                   )}
                 </div>
-              ))}
+                );
+              })}
             </div>
           )}
 
