@@ -17,8 +17,10 @@ export default async function NotificationsPage() {
     redirect('/login');
   }
 
-  // Fetch notifications for the current user
-  const notifications = await prisma.notification.findMany({
+  let notifications = [];
+  try {
+    // Fetch notifications for the current user
+    notifications = await prisma.notification.findMany({
     where: {
       userId: currentUserId,
     },
@@ -49,15 +51,44 @@ export default async function NotificationsPage() {
       createdAt: 'desc',
     },
     take: 100, // Limit to 100 most recent
-  });
+    });
+  } catch (error: any) {
+    console.error('Error fetching notifications:', error);
+    return (
+      <main style={{ padding: 40, maxWidth: 800, margin: '0 auto' }}>
+        <div
+          style={{
+            backgroundColor: '#fed7d7',
+            color: '#742a2a',
+            padding: '20px 24px',
+            borderRadius: 6,
+            fontSize: 14,
+          }}
+        >
+          <strong>Error loading notifications:</strong> {error.message || 'Failed to load notifications'}
+          <div style={{ marginTop: 12 }}>
+            <Link href="/" style={{ color: '#742a2a', textDecoration: 'underline' }}>
+              ← Back to Home
+            </Link>
+          </div>
+        </div>
+      </main>
+    );
+  }
+
+  // Convert Date objects to ISO strings for serialization
+  const serializedNotifications = notifications.map((n) => ({
+    ...n,
+    createdAt: n.createdAt.toISOString(),
+  }));
 
   // Separate read and unread notifications
-  const unreadNotifications = notifications.filter((n: typeof notifications[0]) => !n.read);
-  const readNotifications = notifications.filter((n: typeof notifications[0]) => n.read);
+  const unreadNotifications = serializedNotifications.filter((n) => !n.read);
+  const readNotifications = serializedNotifications.filter((n) => n.read);
   const unreadCount = unreadNotifications.length;
 
   // Format notification message with link
-  const getNotificationLink = (notification: typeof notifications[0]) => {
+  const getNotificationLink = (notification: typeof serializedNotifications[0]) => {
     if (notification.taskId && notification.jobId) {
       return `/jobs/${notification.jobId}`;
     }
@@ -70,7 +101,8 @@ export default async function NotificationsPage() {
     return '/';
   };
 
-  const formatTimeAgo = (date: Date) => {
+  const formatTimeAgo = (dateString: string) => {
+    const date = new Date(dateString);
     const now = new Date();
     const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
 
@@ -102,7 +134,7 @@ export default async function NotificationsPage() {
       </div>
 
       {/* Notifications List */}
-      {notifications.length === 0 ? (
+      {serializedNotifications.length === 0 ? (
         <div
           style={{
             backgroundColor: '#f7fdfc',
@@ -117,7 +149,7 @@ export default async function NotificationsPage() {
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
           {/* Unread notifications */}
-          {unreadNotifications.map((notification: typeof notifications[0]) => {
+          {unreadNotifications.map((notification) => {
             const link = getNotificationLink(notification);
             const actorName = notification.actor?.name || notification.actor?.email || 'Someone';
 

@@ -8,7 +8,7 @@ type Notification = {
   title: string;
   message: string;
   read: boolean;
-  createdAt: Date;
+  createdAt: string; // ISO string
   actor?: {
     name: string | null;
     email: string;
@@ -33,7 +33,7 @@ type ReadNotificationsAccordionProps = {
     title: string;
     message: string;
     read: boolean;
-    createdAt: Date;
+    createdAt: string; // ISO string
     actor?: {
       name: string | null;
       email: string;
@@ -52,7 +52,7 @@ type ReadNotificationsAccordionProps = {
     } | null;
   }>;
   getNotificationLink: (notification: any) => string;
-  formatTimeAgo: (date: Date) => string;
+  formatTimeAgo: (dateString: string) => string;
 };
 
 export default function ReadNotificationsAccordion({
