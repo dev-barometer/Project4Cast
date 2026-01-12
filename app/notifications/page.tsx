@@ -9,6 +9,9 @@ import { markNotificationAsRead, markAllNotificationsAsRead } from './actions';
 import MarkAllReadButton from './MarkAllReadButton';
 import ReadNotificationsAccordion from './ReadNotificationsAccordion';
 
+// Force dynamic rendering since we use auth()
+export const dynamic = 'force-dynamic';
+
 export default async function NotificationsPage() {
   const session = await auth();
   const currentUserId = session?.user?.id;
@@ -77,10 +80,17 @@ export default async function NotificationsPage() {
   }
 
   // Convert Date objects to ISO strings for serialization
-  const serializedNotifications = notifications.map((n) => ({
-    ...n,
-    createdAt: n.createdAt.toISOString(),
-  }));
+  const serializedNotifications = notifications.map((n) => {
+    // Ensure createdAt exists and is a Date object
+    const createdAt = n.createdAt instanceof Date 
+      ? n.createdAt.toISOString() 
+      : new Date(n.createdAt).toISOString();
+    
+    return {
+      ...n,
+      createdAt,
+    };
+  });
 
   // Separate read and unread notifications
   const unreadNotifications = serializedNotifications.filter((n) => !n.read);
