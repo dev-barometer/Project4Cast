@@ -713,6 +713,9 @@ export async function addTaskComment(prevState: any, formData: FormData) {
     // Parse @mentions and send notifications
     try {
       const mentions = parseMentions(body);
+      console.log('[addTaskComment] Comment body:', body);
+      console.log('[addTaskComment] Parsed mentions:', mentions);
+      
       if (mentions.length > 0) {
         const author = await prisma.user.findUnique({
           where: { id: authorId },
@@ -730,10 +733,14 @@ export async function addTaskComment(prevState: any, formData: FormData) {
         const taskUrl = jobId ? `${baseUrl}/jobs/${jobId}` : `${baseUrl}/tasks`;
         
         for (const mention of mentions) {
+          console.log('[addTaskComment] Processing mention:', mention);
           const userIds = await findUsersByMention(mention);
+          console.log('[addTaskComment] Found user IDs for mention:', userIds);
+          
           for (const mentionedUserId of userIds) {
             // Don't notify the author
             if (mentionedUserId !== authorId) {
+              console.log('[addTaskComment] Creating notification for user:', mentionedUserId);
               await notifyCommentMention({
                 userId: mentionedUserId,
                 commentId: comment.id,
@@ -746,12 +753,18 @@ export async function addTaskComment(prevState: any, formData: FormData) {
                 actorEmail: author?.email || null,
                 taskUrl,
               });
+              console.log('[addTaskComment] Notification created successfully');
+            } else {
+              console.log('[addTaskComment] Skipping notification - user is the author');
             }
           }
         }
+      } else {
+        console.log('[addTaskComment] No mentions found in comment');
       }
     } catch (mentionError) {
-      console.error('Error processing mentions:', mentionError);
+      console.error('[addTaskComment] Error processing mentions:', mentionError);
+      console.error('[addTaskComment] Error stack:', mentionError instanceof Error ? mentionError.stack : 'No stack trace');
     }
 
     revalidatePath(`/jobs/${jobId}`);

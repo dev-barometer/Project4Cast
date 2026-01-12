@@ -9,10 +9,17 @@ export async function findUsersByMention(mentionText: string): Promise<string[]>
   // Remove @ symbol and trim
   let searchTerm = mentionText.replace('@', '').trim();
 
-  if (!searchTerm) return [];
+  console.log('[findUsersByMention] Searching for mention:', mentionText, '-> searchTerm:', searchTerm);
+
+  if (!searchTerm) {
+    console.log('[findUsersByMention] Empty search term, returning empty array');
+    return [];
+  }
 
   // Check if it looks like an email address
   const isEmail = searchTerm.includes('@') && searchTerm.includes('.');
+  
+  console.log('[findUsersByMention] Is email?', isEmail);
   
   // If it's an email, search for exact match first, then contains
   // If it's not an email, search by name or email contains
@@ -28,10 +35,14 @@ export async function findUsersByMention(mentionText: string): Promise<string[]>
           OR: [
             { email: { contains: searchTerm, mode: 'insensitive' as const } },
             { name: { contains: searchTerm, mode: 'insensitive' as const } },
+            // Also try exact name match (case-insensitive)
+            { name: { equals: searchTerm, mode: 'insensitive' as const } },
           ],
         },
-    select: { id: true },
+    select: { id: true, name: true, email: true },
   });
+
+  console.log('[findUsersByMention] Found users:', users.map(u => ({ id: u.id, name: u.name, email: u.email })));
 
   return users.map((u) => u.id);
 }
@@ -43,13 +54,22 @@ export function parseMentions(text: string): string[] {
   // - @email@domain.com (full email addresses)
   // - @First Last (names with spaces)
   // Matches @ followed by word characters, dots, hyphens, @ (for emails), or spaces
+  // Updated regex to match @username followed by optional space or end of string
   const mentionRegex = /@([\w.@-]+(?:\s+[\w.@-]+)*)/g;
   const matches = text.match(mentionRegex);
   
-  if (!matches) return [];
+  console.log('[parseMentions] Text:', text);
+  console.log('[parseMentions] Matches:', matches);
+  
+  if (!matches) {
+    console.log('[parseMentions] No matches found');
+    return [];
+  }
   
   // Return unique mentions
-  return Array.from(new Set(matches));
+  const uniqueMentions = Array.from(new Set(matches));
+  console.log('[parseMentions] Unique mentions:', uniqueMentions);
+  return uniqueMentions;
 }
 
 // Create task assignment notification
@@ -177,16 +197,20 @@ export async function notifyCommentMention({
   if (shouldNotifyInApp) {
     const context = taskTitle || jobTitle || 'a task';
     const actor = actorName || 'Someone';
+    console.log('[notifyCommentMention] Creating in-app notification for user:', userId, 'actor:', actor);
     await createNotification({
       userId,
       type: 'COMMENT_MENTION',
-      title: `${actor} mentioned you in a comment`,
-      message: context,
+      title: `@${actor} mentioned you`,
+      message: `in a comment on ${context}`,
       taskId: taskId || null,
       jobId: jobId || null,
       commentId,
       actorId: actorId || null,
     });
+    console.log('[notifyCommentMention] In-app notification created successfully');
+  } else {
+    console.log('[notifyCommentMention] In-app notifications disabled for user:', userId);
   }
 
   // Send email notification if enabled
