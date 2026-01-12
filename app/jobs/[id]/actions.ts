@@ -726,6 +726,9 @@ export async function addTaskComment(prevState: any, formData: FormData) {
         });
 
         // Find users mentioned
+        const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
+        const taskUrl = jobId ? `${baseUrl}/jobs/${jobId}` : `${baseUrl}/tasks`;
+        
         for (const mention of mentions) {
           const userIds = await findUsersByMention(mention);
           for (const mentionedUserId of userIds) {
@@ -740,6 +743,8 @@ export async function addTaskComment(prevState: any, formData: FormData) {
                 jobTitle: task?.job?.title || null,
                 actorId: authorId,
                 actorName: author?.name || null,
+                actorEmail: author?.email || null,
+                taskUrl,
               });
             }
           }

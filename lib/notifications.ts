@@ -2,6 +2,7 @@
 
 import { createNotification } from '@/app/notifications/actions';
 import { prisma } from '@/lib/prisma';
+import { sendCommentMentionEmail } from '@/lib/email';
 
 // Helper to find users by email or name (for @mentions)
 export async function findUsersByMention(mentionText: string): Promise<string[]> {
@@ -139,6 +140,8 @@ export async function notifyCommentMention({
   jobTitle,
   actorId,
   actorName,
+  actorEmail,
+  taskUrl,
 }: {
   userId: string;
   commentId: string;
@@ -148,6 +151,8 @@ export async function notifyCommentMention({
   jobTitle?: string | null;
   actorId?: string | null;
   actorName?: string | null;
+  actorEmail?: string | null;
+  taskUrl?: string | null;
 }) {
   // Check user's notification preferences
   const preferences = await prisma.userNotificationPreferences.findUnique({
@@ -155,24 +160,51 @@ export async function notifyCommentMention({
   });
 
   // Default to true if preferences don't exist (backward compatibility)
-  const shouldNotify = preferences?.commentMentionInApp !== false;
+  const shouldNotifyInApp = preferences?.commentMentionInApp !== false;
+  const shouldNotifyEmail = preferences?.commentMentionEmail !== false;
 
-  if (!shouldNotify) {
-    return; // User has disabled comment mention notifications
+  // Get the mentioned user's email
+  const mentionedUser = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { email: true },
+  });
+
+  if (!mentionedUser) {
+    return; // User doesn't exist
   }
 
-  const context = taskTitle || jobTitle || 'a task';
-  const actor = actorName || 'Someone';
-  await createNotification({
-    userId,
-    type: 'COMMENT_MENTION',
-    title: `${actor} mentioned you in a comment`,
-    message: context,
-    taskId: taskId || null,
-    jobId: jobId || null,
-    commentId,
-    actorId: actorId || null,
-  });
+  // Create in-app notification if enabled
+  if (shouldNotifyInApp) {
+    const context = taskTitle || jobTitle || 'a task';
+    const actor = actorName || 'Someone';
+    await createNotification({
+      userId,
+      type: 'COMMENT_MENTION',
+      title: `${actor} mentioned you in a comment`,
+      message: context,
+      taskId: taskId || null,
+      jobId: jobId || null,
+      commentId,
+      actorId: actorId || null,
+    });
+  }
+
+  // Send email notification if enabled
+  if (shouldNotifyEmail && taskUrl) {
+    try {
+      await sendCommentMentionEmail({
+        email: mentionedUser.email,
+        taskTitle: taskTitle || null,
+        jobTitle: jobTitle || null,
+        commenterName: actorName || null,
+        commenterEmail: actorEmail || 'System',
+        taskUrl,
+      });
+    } catch (emailError) {
+      // Don't fail the notification if email fails
+      console.error('Error sending comment mention email:', emailError);
+    }
+  }
 }
 
 

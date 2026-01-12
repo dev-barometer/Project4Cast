@@ -5,6 +5,9 @@ import { prisma } from '@/lib/prisma';
 import { auth } from '@/auth';
 import { NextResponse } from 'next/server';
 
+// Force dynamic rendering since we use auth()
+export const dynamic = 'force-dynamic';
+
 export async function GET() {
   try {
     const session = await auth();
