@@ -10,6 +10,7 @@ import bcrypt from 'bcryptjs';
 import { randomBytes } from 'crypto';
 import { sendPasswordResetEmail } from '@/lib/email';
 import { resendVerificationEmail } from '@/app/verify-email/actions';
+import { deleteFile } from '@/lib/file-upload';
 
 async function requireAdminOrOwner() {
   const session = await auth();
@@ -534,6 +535,95 @@ export async function deleteJob(prevState: any, formData: FormData) {
       return { success: false, error: 'Job ID is required' };
     }
 
+    // Delete all related records first (in correct order to respect foreign key constraints)
+    // 1. Delete notifications related to this job
+    await prisma.notification.deleteMany({
+      where: { jobId },
+    });
+
+    // 2. Delete comments related to this job
+    await prisma.comment.deleteMany({
+      where: { jobId },
+    });
+
+    // 3. Delete attachments related to this job
+    const attachments = await prisma.attachment.findMany({
+      where: { jobId },
+      select: { url: true },
+    });
+    
+    // Delete attachment files from storage
+    for (const attachment of attachments) {
+      try {
+        await deleteFile(attachment.url);
+      } catch (fileError) {
+        // Continue even if file deletion fails (file might not exist)
+        console.error('Error deleting attachment file:', attachment.url, fileError);
+      }
+    }
+    
+    await prisma.attachment.deleteMany({
+      where: { jobId },
+    });
+
+    // 4. Delete task assignees (for tasks in this job)
+    const tasks = await prisma.task.findMany({
+      where: { jobId },
+      select: { id: true },
+    });
+    
+    const taskIds = tasks.map(t => t.id);
+    if (taskIds.length > 0) {
+      // Delete task assignees
+      await prisma.taskAssignee.deleteMany({
+        where: { taskId: { in: taskIds } },
+      });
+
+      // Delete task comments
+      await prisma.comment.deleteMany({
+        where: { taskId: { in: taskIds } },
+      });
+
+      // Delete task attachments
+      const taskAttachments = await prisma.attachment.findMany({
+        where: { taskId: { in: taskIds } },
+        select: { url: true },
+      });
+      
+      for (const attachment of taskAttachments) {
+        try {
+          await deleteFile(attachment.url);
+        } catch (fileError) {
+          console.error('Error deleting task attachment file:', attachment.url, fileError);
+        }
+      }
+      
+      await prisma.attachment.deleteMany({
+        where: { taskId: { in: taskIds } },
+      });
+
+      // Delete task notifications
+      await prisma.notification.deleteMany({
+        where: { taskId: { in: taskIds } },
+      });
+
+      // Delete tasks
+      await prisma.task.deleteMany({
+        where: { jobId },
+      });
+    }
+
+    // 5. Delete invitations related to this job
+    await prisma.invitation.deleteMany({
+      where: { jobId },
+    });
+
+    // 6. Delete job collaborators
+    await prisma.jobCollaborator.deleteMany({
+      where: { jobId },
+    });
+
+    // 7. Finally, delete the job itself
     await prisma.job.delete({
       where: { id: jobId },
     });
@@ -541,6 +631,7 @@ export async function deleteJob(prevState: any, formData: FormData) {
     revalidatePath('/admin');
     return { success: true, error: null };
   } catch (error: any) {
+    console.error('Error deleting job:', error);
     return { success: false, error: error.message || 'Failed to delete job' };
   }
 }
