@@ -56,9 +56,8 @@ export async function GET(request: Request) {
     });
 
     // Test 4: Try to create a notification (without actually creating a comment)
-    // We'll create a fake comment ID for testing
+    // Use null for taskId/jobId to avoid foreign key constraints
     const testCommentId = 'test-comment-' + Date.now();
-    const testTaskId = 'test-task-' + Date.now();
 
     let notificationResult = null;
     let notificationError = null;
@@ -67,7 +66,7 @@ export async function GET(request: Request) {
       await notifyCommentMention({
         userId: mentionedUserId,
         commentId: testCommentId,
-        taskId: testTaskId,
+        taskId: null, // Use null to avoid foreign key constraint
         taskTitle: 'Test Task',
         jobId: null,
         jobTitle: null,
@@ -82,6 +81,7 @@ export async function GET(request: Request) {
         message: error.message,
         code: error.code,
         meta: error.meta,
+        stack: error.stack,
       };
     }
 
@@ -92,6 +92,25 @@ export async function GET(request: Request) {
         commentId: testCommentId,
       },
       orderBy: { createdAt: 'desc' },
+    });
+
+    // Test 6: Check recent notifications for the mentioned user
+    const recentNotifications = await prisma.notification.findMany({
+      where: {
+        userId: mentionedUserId,
+        type: 'COMMENT_MENTION',
+      },
+      orderBy: { createdAt: 'desc' },
+      take: 5,
+      include: {
+        actor: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
+      },
     });
 
     // Clean up test notification
@@ -126,6 +145,17 @@ export async function GET(request: Request) {
         notificationCreated: !!createdNotification,
         notificationId: createdNotification?.id,
       },
+      recentNotifications: recentNotifications.map(n => ({
+        id: n.id,
+        title: n.title,
+        message: n.message,
+        createdAt: n.createdAt,
+        actor: n.actor ? {
+          name: n.actor.name,
+          email: n.actor.email,
+        } : null,
+        commentId: n.commentId,
+      })),
     });
   } catch (error: any) {
     return NextResponse.json({
