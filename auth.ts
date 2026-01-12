@@ -31,8 +31,18 @@ export const { auth, signIn, signOut, handlers } = NextAuth({
           throw new Error('Database connection failed. Please try again later.');
         }
 
-        if (!user || !user.password) {
+        if (!user) {
           return null;
+        }
+
+        // Check if account is paused
+        if (user.isPaused) {
+          throw new Error('Your account has been paused. Please contact an administrator.');
+        }
+
+        // Check if user has a password set
+        if (!user.password) {
+          throw new Error('No password set for this account. Please use password reset or contact an administrator.');
         }
 
         // Verify password

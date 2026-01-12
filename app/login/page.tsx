@@ -34,13 +34,17 @@ export default function LoginPage() {
       });
 
       if (result?.error) {
-        setError('Invalid email or password');
+        // Show the actual error message if available, otherwise show generic message
+        const errorMessage = result.error === 'CredentialsSignin' 
+          ? 'Invalid email or password' 
+          : result.error;
+        setError(errorMessage);
       } else {
         router.push('/');
         router.refresh();
       }
-    } catch (error) {
-      setError('Something went wrong. Please try again.');
+    } catch (error: any) {
+      setError(error?.message || 'Something went wrong. Please try again.');
     } finally {
       setIsLoading(false);
     }
