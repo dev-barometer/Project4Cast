@@ -2,7 +2,7 @@
 
 // Client Component for displaying and adding task comments
 
-import { addTaskComment } from './actions';
+import { addTaskComment, editTaskComment, deleteTaskComment } from './actions';
 import { useState, useRef, useEffect } from 'react';
 import { useFormState } from 'react-dom';
 import { useRouter } from 'next/navigation';
@@ -65,6 +65,10 @@ export default function TaskComments({
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [fileError, setFileError] = useState<string | null>(null);
+  const [editingCommentId, setEditingCommentId] = useState<string | null>(null);
+  const [editBody, setEditBody] = useState<string>('');
+  const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
+  const editTextareaRef = useRef<HTMLTextAreaElement>(null);
   const router = useRouter();
 
   // Clear form and refresh page when comment is successfully added
@@ -189,31 +193,197 @@ export default function TaskComments({
           {/* Existing comments */}
           {comments.length > 0 && (
             <div style={{ marginBottom: 16 }}>
-              {comments.map((comment) => (
-                <div
-                  key={comment.id}
-                  style={{
-                    marginBottom: 12,
-                    paddingBottom: 12,
-                    borderBottom: '1px solid #e2e8f0',
-                  }}
-                >
-                  <div style={{ fontSize: 12, color: '#4a5568', marginBottom: 4 }}>
-                    <strong>
-                      {comment.author?.name || comment.author?.email || 'Unknown'}
-                    </strong>
-                    {' · '}
-                    {new Date(comment.createdAt).toLocaleDateString('en-US', {
-                      month: 'short',
-                      day: 'numeric',
-                      year: 'numeric',
-                      hour: 'numeric',
-                      minute: '2-digit',
-                    })}
-                  </div>
-                  <div style={{ fontSize: 13, color: '#2d3748', lineHeight: 1.6 }}>
-                    {comment.body}
-                  </div>
+              {comments.map((comment) => {
+                const isAuthor = comment.author?.id === currentUserId;
+                const isEditing = editingCommentId === comment.id;
+                
+                return (
+                  <div
+                    key={comment.id}
+                    style={{
+                      marginBottom: 12,
+                      paddingBottom: 12,
+                      borderBottom: '1px solid #e2e8f0',
+                    }}
+                  >
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 4 }}>
+                      <div style={{ fontSize: 12, color: '#4a5568' }}>
+                        <strong>
+                          {comment.author?.name || comment.author?.email || 'Unknown'}
+                        </strong>
+                        {' · '}
+                        {new Date(comment.createdAt).toLocaleDateString('en-US', {
+                          month: 'short',
+                          day: 'numeric',
+                          year: 'numeric',
+                          hour: 'numeric',
+                          minute: '2-digit',
+                        })}
+                      </div>
+                      {isAuthor && !isEditing && (
+                        <div style={{ display: 'flex', gap: 8 }}>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setEditingCommentId(comment.id);
+                              setEditBody(comment.body);
+                              setTimeout(() => {
+                                editTextareaRef.current?.focus();
+                              }, 0);
+                            }}
+                            style={{
+                              background: 'none',
+                              border: 'none',
+                              color: '#4299e1',
+                              cursor: 'pointer',
+                              fontSize: 11,
+                              padding: '2px 4px',
+                              textDecoration: 'underline',
+                            }}
+                          >
+                            Edit
+                          </button>
+                          {deleteConfirmId === comment.id ? (
+                            <>
+                              <button
+                                type="button"
+                                onClick={async () => {
+                                  const formData = new FormData();
+                                  formData.append('commentId', comment.id);
+                                  formData.append('currentUserId', currentUserId);
+                                  formData.append('jobId', jobId);
+                                  const result = await deleteTaskComment(null, formData);
+                                  if (result.success) {
+                                    setDeleteConfirmId(null);
+                                    router.refresh();
+                                  } else {
+                                    alert(result.error || 'Failed to delete comment');
+                                  }
+                                }}
+                                style={{
+                                  background: '#e53e3e',
+                                  border: 'none',
+                                  color: 'white',
+                                  cursor: 'pointer',
+                                  fontSize: 11,
+                                  padding: '2px 6px',
+                                  borderRadius: 3,
+                                }}
+                              >
+                                Confirm
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => setDeleteConfirmId(null)}
+                                style={{
+                                  background: 'none',
+                                  border: 'none',
+                                  color: '#718096',
+                                  cursor: 'pointer',
+                                  fontSize: 11,
+                                  padding: '2px 4px',
+                                }}
+                              >
+                                Cancel
+                              </button>
+                            </>
+                          ) : (
+                            <button
+                              type="button"
+                              onClick={() => setDeleteConfirmId(comment.id)}
+                              style={{
+                                background: 'none',
+                                border: 'none',
+                                color: '#e53e3e',
+                                cursor: 'pointer',
+                                fontSize: 11,
+                                padding: '2px 4px',
+                                textDecoration: 'underline',
+                              }}
+                            >
+                              Delete
+                            </button>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                    {isEditing ? (
+                      <form
+                        action={async (formData: FormData) => {
+                          formData.append('commentId', comment.id);
+                          formData.append('currentUserId', currentUserId);
+                          formData.append('jobId', jobId);
+                          const result = await editTaskComment(null, formData);
+                          if (result.success) {
+                            setEditingCommentId(null);
+                            setEditBody('');
+                            router.refresh();
+                          } else {
+                            alert(result.error || 'Failed to edit comment');
+                          }
+                        }}
+                        style={{ marginTop: 8 }}
+                      >
+                        <textarea
+                          ref={editTextareaRef}
+                          name="body"
+                          value={editBody}
+                          onChange={(e) => setEditBody(e.target.value)}
+                          required
+                          rows={3}
+                          style={{
+                            width: '100%',
+                            padding: '8px 10px',
+                            borderRadius: 4,
+                            border: '1px solid #cbd5e0',
+                            fontSize: 13,
+                            backgroundColor: '#ffffff',
+                            color: '#2d3748',
+                            fontFamily: 'inherit',
+                            resize: 'vertical',
+                          }}
+                        />
+                        <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end', marginTop: 8 }}>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setEditingCommentId(null);
+                              setEditBody('');
+                            }}
+                            style={{
+                              padding: '6px 12px',
+                              borderRadius: 4,
+                              border: '1px solid #cbd5e0',
+                              background: '#f7fdfc',
+                              color: '#4a5568',
+                              fontSize: 12,
+                              cursor: 'pointer',
+                            }}
+                          >
+                            Cancel
+                          </button>
+                          <button
+                            type="submit"
+                            style={{
+                              padding: '6px 12px',
+                              borderRadius: 4,
+                              border: 'none',
+                              background: '#14B8A6',
+                              color: 'white',
+                              fontSize: 12,
+                              cursor: 'pointer',
+                              fontWeight: 500,
+                            }}
+                          >
+                            Save
+                          </button>
+                        </div>
+                      </form>
+                    ) : (
+                      <div style={{ fontSize: 13, color: '#2d3748', lineHeight: 1.6 }}>
+                        {comment.body}
+                      </div>
+                    )}
                   {/* Show attachments for this comment */}
                   {getCommentAttachments(comment.createdAt, comment.author?.id || '').length > 0 && (
                     <div style={{ marginTop: 8, display: 'flex', flexDirection: 'column', gap: 4 }}>

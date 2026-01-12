@@ -782,6 +782,88 @@ export async function addTaskComment(prevState: any, formData: FormData) {
   }
 }
 
+// Server action to edit a comment
+export async function editTaskComment(prevState: any, formData: FormData) {
+  'use server';
+  
+  try {
+    const commentId = formData.get('commentId')?.toString();
+    const body = formData.get('body')?.toString().trim();
+    const currentUserId = formData.get('currentUserId')?.toString();
+    const jobId = formData.get('jobId')?.toString();
+
+    if (!commentId || !body || !currentUserId) {
+      return { error: 'Missing required fields', success: false };
+    }
+
+    // Verify the comment exists and the user is the author
+    const comment = await prisma.comment.findUnique({
+      where: { id: commentId },
+      include: { task: true },
+    });
+
+    if (!comment) {
+      return { error: 'Comment not found', success: false };
+    }
+
+    if (comment.authorId !== currentUserId) {
+      return { error: 'You can only edit your own comments', success: false };
+    }
+
+    // Update the comment
+    await prisma.comment.update({
+      where: { id: commentId },
+      data: { body },
+    });
+
+    revalidatePath(`/jobs/${jobId || comment.task.jobId}`);
+    return { success: true, error: null };
+  } catch (error: any) {
+    console.error('Error editing comment:', error);
+    return { error: error.message || 'Failed to edit comment', success: false };
+  }
+}
+
+// Server action to delete a comment
+export async function deleteTaskComment(prevState: any, formData: FormData) {
+  'use server';
+  
+  try {
+    const commentId = formData.get('commentId')?.toString();
+    const currentUserId = formData.get('currentUserId')?.toString();
+    const jobId = formData.get('jobId')?.toString();
+
+    if (!commentId || !currentUserId) {
+      return { error: 'Missing required fields', success: false };
+    }
+
+    // Verify the comment exists and the user is the author
+    const comment = await prisma.comment.findUnique({
+      where: { id: commentId },
+      include: { task: true },
+    });
+
+    if (!comment) {
+      return { error: 'Comment not found', success: false };
+    }
+
+    if (comment.authorId !== currentUserId) {
+      return { error: 'You can only delete your own comments', success: false };
+    }
+
+    // Delete the comment
+    await prisma.comment.delete({
+      where: { id: commentId },
+    });
+
+    revalidatePath(`/jobs/${jobId || comment.task.jobId}`);
+    return { success: true, error: null };
+  } catch (error: any) {
+    console.error('Error deleting comment:', error);
+    return { error: error.message || 'Failed to delete comment', success: false };
+  }
+}
+
 // Server action to upload an attachment to a job
 export async function uploadJobAttachment(prevState: any, formData: FormData) {
   try {
