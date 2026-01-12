@@ -21,42 +21,64 @@ export default async function NotificationsPage() {
   }
 
   let notifications = [];
+  let errorDetails: any = null;
   try {
+    // First, verify the user exists
+    const user = await prisma.user.findUnique({
+      where: { id: currentUserId },
+      select: { id: true, email: true },
+    });
+
+    if (!user) {
+      throw new Error(`User ${currentUserId} not found`);
+    }
+
     // Fetch notifications for the current user
     notifications = await prisma.notification.findMany({
-    where: {
-      userId: currentUserId,
-    },
-    include: {
-      actor: {
-        select: {
-          id: true,
-          name: true,
-          email: true,
+      where: {
+        userId: currentUserId,
+      },
+      include: {
+        actor: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
+        task: {
+          select: {
+            id: true,
+            title: true,
+            jobId: true,
+          },
+        },
+        job: {
+          select: {
+            id: true,
+            title: true,
+            jobNumber: true,
+          },
         },
       },
-      task: {
-        select: {
-          id: true,
-          title: true,
-          jobId: true,
-        },
+      orderBy: {
+        createdAt: 'desc',
       },
-      job: {
-        select: {
-          id: true,
-          title: true,
-          jobNumber: true,
-        },
-      },
-    },
-    orderBy: {
-      createdAt: 'desc',
-    },
-    take: 100, // Limit to 100 most recent
+      take: 100, // Limit to 100 most recent
     });
   } catch (error: any) {
     console.error('Error fetching notifications:', error);
+    errorDetails = {
+      message: error.message,
+      code: error.code,
+      meta: error.meta,
+      stack: error.stack,
+      name: error.name,
+    };
+    
+    // Log full error details for debugging
+    console.error('Full error details:', JSON.stringify(errorDetails, null, 2));
+    
     return (
       <main style={{ padding: 40, maxWidth: 800, margin: '0 auto' }}>
         <div
@@ -69,6 +91,26 @@ export default async function NotificationsPage() {
           }}
         >
           <strong>Error loading notifications:</strong> {error.message || 'Failed to load notifications'}
+          {error.code && (
+            <div style={{ marginTop: 8, fontSize: 12, fontFamily: 'monospace' }}>
+              Error Code: {error.code}
+            </div>
+          )}
+          {process.env.NODE_ENV === 'development' && errorDetails && (
+            <details style={{ marginTop: 12, fontSize: 12 }}>
+              <summary style={{ cursor: 'pointer', marginBottom: 8 }}>Technical Details</summary>
+              <pre style={{ 
+                backgroundColor: '#fff', 
+                padding: 12, 
+                borderRadius: 4, 
+                overflow: 'auto',
+                fontSize: 11,
+                maxHeight: '300px'
+              }}>
+                {JSON.stringify(errorDetails, null, 2)}
+              </pre>
+            </details>
+          )}
           <div style={{ marginTop: 12 }}>
             <Link href="/" style={{ color: '#742a2a', textDecoration: 'underline' }}>
               ← Back to Home
