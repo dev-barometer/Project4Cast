@@ -52,30 +52,102 @@ export function parseMentions(text: string): string[] {
   // Match @mentions - supports:
   // - @username (word characters, dots, hyphens)
   // - @email@domain.com (full email addresses)
-  // - @First Last (names with spaces, but stops at punctuation or end of word)
-  // The regex matches @ followed by word characters, but stops at:
+  // - @First Last (names with spaces)
+  // Strategy: Match @ followed by words, but stop when we hit:
   // - End of string
-  // - Multiple spaces (2+) which indicates end of mention
-  // - Punctuation (except @, ., - which are allowed in names/emails)
-  // We use lookahead to stop at the right place
-  const mentionRegex = /@[\w.@-]+(?:\s+[\w.@-]+)*(?=\s{2,}|$|[^\w.@-\s])/g;
-  const matches = text.match(mentionRegex);
+  // - A space followed by text that doesn't look like a name continuation
+  //   (e.g., all lowercase gibberish, or punctuation)
+  // We'll match word by word and stop when we hit something that's clearly not part of the mention
   
-  console.log('[parseMentions] Text:', text);
-  console.log('[parseMentions] Matches:', matches);
+  const mentions: string[] = [];
+  let i = 0;
   
-  if (!matches) {
-    console.log('[parseMentions] No matches found');
-    return [];
+  while (i < text.length) {
+    // Find the next @ symbol
+    const atIndex = text.indexOf('@', i);
+    if (atIndex === -1) break;
+    
+    // Start matching from the @
+    let matchEnd = atIndex + 1; // Skip the @
+    let words: string[] = [];
+    let currentWord = '';
+    let inWord = false;
+    
+    // Match words after @
+    for (let j = atIndex + 1; j < text.length; j++) {
+      const char = text[j];
+      const isWordChar = /[\w.@-]/.test(char);
+      const isSpace = /\s/.test(char);
+      
+      if (isWordChar) {
+        currentWord += char;
+        inWord = true;
+      } else if (isSpace && inWord) {
+        // We hit a space after a word
+        words.push(currentWord);
+        currentWord = '';
+        inWord = false;
+        
+        // Look ahead to see if the next word looks like part of the mention
+        // Skip spaces
+        let nextWordStart = j + 1;
+        while (nextWordStart < text.length && /\s/.test(text[nextWordStart])) {
+          nextWordStart++;
+        }
+        
+        // Check if next word starts with capital (likely part of name) or is short
+        if (nextWordStart < text.length) {
+          const nextChar = text[nextWordStart];
+          const nextWordMatch = text.substring(nextWordStart).match(/^[\w.@-]+/);
+          const nextWord = nextWordMatch ? nextWordMatch[0] : '';
+          
+          // Stop if next word is all lowercase and long (probably not part of name)
+          // or if it's clearly not a name continuation
+          if (nextWord && nextWord.length > 10 && nextWord === nextWord.toLowerCase()) {
+            // Long all-lowercase word - probably not part of mention
+            break;
+          }
+          
+          // Continue if next word starts with capital or is short (could be part of name)
+          if (nextChar && nextChar === nextChar.toUpperCase() && /[A-Z]/.test(nextChar)) {
+            // Next word starts with capital - might be part of name, continue
+            continue;
+          }
+          
+          // If we have 2+ words already, stop (names are usually 1-2 words)
+          if (words.length >= 2) {
+            break;
+          }
+        }
+      } else {
+        // Hit punctuation or end - stop
+        if (inWord) {
+          words.push(currentWord);
+        }
+        break;
+      }
+    }
+    
+    // Add final word if we ended in the middle of one
+    if (inWord && currentWord) {
+      words.push(currentWord);
+    }
+    
+    // If we found at least one word, it's a mention
+    if (words.length > 0) {
+      const mention = '@' + words.join(' ');
+      mentions.push(mention);
+    }
+    
+    // Move past this mention
+    i = atIndex + 1;
   }
   
-  // Clean up mentions - remove trailing spaces and trim
-  const cleanedMentions = matches.map(m => m.trim());
+  console.log('[parseMentions] Text:', text);
+  console.log('[parseMentions] Found mentions:', mentions);
   
   // Return unique mentions
-  const uniqueMentions = Array.from(new Set(cleanedMentions));
-  console.log('[parseMentions] Unique mentions:', uniqueMentions);
-  return uniqueMentions;
+  return Array.from(new Set(mentions));
 }
 
 // Create task assignment notification
