@@ -68,6 +68,7 @@ export default function TaskComments({
   const [editingCommentId, setEditingCommentId] = useState<string | null>(null);
   const [editBody, setEditBody] = useState<string>('');
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const editTextareaRef = useRef<HTMLTextAreaElement>(null);
   const router = useRouter();
 
@@ -77,13 +78,16 @@ export default function TaskComments({
       textareaRef.current.value = '';
       setSelectedFiles([]);
       setFileError(null);
+      setIsSubmitting(false);
       if (fileInputRef.current) {
         fileInputRef.current.value = '';
       }
       // Refresh the page to show the new comment
       router.refresh();
+    } else if (state?.error) {
+      setIsSubmitting(false);
     }
-  }, [state?.success, router]);
+  }, [state?.success, state?.error, router]);
 
   const handlePaperclipClick = () => {
     fileInputRef.current?.click();
@@ -419,7 +423,20 @@ export default function TaskComments({
           )}
 
           {/* Add comment form */}
-          <form action={formAction} encType="multipart/form-data">
+          <form 
+            action={async (formData: FormData) => {
+              if (isSubmitting) {
+                return; // Prevent double submission
+              }
+              setIsSubmitting(true);
+              try {
+                await formAction(formData);
+              } catch (error) {
+                setIsSubmitting(false);
+              }
+            }}
+            encType="multipart/form-data"
+          >
             <input type="hidden" name="taskId" value={taskId} />
             <input type="hidden" name="jobId" value={jobId} />
             <input type="hidden" name="authorId" value={currentUserId} />
@@ -560,18 +577,20 @@ export default function TaskComments({
               )}
               <button
                 type="submit"
+                disabled={isSubmitting}
                 style={{
                   padding: '6px 12px',
                   borderRadius: 4,
                   border: 'none',
-                  background: '#14B8A6',
+                  background: isSubmitting ? '#a0aec0' : '#14B8A6',
                   color: 'white',
                   fontSize: 12,
-                  cursor: 'pointer',
+                  cursor: isSubmitting ? 'not-allowed' : 'pointer',
                   fontWeight: 500,
+                  opacity: isSubmitting ? 0.6 : 1,
                 }}
               >
-                Post Comment
+                {isSubmitting ? 'Posting...' : 'Post Comment'}
               </button>
             </div>
           </form>
