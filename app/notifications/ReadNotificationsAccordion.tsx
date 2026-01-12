@@ -34,6 +34,7 @@ type ReadNotificationsAccordionProps = {
     message: string;
     read: boolean;
     createdAt: string; // ISO string
+    link: string; // Pre-computed link
     actor?: {
       name: string | null;
       email: string;
@@ -51,15 +52,22 @@ type ReadNotificationsAccordionProps = {
       jobId: string | null;
     } | null;
   }>;
-  getNotificationLink: (notification: any) => string;
-  formatTimeAgo: (dateString: string) => string;
 };
 
 export default function ReadNotificationsAccordion({
   notifications,
-  getNotificationLink,
-  formatTimeAgo,
 }: ReadNotificationsAccordionProps) {
+  const formatTimeAgo = (dateString: string) => {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
+
+    if (diffInSeconds < 60) return 'just now';
+    if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)}m ago`;
+    if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)}h ago`;
+    if (diffInSeconds < 604800) return `${Math.floor(diffInSeconds / 86400)}d ago`;
+    return date.toLocaleDateString();
+  };
   const [isExpanded, setIsExpanded] = useState(false);
 
   if (notifications.length === 0) {
@@ -118,13 +126,12 @@ export default function ReadNotificationsAccordion({
       {isExpanded && (
         <div style={{ marginTop: 8, display: 'flex', flexDirection: 'column', gap: 8 }}>
           {notifications.map((notification) => {
-            const link = getNotificationLink(notification);
             const actorName = notification.actor?.name || notification.actor?.email || 'Someone';
 
             return (
               <Link
                 key={notification.id}
-                href={link}
+                href={notification.link}
                 style={{
                   display: 'block',
                   backgroundColor: '#f7fdfc',

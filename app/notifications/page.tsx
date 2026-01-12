@@ -121,16 +121,27 @@ export default async function NotificationsPage() {
     );
   }
 
-  // Convert Date objects to ISO strings for serialization
+  // Convert Date objects to ISO strings for serialization and pre-compute links
   const serializedNotifications = notifications.map((n) => {
     // Ensure createdAt exists and is a Date object
     const createdAt = n.createdAt instanceof Date 
       ? n.createdAt.toISOString() 
       : new Date(n.createdAt).toISOString();
     
+    // Pre-compute the link (can't pass functions to client components)
+    let link = '/';
+    if (n.taskId && n.jobId) {
+      link = `/jobs/${n.jobId}`;
+    } else if (n.jobId) {
+      link = `/jobs/${n.jobId}`;
+    } else if (n.taskId) {
+      link = '/tasks';
+    }
+    
     return {
       ...n,
       createdAt,
+      link, // Pre-computed link
     };
   });
 
@@ -138,32 +149,6 @@ export default async function NotificationsPage() {
   const unreadNotifications = serializedNotifications.filter((n) => !n.read);
   const readNotifications = serializedNotifications.filter((n) => n.read);
   const unreadCount = unreadNotifications.length;
-
-  // Format notification message with link
-  const getNotificationLink = (notification: typeof serializedNotifications[0]) => {
-    if (notification.taskId && notification.jobId) {
-      return `/jobs/${notification.jobId}`;
-    }
-    if (notification.jobId) {
-      return `/jobs/${notification.jobId}`;
-    }
-    if (notification.taskId) {
-      return '/tasks';
-    }
-    return '/';
-  };
-
-  const formatTimeAgo = (dateString: string) => {
-    const date = new Date(dateString);
-    const now = new Date();
-    const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
-
-    if (diffInSeconds < 60) return 'just now';
-    if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)}m ago`;
-    if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)}h ago`;
-    if (diffInSeconds < 604800) return `${Math.floor(diffInSeconds / 86400)}d ago`;
-    return date.toLocaleDateString();
-  };
 
   return (
     <main style={{ padding: 40, maxWidth: 800, margin: '0 auto' }}>
@@ -202,13 +187,25 @@ export default async function NotificationsPage() {
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
           {/* Unread notifications */}
           {unreadNotifications.map((notification) => {
-            const link = getNotificationLink(notification);
             const actorName = notification.actor?.name || notification.actor?.email || 'Someone';
+            const date = new Date(notification.createdAt);
+            const now = new Date();
+            const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
+            let timeAgo = 'just now';
+            if (diffInSeconds >= 604800) {
+              timeAgo = date.toLocaleDateString();
+            } else if (diffInSeconds >= 86400) {
+              timeAgo = `${Math.floor(diffInSeconds / 86400)}d ago`;
+            } else if (diffInSeconds >= 3600) {
+              timeAgo = `${Math.floor(diffInSeconds / 3600)}h ago`;
+            } else if (diffInSeconds >= 60) {
+              timeAgo = `${Math.floor(diffInSeconds / 60)}m ago`;
+            }
 
             return (
               <Link
                 key={notification.id}
-                href={link}
+                href={notification.link}
                 style={{
                   display: 'block',
                   backgroundColor: '#f0f7ff',
@@ -246,7 +243,7 @@ export default async function NotificationsPage() {
                       {notification.message}
                     </p>
                     <p style={{ fontSize: 12, color: '#a0aec0', margin: '8px 0 0 0' }}>
-                      {formatTimeAgo(notification.createdAt)}
+                      {timeAgo}
                       {notification.actor && ` · by ${actorName}`}
                     </p>
                   </div>
@@ -258,8 +255,6 @@ export default async function NotificationsPage() {
           {/* Read notifications accordion */}
           <ReadNotificationsAccordion
             notifications={readNotifications}
-            getNotificationLink={getNotificationLink}
-            formatTimeAgo={formatTimeAgo}
           />
         </div>
       )}
