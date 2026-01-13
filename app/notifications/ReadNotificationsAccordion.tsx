@@ -1,31 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import Link from 'next/link';
-
-type Notification = {
-  id: string;
-  title: string;
-  message: string;
-  read: boolean;
-  createdAt: string; // ISO string
-  actor?: {
-    name: string | null;
-    email: string;
-  } | null;
-  taskId?: string | null;
-  jobId?: string | null;
-  job?: {
-    id: string;
-    title: string;
-    jobNumber: string;
-  } | null;
-  task?: {
-    id: string;
-    title: string;
-    jobId: string | null;
-  } | null;
-};
+import NotificationItem from './NotificationItem';
 
 type ReadNotificationsAccordionProps = {
   notifications: Array<{
@@ -35,6 +11,7 @@ type ReadNotificationsAccordionProps = {
     read: boolean;
     createdAt: string; // ISO string
     link: string; // Pre-computed link
+    type: string;
     actor?: {
       name: string | null;
       email: string;
@@ -51,23 +28,16 @@ type ReadNotificationsAccordionProps = {
       title: string;
       jobId: string | null;
     } | null;
+    comment?: {
+      id: string;
+      body: string;
+    } | null;
   }>;
 };
 
 export default function ReadNotificationsAccordion({
   notifications,
 }: ReadNotificationsAccordionProps) {
-  const formatTimeAgo = (dateString: string) => {
-    const date = new Date(dateString);
-    const now = new Date();
-    const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
-
-    if (diffInSeconds < 60) return 'just now';
-    if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)}m ago`;
-    if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)}h ago`;
-    if (diffInSeconds < 604800) return `${Math.floor(diffInSeconds / 86400)}d ago`;
-    return date.toLocaleDateString();
-  };
   const [isExpanded, setIsExpanded] = useState(false);
 
   if (notifications.length === 0) {
@@ -125,49 +95,9 @@ export default function ReadNotificationsAccordion({
       
       {isExpanded && (
         <div style={{ marginTop: 8, display: 'flex', flexDirection: 'column', gap: 8 }}>
-          {notifications.map((notification) => {
-            const actorName = notification.actor?.name || notification.actor?.email || 'Someone';
-
-            return (
-              <Link
-                key={notification.id}
-                href={notification.link}
-                style={{
-                  display: 'block',
-                  backgroundColor: '#f7fdfc',
-                  border: '1px solid #e2e8f0',
-                  borderRadius: 8,
-                  padding: 16,
-                  textDecoration: 'none',
-                  transition: 'all 0.2s',
-                }}
-              >
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                  <div style={{ flex: 1 }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
-                      <h3
-                        style={{
-                          fontSize: 14,
-                          fontWeight: 400,
-                          color: '#2d3748',
-                          margin: 0,
-                        }}
-                      >
-                        {notification.title}
-                      </h3>
-                    </div>
-                    <p style={{ fontSize: 14, color: '#4a5568', margin: '4px 0 0 0' }}>
-                      {notification.message}
-                    </p>
-                    <p style={{ fontSize: 12, color: '#a0aec0', margin: '8px 0 0 0' }}>
-                      {formatTimeAgo(notification.createdAt)}
-                      {notification.actor && ` · by ${actorName}`}
-                    </p>
-                  </div>
-                </div>
-              </Link>
-            );
-          })}
+          {notifications.map((notification) => (
+            <NotificationItem key={notification.id} notification={notification} />
+          ))}
         </div>
       )}
     </div>

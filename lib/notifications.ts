@@ -166,12 +166,18 @@ export async function notifyTaskAssignment({
   jobTitle?: string | null;
   actorId?: string | null;
 }) {
-  const jobContext = jobTitle ? ` on ${jobTitle}` : '';
+  let messageText = '';
+  if (jobTitle) {
+    messageText = `"${taskTitle}" in job "${jobTitle}"`;
+  } else {
+    messageText = `"${taskTitle}"`;
+  }
+  
   await createNotification({
     userId,
     type: 'TASK_ASSIGNED',
     title: "You've been assigned to a task",
-    message: `${taskTitle}${jobContext}`,
+    message: messageText,
     taskId,
     jobId: jobId || null,
     actorId: actorId || null,
@@ -273,15 +279,25 @@ export async function notifyCommentMention({
 
   // Create in-app notification if enabled
   if (shouldNotifyInApp) {
-    const context = taskTitle || jobTitle || 'a task';
     const actor = actorName || 'Someone';
+    let contextMessage = '';
+    if (taskTitle && jobTitle) {
+      contextMessage = `on task "${taskTitle}" in job "${jobTitle}"`;
+    } else if (taskTitle) {
+      contextMessage = `on task "${taskTitle}"`;
+    } else if (jobTitle) {
+      contextMessage = `on job "${jobTitle}"`;
+    } else {
+      contextMessage = 'on a task';
+    }
+    
     console.log('[notifyCommentMention] Creating in-app notification for user:', userId, 'actor:', actor);
     try {
       await createNotification({
         userId,
         type: 'COMMENT_MENTION',
-        title: `@${actor} mentioned you`,
-        message: `in a comment on ${context}`,
+        title: `${actor} mentioned you`,
+        message: `in a comment ${contextMessage}`,
         taskId: taskId || null,
         jobId: jobId || null,
         commentId,

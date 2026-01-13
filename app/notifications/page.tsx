@@ -8,6 +8,7 @@ import Link from 'next/link';
 import { markNotificationAsRead, markAllNotificationsAsRead } from './actions';
 import MarkAllReadButton from './MarkAllReadButton';
 import ReadNotificationsAccordion from './ReadNotificationsAccordion';
+import NotificationItem from './NotificationItem';
 
 // Force dynamic rendering since we use auth()
 export const dynamic = 'force-dynamic';
@@ -66,6 +67,32 @@ export default async function NotificationsPage() {
       },
       take: 100, // Limit to 100 most recent
     });
+
+    // Fetch comments for notifications that have commentId
+    const commentIds = notifications
+      .map(n => n.commentId)
+      .filter((id): id is string => id !== null);
+    
+    const comments = commentIds.length > 0
+      ? await prisma.comment.findMany({
+          where: {
+            id: { in: commentIds },
+          },
+          select: {
+            id: true,
+            body: true,
+          },
+        })
+      : [];
+
+    // Create a map of commentId -> comment for easy lookup
+    const commentMap = new Map(comments.map(c => [c.id, c]));
+
+    // Attach comments to notifications
+    notifications = notifications.map(n => ({
+      ...n,
+      comment: n.commentId ? commentMap.get(n.commentId) || null : null,
+    }));
   } catch (error: any) {
     console.error('Error fetching notifications:', error);
     errorDetails = {
@@ -142,6 +169,7 @@ export default async function NotificationsPage() {
       ...n,
       createdAt,
       link, // Pre-computed link
+      type: n.type,
     };
   });
 
@@ -162,12 +190,6 @@ export default async function NotificationsPage() {
             <MarkAllReadButton />
           )}
         </div>
-        <p style={{ color: '#718096', fontSize: 15 }}>
-          {unreadCount > 0 ? `${unreadCount} unread notification${unreadCount === 1 ? '' : 's'}` : 'All caught up!'}
-        </p>
-        <p style={{ marginTop: 16, fontSize: 14, color: '#718096' }}>
-          <Link href="/" style={{ color: '#14B8A6', textDecoration: 'none' }}>← Home</Link>
-        </p>
       </div>
 
       {/* Notifications List */}
@@ -186,71 +208,9 @@ export default async function NotificationsPage() {
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
           {/* Unread notifications */}
-          {unreadNotifications.map((notification) => {
-            const actorName = notification.actor?.name || notification.actor?.email || 'Someone';
-            const date = new Date(notification.createdAt);
-            const now = new Date();
-            const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
-            let timeAgo = 'just now';
-            if (diffInSeconds >= 604800) {
-              timeAgo = date.toLocaleDateString();
-            } else if (diffInSeconds >= 86400) {
-              timeAgo = `${Math.floor(diffInSeconds / 86400)}d ago`;
-            } else if (diffInSeconds >= 3600) {
-              timeAgo = `${Math.floor(diffInSeconds / 3600)}h ago`;
-            } else if (diffInSeconds >= 60) {
-              timeAgo = `${Math.floor(diffInSeconds / 60)}m ago`;
-            }
-
-            return (
-              <Link
-                key={notification.id}
-                href={notification.link}
-                style={{
-                  display: 'block',
-                  backgroundColor: '#f0f7ff',
-                  border: '1px solid #cfe2ff',
-                  borderRadius: 8,
-                  padding: 16,
-                  textDecoration: 'none',
-                  transition: 'all 0.2s',
-                }}
-              >
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                  <div style={{ flex: 1 }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
-                      <span
-                        style={{
-                          width: 8,
-                          height: 8,
-                          borderRadius: '50%',
-                          backgroundColor: '#14B8A6',
-                          display: 'inline-block',
-                        }}
-                      />
-                      <h3
-                        style={{
-                          fontSize: 14,
-                          fontWeight: 600,
-                          color: '#2d3748',
-                          margin: 0,
-                        }}
-                      >
-                        {notification.title}
-                      </h3>
-                    </div>
-                    <p style={{ fontSize: 14, color: '#4a5568', margin: '4px 0 0 0' }}>
-                      {notification.message}
-                    </p>
-                    <p style={{ fontSize: 12, color: '#a0aec0', margin: '8px 0 0 0' }}>
-                      {timeAgo}
-                      {notification.actor && ` · by ${actorName}`}
-                    </p>
-                  </div>
-                </div>
-              </Link>
-            );
-          })}
+          {unreadNotifications.map((notification) => (
+            <NotificationItem key={notification.id} notification={notification} />
+          ))}
 
           {/* Read notifications accordion */}
           <ReadNotificationsAccordion

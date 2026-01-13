@@ -99,7 +99,7 @@ export async function sendTaskAssignmentEmail({
   taskUrl: string;
 }) {
   const assignerDisplay = assignerName || assignerEmail;
-  const jobContext = jobTitle ? ` on ${jobTitle}` : '';
+  const jobContext = jobTitle ? ` in job "${jobTitle}"` : '';
 
   try {
     const { data, error } = await resend.emails.send({
@@ -125,6 +125,7 @@ export async function sendTaskAssignmentEmail({
                 <p style="margin: 0; font-size: 16px; font-weight: 500; color: #2d3748;">
                   ${taskTitle}
                 </p>
+                ${jobTitle ? `<p style="margin: 8px 0 0 0; font-size: 14px; color: #718096;">${jobTitle}</p>` : ''}
               </div>
               <div style="text-align: center; margin: 32px 0;">
                 <a href="${taskUrl}" style="display: inline-block; background-color: #4299e1; color: #ffffff; text-decoration: none; padding: 12px 24px; border-radius: 6px; font-weight: 500; font-size: 16px;">
@@ -141,6 +142,7 @@ You've been assigned to a task
 ${assignerDisplay} has assigned you to a task${jobContext}.
 
 Task: ${taskTitle}
+${jobTitle ? `Job: ${jobTitle}` : ''}
 
 View the task: ${taskUrl}
       `,
@@ -326,7 +328,16 @@ export async function sendCommentMentionEmail({
   taskUrl: string;
 }) {
   const commenterDisplay = commenterName || commenterEmail;
-  const context = taskTitle || jobTitle || 'a task';
+  let contextText = '';
+  if (taskTitle && jobTitle) {
+    contextText = `task "${taskTitle}" in job "${jobTitle}"`;
+  } else if (taskTitle) {
+    contextText = `task "${taskTitle}"`;
+  } else if (jobTitle) {
+    contextText = `job "${jobTitle}"`;
+  } else {
+    contextText = 'a task';
+  }
 
   try {
     const { data, error } = await resend.emails.send({
@@ -346,8 +357,22 @@ export async function sendCommentMentionEmail({
                 You've been mentioned
               </h1>
               <p style="color: #4a5568; font-size: 16px; margin-bottom: 24px;">
-                <strong>${commenterDisplay}</strong> mentioned you in a comment on ${context}.
+                <strong>${commenterDisplay}</strong> mentioned you in a comment on ${contextText}.
               </p>
+              ${taskTitle ? `
+              <div style="background-color: #f7fafc; border-left: 4px solid #4299e1; padding: 16px; margin: 24px 0; border-radius: 4px;">
+                <p style="margin: 0; font-size: 16px; font-weight: 500; color: #2d3748;">
+                  ${taskTitle}
+                </p>
+                ${jobTitle ? `<p style="margin: 8px 0 0 0; font-size: 14px; color: #718096;">${jobTitle}</p>` : ''}
+              </div>
+              ` : jobTitle ? `
+              <div style="background-color: #f7fafc; border-left: 4px solid #4299e1; padding: 16px; margin: 24px 0; border-radius: 4px;">
+                <p style="margin: 0; font-size: 16px; font-weight: 500; color: #2d3748;">
+                  ${jobTitle}
+                </p>
+              </div>
+              ` : ''}
               <div style="text-align: center; margin: 32px 0;">
                 <a href="${taskUrl}" style="display: inline-block; background-color: #4299e1; color: #ffffff; text-decoration: none; padding: 12px 24px; border-radius: 6px; font-weight: 500; font-size: 16px;">
                   View Comment
@@ -360,7 +385,7 @@ export async function sendCommentMentionEmail({
       text: `
 You've been mentioned
 
-${commenterDisplay} mentioned you in a comment on ${context}.
+${commenterDisplay} mentioned you in a comment on ${contextText}.
 
 View the comment: ${taskUrl}
       `,
