@@ -320,12 +320,26 @@ export async function notifyCommentMention({
   // Send email notification if enabled
   if (shouldNotifyEmail && taskUrl) {
     try {
+      // Get job number if jobId exists
+      let jobNumber: string | null = null;
+      if (jobId) {
+        const job = await prisma.job.findUnique({
+          where: { id: jobId },
+          select: { jobNumber: true },
+        });
+        jobNumber = job?.jobNumber || null;
+      }
+      
       await sendCommentMentionEmail({
         email: mentionedUser.email,
         taskTitle: taskTitle || null,
         jobTitle: jobTitle || null,
+        jobNumber: jobNumber || null,
         commenterName: actorName || null,
         commenterEmail: actorEmail || 'System',
+        commentId,
+        taskId: taskId || null,
+        jobId: jobId || null,
         taskUrl,
       });
     } catch (emailError) {

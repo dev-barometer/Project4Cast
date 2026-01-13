@@ -316,34 +316,96 @@ export async function sendCommentMentionEmail({
   email,
   taskTitle,
   jobTitle,
+  jobNumber,
   commenterName,
   commenterEmail,
+  commentId,
+  taskId,
+  jobId,
   taskUrl,
 }: {
   email: string;
   taskTitle?: string | null;
   jobTitle?: string | null;
+  jobNumber?: string | null;
   commenterName: string | null;
   commenterEmail: string;
+  commentId: string;
+  taskId?: string | null;
+  jobId?: string | null;
   taskUrl: string;
 }) {
+  const { prisma } = await import('@/lib/prisma');
+  
   const commenterDisplay = commenterName || commenterEmail;
-  let contextText = '';
-  if (taskTitle && jobTitle) {
-    contextText = `task "${taskTitle}" in job "${jobTitle}"`;
-  } else if (taskTitle) {
-    contextText = `task "${taskTitle}"`;
-  } else if (jobTitle) {
-    contextText = `job "${jobTitle}"`;
-  } else {
-    contextText = 'a task';
+  
+  // Fetch the comment body
+  const comment = await prisma.comment.findUnique({
+    where: { id: commentId },
+    select: { body: true, createdAt: true },
+  });
+  
+  const commentBody = comment?.body || '';
+  const commentDate = comment?.createdAt || new Date();
+  
+  // Format comment date
+  const formatCommentDate = (date: Date) => {
+    return date.toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
+      hour: 'numeric',
+      minute: '2-digit',
+    });
+  };
+  
+  // Fetch recent comments (2-3 most recent, excluding the current comment)
+  let recentComments: Array<{
+    body: string;
+    createdAt: Date;
+    author: { name: string | null; email: string };
+  }> = [];
+  
+  if (taskId || jobId) {
+    const whereClause: any = {
+      id: { not: commentId },
+    };
+    
+    if (taskId) {
+      whereClause.taskId = taskId;
+    } else if (jobId) {
+      whereClause.jobId = jobId;
+    }
+    
+    recentComments = await prisma.comment.findMany({
+      where: whereClause,
+      include: {
+        author: {
+          select: {
+            name: true,
+            email: true,
+          },
+        },
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+      take: 3,
+    });
   }
-
+  
+  // Build subject line with job number
+  const subjectPrefix = jobNumber ? `${jobNumber} ` : '';
+  const subject = `${subjectPrefix}@${commenterDisplay} mentioned you`;
+  
+  // Build email body sections
+  const jobHeader = jobNumber && jobTitle ? `${jobNumber} ${jobTitle}` : jobTitle || 'Task';
+  
   try {
     const { data, error } = await resend.emails.send({
       from: process.env.RESEND_FROM_EMAIL || 'onboarding@resend.dev',
       to: email,
-      subject: `${commenterDisplay} mentioned you in a comment`,
+      subject: subject,
       html: `
         <!DOCTYPE html>
         <html>
@@ -353,41 +415,79 @@ export async function sendCommentMentionEmail({
           </head>
           <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
             <div style="background-color: #ffffff; border-radius: 8px; padding: 32px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-              <h1 style="color: #2d3748; margin-top: 0; font-size: 24px; font-weight: 600;">
-                You've been mentioned
+              <!-- Job Number and Job Name -->
+              <h1 style="color: #2d3748; margin-top: 0; margin-bottom: 16px; font-size: 24px; font-weight: 600;">
+                ${jobHeader}
               </h1>
+              
+              <!-- Mention line -->
               <p style="color: #4a5568; font-size: 16px; margin-bottom: 24px;">
-                <strong>${commenterDisplay}</strong> mentioned you in a comment on ${contextText}.
+                <strong>@${commenterDisplay}</strong> mentioned you in a comment.
               </p>
+              
+              <!-- Task name -->
               ${taskTitle ? `
-              <div style="background-color: #f7fafc; border-left: 4px solid #4299e1; padding: 16px; margin: 24px 0; border-radius: 4px;">
-                <p style="margin: 0; font-size: 16px; font-weight: 500; color: #2d3748;">
-                  ${taskTitle}
-                </p>
-                ${jobTitle ? `<p style="margin: 8px 0 0 0; font-size: 14px; color: #718096;">${jobTitle}</p>` : ''}
-              </div>
-              ` : jobTitle ? `
-              <div style="background-color: #f7fafc; border-left: 4px solid #4299e1; padding: 16px; margin: 24px 0; border-radius: 4px;">
-                <p style="margin: 0; font-size: 16px; font-weight: 500; color: #2d3748;">
-                  ${jobTitle}
-                </p>
-              </div>
+              <p style="color: #4a5568; font-size: 16px; margin-bottom: 24px;">
+                ${taskTitle}
+              </p>
               ` : ''}
+              
+              <!-- Comment content -->
+              <div style="background-color: #f7fafc; border-left: 4px solid #4299e1; padding: 16px; margin: 24px 0; border-radius: 4px;">
+                <p style="margin: 0 0 8px 0; font-size: 14px; color: #718096;">
+                  ${commenterDisplay} · ${formatCommentDate(commentDate)}
+                </p>
+                <p style="margin: 0; font-size: 16px; color: #2d3748; white-space: pre-wrap;">
+                  ${commentBody}
+                </p>
+              </div>
+              
+              <!-- View Comment button -->
               <div style="text-align: center; margin: 32px 0;">
                 <a href="${taskUrl}" style="display: inline-block; background-color: #4299e1; color: #ffffff; text-decoration: none; padding: 12px 24px; border-radius: 6px; font-weight: 500; font-size: 16px;">
                   View Comment
                 </a>
               </div>
+              
+              <!-- Recent Comments Section -->
+              ${recentComments.length > 0 ? `
+              <div style="margin-top: 48px; padding-top: 24px; border-top: 1px solid #e2e8f0;">
+                <h2 style="color: #2d3748; font-size: 18px; font-weight: 600; margin-bottom: 16px;">
+                  Recent Comments
+                </h2>
+                ${recentComments.map(comment => {
+                  const authorName = comment.author.name || comment.author.email;
+                  return `
+                    <div style="margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid #e2e8f0;">
+                      <p style="margin: 0 0 8px 0; font-size: 14px; color: #718096;">
+                        ${authorName} · ${formatCommentDate(comment.createdAt)}
+                      </p>
+                      <p style="margin: 0; font-size: 14px; color: #4a5568; white-space: pre-wrap;">
+                        ${comment.body}
+                      </p>
+                    </div>
+                  `;
+                }).join('')}
+              </div>
+              ` : ''}
             </div>
           </body>
         </html>
       `,
       text: `
-You've been mentioned
+${jobHeader}
 
-${commenterDisplay} mentioned you in a comment on ${contextText}.
+@${commenterDisplay} mentioned you in a comment.
+
+${taskTitle ? `Task: ${taskTitle}\n` : ''}
+Comment:
+${commentBody}
 
 View the comment: ${taskUrl}
+${recentComments.length > 0 ? `\n\nRecent Comments:\n${recentComments.map(c => {
+  const authorName = c.author.name || c.author.email;
+  return `${authorName} · ${formatCommentDate(c.createdAt)}\n${c.body}\n`;
+}).join('\n')}` : ''}
       `,
     });
 
