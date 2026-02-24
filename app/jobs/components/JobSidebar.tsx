@@ -421,12 +421,12 @@ export default function JobSidebar({ jobs, isAdmin, currentJobId }: JobSidebarPr
       </div>
 
       {/* Job List */}
-      <div data-sidebar-scroll style={{ flex: 1, overflowY: 'auto', padding: '12px' }}>
+      <div data-sidebar-scroll style={{ flex: 1, overflowY: 'auto', padding: '8px' }}>
         {Object.entries(groupedJobs).map(([groupKey, groupJobs]) => {
           // If grouping is 'none', just show jobs directly
           if (groupBy === 'none') {
             return (
-              <div key={groupKey} style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+              <div key={groupKey} style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
                 {groupJobs.map((job) => {
                   const isActive = job.id === activeJobId;
                   const taskStatus = getTaskStatusIndicator(job);
@@ -439,7 +439,7 @@ export default function JobSidebar({ jobs, isAdmin, currentJobId }: JobSidebarPr
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'space-between',
-                        padding: '8px 12px',
+                        padding: '6px 10px',
                         backgroundColor: isActive ? '#cbfdee' : '#f7fdfc',
                         borderRadius: 12,
                         transition: 'all 0.2s',
@@ -560,7 +560,7 @@ export default function JobSidebar({ jobs, isAdmin, currentJobId }: JobSidebarPr
 
               {/* Folder Contents */}
               {isExpanded && (
-                <div style={{ marginTop: 8, display: 'flex', flexDirection: 'column', gap: 8, paddingLeft: 8 }}>
+                <div style={{ marginTop: 4, display: 'flex', flexDirection: 'column', gap: 4, paddingLeft: 8 }}>
                   {groupJobs.map((job) => {
                     const isActive = job.id === activeJobId;
                     const taskStatus = getTaskStatusIndicator(job);
@@ -573,7 +573,7 @@ export default function JobSidebar({ jobs, isAdmin, currentJobId }: JobSidebarPr
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'space-between',
-                          padding: '8px 12px',
+                          padding: '6px 10px',
                           backgroundColor: isActive ? '#cbfdee' : '#f7fdfc',
                           borderRadius: 12,
                           transition: 'all 0.2s',
