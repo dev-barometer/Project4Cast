@@ -421,7 +421,7 @@ export default function JobSidebar({ jobs, isAdmin, currentJobId }: JobSidebarPr
       </div>
 
       {/* Job List */}
-      <div style={{ flex: 1, overflowY: 'auto', padding: '12px' }}>
+      <div data-sidebar-scroll style={{ flex: 1, overflowY: 'auto', padding: '12px' }}>
         {Object.entries(groupedJobs).map(([groupKey, groupJobs]) => {
           // If grouping is 'none', just show jobs directly
           if (groupBy === 'none') {
