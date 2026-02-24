@@ -2,8 +2,10 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import NotificationBadge from './NotificationBadge';
 import UserMenu from './UserMenu';
+import { saveScrollPosition } from './AutoRefresh';
 
 type HeaderProps = {
   user?: {
@@ -16,6 +18,7 @@ type HeaderProps = {
 
 export default function Header({ user, unreadNotificationCount = 0 }: HeaderProps) {
   const [isMobile, setIsMobile] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
     const checkMobile = () => {
@@ -25,6 +28,11 @@ export default function Header({ user, unreadNotificationCount = 0 }: HeaderProp
     window.addEventListener('resize', checkMobile);
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
+
+  const handleRefresh = () => {
+    saveScrollPosition();
+    router.refresh();
+  };
 
   return (
     <header
@@ -107,6 +115,34 @@ export default function Header({ user, unreadNotificationCount = 0 }: HeaderProp
             My Tasks
           </Link>
         )}
+        <button
+          onClick={handleRefresh}
+          style={{
+            fontSize: 14,
+            color: '#5a6579',
+            background: 'none',
+            border: 'none',
+            cursor: 'pointer',
+            fontWeight: 500,
+            padding: '6px 12px',
+            borderRadius: 8,
+            display: 'flex',
+            alignItems: 'center',
+            gap: 6,
+          }}
+          title="Refresh page"
+        >
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path
+              d="M8 2V6L12 2L8 2ZM8 14V10L4 14L8 14ZM2 8C2 4.68629 4.68629 2 8 2M14 8C14 11.3137 11.3137 14 8 14"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+          {!isMobile && <span>Refresh</span>}
+        </button>
         <NotificationBadge initialCount={unreadNotificationCount} />
         {user && <UserMenu user={user} />}
       </div>
