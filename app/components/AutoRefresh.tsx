@@ -11,10 +11,13 @@ export default function AutoRefresh({
   enabled = true 
 }: AutoRefreshProps) {
   const router = useRouter();
-  const hasRefreshedRef = useRef<boolean>(false);
 
   useEffect(() => {
     if (!enabled) return;
+
+    // Check if we've already done the initial refresh in this session
+    const hasRefreshedKey = 'auto-refresh-done';
+    const hasRefreshed = sessionStorage.getItem(hasRefreshedKey);
 
     // Restore scroll position after refresh
     const restoreScrollPositions = () => {
@@ -44,9 +47,9 @@ export default function AutoRefresh({
     // Restore scroll position on mount (after refresh)
     restoreScrollPositions();
 
-    // Refresh on initial page load only (if not already refreshed)
-    if (!hasRefreshedRef.current) {
-      hasRefreshedRef.current = true;
+    // Refresh on initial page load only (if not already refreshed in this session)
+    if (!hasRefreshed) {
+      sessionStorage.setItem(hasRefreshedKey, 'true');
       // Small delay to ensure page is fully loaded
       setTimeout(() => {
         router.refresh();
