@@ -61,7 +61,7 @@ export default async function RootLayout({
       <body>
         <ServiceWorkerRegistration />
         {session?.user && <Header user={session.user} unreadNotificationCount={unreadNotificationCount} />}
-        {session?.user && <AutoRefresh intervalMinutes={5} enabled={true} />}
+        {session?.user && <AutoRefresh enabled={true} />}
         <EmailVerificationWrapper>
           {children}
         </EmailVerificationWrapper>
