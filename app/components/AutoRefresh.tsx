@@ -19,14 +19,13 @@ export default function AutoRefresh({
   const isScrollingRef = useRef<boolean>(false);
   const scrollTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const lastScrollTimeRef = useRef<number>(0);
-  const refreshBlockedRef = useRef<boolean>(false);
+  const isRefreshingRef = useRef<boolean>(false);
 
   useEffect(() => {
     if (!enabled) return;
 
     // Save scroll position before refresh
     const saveScrollPositions = () => {
-      // Save sidebar scroll position
       const sidebar = document.querySelector('[data-sidebar-scroll]') as HTMLElement;
       if (sidebar) {
         sessionStorage.setItem('sidebar-scroll', sidebar.scrollTop.toString());
@@ -39,23 +38,27 @@ export default function AutoRefresh({
       if (sidebar) {
         const savedScroll = sessionStorage.getItem('sidebar-scroll');
         if (savedScroll) {
-          // Use requestAnimationFrame to ensure DOM is ready
+          const scrollValue = parseInt(savedScroll, 10);
+          // Try multiple times to ensure content is loaded
           requestAnimationFrame(() => {
-            sidebar.scrollTop = parseInt(savedScroll, 10);
-            // Also try again after a short delay in case content is still loading
-            setTimeout(() => {
-              sidebar.scrollTop = parseInt(savedScroll, 10);
-            }, 100);
-            sessionStorage.removeItem('sidebar-scroll');
+            sidebar.scrollTop = scrollValue;
           });
+          setTimeout(() => {
+            sidebar.scrollTop = scrollValue;
+          }, 100);
+          setTimeout(() => {
+            sidebar.scrollTop = scrollValue;
+          }, 300);
+          setTimeout(() => {
+            sidebar.scrollTop = scrollValue;
+            sessionStorage.removeItem('sidebar-scroll');
+          }, 500);
         }
       }
     };
 
-    // Restore scroll position on mount - try multiple times to catch when content loads
+    // Restore scroll position on mount
     restoreScrollPositions();
-    const restoreTimeout = setTimeout(restoreScrollPositions, 200);
-    const restoreTimeout2 = setTimeout(restoreScrollPositions, 500);
 
     // Track user activity
     const updateActivity = () => {
@@ -66,12 +69,10 @@ export default function AutoRefresh({
     // Track scrolling state - listen specifically to sidebar scroll
     const handleScroll = (e: Event) => {
       const target = e.target as HTMLElement;
-      // Only track scroll if it's the sidebar or a child of sidebar
       const sidebar = document.querySelector('[data-sidebar-scroll]') as HTMLElement;
       if (sidebar && (target === sidebar || sidebar.contains(target))) {
         isScrollingRef.current = true;
         lastScrollTimeRef.current = Date.now();
-        refreshBlockedRef.current = true;
         updateActivity();
         
         // Clear existing timeout
@@ -79,15 +80,10 @@ export default function AutoRefresh({
           clearTimeout(scrollTimeoutRef.current);
         }
         
-        // Mark as not scrolling after 2 seconds of no scroll activity
-        // But keep refresh blocked for 5 seconds total after last scroll
+        // Mark as not scrolling after 1.5 seconds of no scroll activity
         scrollTimeoutRef.current = setTimeout(() => {
           isScrollingRef.current = false;
-          // Keep refresh blocked for additional 3 seconds after scrolling stops
-          setTimeout(() => {
-            refreshBlockedRef.current = false;
-          }, 3000);
-        }, 2000);
+        }, 1500);
       }
     };
 
@@ -119,21 +115,38 @@ export default function AutoRefresh({
     const refreshInterval = intervalMinutes * 60 * 1000; // Convert to milliseconds
     
     intervalRef.current = setInterval(() => {
-      // Only refresh if:
-      // 1. User is not idle (has been active in last 2 minutes)
-      // 2. User is not currently scrolling
-      // 3. Refresh is not blocked (recent scroll activity)
-      // 4. At least 5 seconds have passed since last scroll
+      // Don't refresh if:
+      // 1. Already refreshing
+      // 2. User is currently scrolling
+      // 3. User scrolled within the last 10 seconds
+      // 4. User is idle
       const timeSinceLastScroll = Date.now() - lastScrollTimeRef.current;
-      const canRefresh = !isIdleRef.current && 
-                        !isScrollingRef.current && 
-                        !refreshBlockedRef.current &&
-                        timeSinceLastScroll > 5000; // 5 seconds cooldown after scrolling
       
-      if (canRefresh) {
-        saveScrollPositions();
-        router.refresh();
+      if (isRefreshingRef.current) {
+        return; // Already refreshing, skip
       }
+      
+      if (isScrollingRef.current) {
+        return; // Currently scrolling, skip
+      }
+      
+      if (timeSinceLastScroll < 10000) {
+        return; // Scrolled recently, skip (10 second cooldown)
+      }
+      
+      if (isIdleRef.current) {
+        return; // User is idle, skip
+      }
+      
+      // All checks passed - refresh once
+      isRefreshingRef.current = true;
+      saveScrollPositions();
+      router.refresh();
+      
+      // Reset refreshing flag after refresh completes (give it time)
+      setTimeout(() => {
+        isRefreshingRef.current = false;
+      }, 2000);
     }, refreshInterval);
 
     // Cleanup
@@ -144,8 +157,6 @@ export default function AutoRefresh({
       if (scrollTimeoutRef.current) {
         clearTimeout(scrollTimeoutRef.current);
       }
-      clearTimeout(restoreTimeout);
-      clearTimeout(restoreTimeout2);
       clearInterval(idleCheckInterval);
       events.forEach(event => {
         document.removeEventListener(event, updateActivity);
