@@ -7,6 +7,7 @@ import { auth } from '@/auth';
 import { redirect } from 'next/navigation';
 import StandaloneTaskForm from '@/app/components/StandaloneTaskForm';
 import SortableTaskTable from '@/app/components/SortableTaskTable';
+import MyTasksViewToggle from './MyTasksViewToggle';
 
 export default async function MyTasksPage() {
   // Get authenticated user
@@ -119,7 +120,7 @@ export default async function MyTasksPage() {
         />
       </div>
 
-      {/* Tasks table - only show active (not done) tasks */}
+      {/* Tasks view - list or calendar */}
       {activeTasks.length === 0 ? (
         <div style={{ backgroundColor: '#f7fdfc', padding: 48, borderRadius: 8, boxShadow: '0 1px 3px rgba(0, 0, 0, 0.05)', textAlign: 'center' }}>
           <p style={{ color: '#718096', fontSize: 16, marginBottom: 8 }}>No active tasks assigned to you.</p>
@@ -128,13 +129,13 @@ export default async function MyTasksPage() {
           </p>
         </div>
       ) : (
-        <SortableTaskTable
+        <MyTasksViewToggle
           tasks={activeTasks.map((task) => ({
             id: task.id,
             title: task.title,
             status: task.status,
             priority: task.priority,
-            dueDate: task.dueDate,
+            dueDate: task.dueDate ? (task.dueDate instanceof Date ? task.dueDate : new Date(task.dueDate)) : null,
             jobId: task.jobId,
             job: task.job,
             assignees: task.assignees,
@@ -144,11 +145,7 @@ export default async function MyTasksPage() {
           }))}
           allUsers={allUsers}
           currentUserId={currentUserId}
-          showJobColumn={true}
-          showClientBrandColumn={false}
-          filterCurrentUserFromAssignees={false}
-          showAssigneesColumn={false}
-          highlightOverdue={true}
+          tasksWithUnreadComments={tasksWithUnreadComments}
         />
       )}
 
