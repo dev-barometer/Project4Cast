@@ -18,6 +18,8 @@ export default function AutoRefresh({
   const isIdleRef = useRef<boolean>(false);
   const isScrollingRef = useRef<boolean>(false);
   const scrollTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const lastScrollTimeRef = useRef<number>(0);
+  const refreshBlockedRef = useRef<boolean>(false);
 
   useEffect(() => {
     if (!enabled) return;
@@ -68,6 +70,8 @@ export default function AutoRefresh({
       const sidebar = document.querySelector('[data-sidebar-scroll]') as HTMLElement;
       if (sidebar && (target === sidebar || sidebar.contains(target))) {
         isScrollingRef.current = true;
+        lastScrollTimeRef.current = Date.now();
+        refreshBlockedRef.current = true;
         updateActivity();
         
         // Clear existing timeout
@@ -75,10 +79,15 @@ export default function AutoRefresh({
           clearTimeout(scrollTimeoutRef.current);
         }
         
-        // Mark as not scrolling after 1 second of no scroll activity
+        // Mark as not scrolling after 2 seconds of no scroll activity
+        // But keep refresh blocked for 5 seconds total after last scroll
         scrollTimeoutRef.current = setTimeout(() => {
           isScrollingRef.current = false;
-        }, 1000);
+          // Keep refresh blocked for additional 3 seconds after scrolling stops
+          setTimeout(() => {
+            refreshBlockedRef.current = false;
+          }, 3000);
+        }, 2000);
       }
     };
 
@@ -113,7 +122,15 @@ export default function AutoRefresh({
       // Only refresh if:
       // 1. User is not idle (has been active in last 2 minutes)
       // 2. User is not currently scrolling
-      if (!isIdleRef.current && !isScrollingRef.current) {
+      // 3. Refresh is not blocked (recent scroll activity)
+      // 4. At least 5 seconds have passed since last scroll
+      const timeSinceLastScroll = Date.now() - lastScrollTimeRef.current;
+      const canRefresh = !isIdleRef.current && 
+                        !isScrollingRef.current && 
+                        !refreshBlockedRef.current &&
+                        timeSinceLastScroll > 5000; // 5 seconds cooldown after scrolling
+      
+      if (canRefresh) {
         saveScrollPositions();
         router.refresh();
       }
