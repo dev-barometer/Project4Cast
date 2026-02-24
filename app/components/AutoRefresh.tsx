@@ -37,14 +37,23 @@ export default function AutoRefresh({
       if (sidebar) {
         const savedScroll = sessionStorage.getItem('sidebar-scroll');
         if (savedScroll) {
-          sidebar.scrollTop = parseInt(savedScroll, 10);
-          sessionStorage.removeItem('sidebar-scroll');
+          // Use requestAnimationFrame to ensure DOM is ready
+          requestAnimationFrame(() => {
+            sidebar.scrollTop = parseInt(savedScroll, 10);
+            // Also try again after a short delay in case content is still loading
+            setTimeout(() => {
+              sidebar.scrollTop = parseInt(savedScroll, 10);
+            }, 100);
+            sessionStorage.removeItem('sidebar-scroll');
+          });
         }
       }
     };
 
-    // Restore scroll position on mount
+    // Restore scroll position on mount - try multiple times to catch when content loads
     restoreScrollPositions();
+    const restoreTimeout = setTimeout(restoreScrollPositions, 200);
+    const restoreTimeout2 = setTimeout(restoreScrollPositions, 500);
 
     // Track user activity
     const updateActivity = () => {
@@ -52,20 +61,25 @@ export default function AutoRefresh({
       isIdleRef.current = false;
     };
 
-    // Track scrolling state
-    const handleScroll = () => {
-      isScrollingRef.current = true;
-      updateActivity();
-      
-      // Clear existing timeout
-      if (scrollTimeoutRef.current) {
-        clearTimeout(scrollTimeoutRef.current);
+    // Track scrolling state - listen specifically to sidebar scroll
+    const handleScroll = (e: Event) => {
+      const target = e.target as HTMLElement;
+      // Only track scroll if it's the sidebar or a child of sidebar
+      const sidebar = document.querySelector('[data-sidebar-scroll]') as HTMLElement;
+      if (sidebar && (target === sidebar || sidebar.contains(target))) {
+        isScrollingRef.current = true;
+        updateActivity();
+        
+        // Clear existing timeout
+        if (scrollTimeoutRef.current) {
+          clearTimeout(scrollTimeoutRef.current);
+        }
+        
+        // Mark as not scrolling after 1 second of no scroll activity
+        scrollTimeoutRef.current = setTimeout(() => {
+          isScrollingRef.current = false;
+        }, 1000);
       }
-      
-      // Mark as not scrolling after 500ms of no scroll activity
-      scrollTimeoutRef.current = setTimeout(() => {
-        isScrollingRef.current = false;
-      }, 500);
     };
 
     // Track idle state (no activity for 2 minutes)
@@ -80,7 +94,13 @@ export default function AutoRefresh({
       document.addEventListener(event, updateActivity, { passive: true });
     });
 
-    // Add scroll listener to track scrolling state
+    // Add scroll listener specifically to sidebar
+    const sidebar = document.querySelector('[data-sidebar-scroll]') as HTMLElement;
+    if (sidebar) {
+      sidebar.addEventListener('scroll', handleScroll, { passive: true });
+    }
+    
+    // Also listen to document scroll as fallback
     document.addEventListener('scroll', handleScroll, { passive: true, capture: true });
 
     // Check idle state every 30 seconds
@@ -107,10 +127,16 @@ export default function AutoRefresh({
       if (scrollTimeoutRef.current) {
         clearTimeout(scrollTimeoutRef.current);
       }
+      clearTimeout(restoreTimeout);
+      clearTimeout(restoreTimeout2);
       clearInterval(idleCheckInterval);
       events.forEach(event => {
         document.removeEventListener(event, updateActivity);
       });
+      const sidebar = document.querySelector('[data-sidebar-scroll]') as HTMLElement;
+      if (sidebar) {
+        sidebar.removeEventListener('scroll', handleScroll);
+      }
       document.removeEventListener('scroll', handleScroll, { capture: true });
     };
   }, [router, intervalMinutes, enabled]);

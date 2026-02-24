@@ -67,6 +67,41 @@ export default function JobSidebar({ jobs, isAdmin, currentJobId }: JobSidebarPr
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
+  // Restore scroll position after refresh
+  useEffect(() => {
+    const restoreScroll = () => {
+      const sidebar = document.querySelector('[data-sidebar-scroll]') as HTMLElement;
+      if (sidebar) {
+        const savedScroll = sessionStorage.getItem('sidebar-scroll');
+        if (savedScroll) {
+          const scrollValue = parseInt(savedScroll, 10);
+          // Try multiple times to ensure content is loaded
+          requestAnimationFrame(() => {
+            sidebar.scrollTop = scrollValue;
+          });
+          setTimeout(() => {
+            sidebar.scrollTop = scrollValue;
+          }, 100);
+          setTimeout(() => {
+            sidebar.scrollTop = scrollValue;
+          }, 300);
+        }
+      }
+    };
+    
+    // Restore immediately and after delays
+    restoreScroll();
+    const timeout1 = setTimeout(restoreScroll, 100);
+    const timeout2 = setTimeout(restoreScroll, 300);
+    const timeout3 = setTimeout(restoreScroll, 500);
+    
+    return () => {
+      clearTimeout(timeout1);
+      clearTimeout(timeout2);
+      clearTimeout(timeout3);
+    };
+  }, [jobs]); // Re-run when jobs change (after refresh)
+
   // Check if mobile and handle sidebar state
   useEffect(() => {
     const checkMobile = () => {
