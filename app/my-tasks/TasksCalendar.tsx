@@ -27,20 +27,14 @@ type TasksCalendarProps = {
 };
 
 export default function TasksCalendar({ tasks }: TasksCalendarProps) {
-  const [currentDate, setCurrentDate] = useState(new Date());
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const [startDate, setStartDate] = useState(() => {
+    // Start from today
+    const date = new Date(today);
+    return date;
+  });
 
-  // Get start of month
-  const startOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
-  // Get first day of week for the month (0 = Sunday)
-  const firstDayOfWeek = startOfMonth.getDay();
-  // Get number of days in month
-  const daysInMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0).getDate();
-  
-  // Calculate total days needed to show full weeks (fill first week + month days + fill last week)
-  const daysToFillStart = firstDayOfWeek;
-  const daysToFillEnd = (7 - ((daysToFillStart + daysInMonth) % 7)) % 7;
-  const totalDays = daysToFillStart + daysInMonth + daysToFillEnd;
-  
   // Get tasks grouped by due date
   const tasksByDate = new Map<string, Task[]>();
   tasks.forEach(task => {
@@ -56,61 +50,53 @@ export default function TasksCalendar({ tasks }: TasksCalendarProps) {
     }
   });
 
-  // Generate calendar days
-  const calendarDays: Array<{ date: Date; isCurrentMonth: boolean; tasks: Task[] }> = [];
-  
-  // Add days from previous month to fill first week
-  const prevMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 0);
-  const daysInPrevMonth = prevMonth.getDate();
-  
-  for (let i = firstDayOfWeek - 1; i >= 0; i--) {
-    const date = new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, daysInPrevMonth - i);
+  // Generate 14 days (2 weeks) starting from startDate
+  const calendarDays: Array<{ date: Date; isPast: boolean; tasks: Task[] }> = [];
+  for (let i = 0; i < 14; i++) {
+    const date = new Date(startDate);
+    date.setDate(startDate.getDate() + i);
     const dateKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+    const dateNormalized = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+    const isPast = dateNormalized < today;
+    
     calendarDays.push({
       date,
-      isCurrentMonth: false,
-      tasks: tasksByDate.get(dateKey) || [],
-    });
-  }
-  
-  // Add days from current month
-  for (let day = 1; day <= daysInMonth; day++) {
-    const date = new Date(currentDate.getFullYear(), currentDate.getMonth(), day);
-    const dateKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
-    calendarDays.push({
-      date,
-      isCurrentMonth: true,
-      tasks: tasksByDate.get(dateKey) || [],
-    });
-  }
-  
-  // Fill remaining days to complete the last week
-  const remainingDays = totalDays - calendarDays.length;
-  for (let day = 1; day <= remainingDays; day++) {
-    const date = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, day);
-    const dateKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
-    calendarDays.push({
-      date,
-      isCurrentMonth: false,
+      isPast,
       tasks: tasksByDate.get(dateKey) || [],
     });
   }
 
   const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
   const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-
-  const goToPreviousMonth = () => {
-    setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1));
+  
+  const endDate = new Date(startDate);
+  endDate.setDate(startDate.getDate() + 13);
+  
+  const formatDateRange = () => {
+    const startMonth = monthNames[startDate.getMonth()];
+    const endMonth = monthNames[endDate.getMonth()];
+    if (startDate.getMonth() === endDate.getMonth()) {
+      return `${startMonth} ${startDate.getDate()} - ${endDate.getDate()}, ${startDate.getFullYear()}`;
+    } else {
+      return `${startMonth} ${startDate.getDate()} - ${endMonth} ${endDate.getDate()}, ${startDate.getFullYear()}`;
+    }
   };
 
-  const goToNextMonth = () => {
-    setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1));
+  const goToPreviousPeriod = () => {
+    const newStartDate = new Date(startDate);
+    newStartDate.setDate(startDate.getDate() - 14);
+    setStartDate(newStartDate);
+  };
+
+  const goToNextPeriod = () => {
+    const newStartDate = new Date(startDate);
+    newStartDate.setDate(startDate.getDate() + 14);
+    setStartDate(newStartDate);
   };
 
   const goToToday = () => {
-    setCurrentDate(new Date());
+    const date = new Date(today);
+    setStartDate(date);
   };
 
   return (
@@ -119,7 +105,7 @@ export default function TasksCalendar({ tasks }: TasksCalendarProps) {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
           <button
-            onClick={goToPreviousMonth}
+            onClick={goToPreviousPeriod}
             style={{
               background: 'none',
               border: '1px solid #e2e8f0',
@@ -132,11 +118,11 @@ export default function TasksCalendar({ tasks }: TasksCalendarProps) {
           >
             ←
           </button>
-          <h2 style={{ fontSize: 20, fontWeight: 600, color: '#2d3748', margin: 0, minWidth: 200, textAlign: 'center' }}>
-            {monthNames[currentDate.getMonth()]} {currentDate.getFullYear()}
+          <h2 style={{ fontSize: 20, fontWeight: 600, color: '#2d3748', margin: 0, minWidth: 300, textAlign: 'center' }}>
+            {formatDateRange()}
           </h2>
           <button
-            onClick={goToNextMonth}
+            onClick={goToNextPeriod}
             style={{
               background: 'none',
               border: '1px solid #e2e8f0',
@@ -191,18 +177,18 @@ export default function TasksCalendar({ tasks }: TasksCalendarProps) {
           const dayDateNormalized = new Date(dayData.date.getFullYear(), dayData.date.getMonth(), dayData.date.getDate());
           const todayNormalized = new Date(today.getFullYear(), today.getMonth(), today.getDate());
           const isToday = dayDateNormalized.getTime() === todayNormalized.getTime();
-          const isPast = dayDateNormalized < todayNormalized && !isToday;
+          const isPast = dayData.isPast && !isToday;
           
           return (
             <div
               key={index}
               style={{
-                minHeight: 100,
+                minHeight: 140,
                 border: `1px solid ${isToday ? '#14B8A6' : '#e2e8f0'}`,
                 borderRadius: 6,
                 padding: 8,
-                backgroundColor: isToday ? '#f0fdfa' : dayData.isCurrentMonth ? '#ffffff' : '#f7fafc',
-                opacity: dayData.isCurrentMonth ? 1 : 0.5,
+                backgroundColor: isToday ? '#f0fdfa' : '#ffffff',
+                opacity: isPast ? 0.6 : 1,
               }}
             >
               {/* Date Number */}
@@ -211,15 +197,15 @@ export default function TasksCalendar({ tasks }: TasksCalendarProps) {
                   fontSize: 14,
                   fontWeight: isToday ? 600 : 400,
                   color: isToday ? '#14B8A6' : isPast ? '#a0aec0' : '#2d3748',
-                  marginBottom: 4,
+                  marginBottom: 6,
                 }}
               >
-                {dayData.date.getDate()}
+                {dayNames[dayData.date.getDay()]} {dayData.date.getDate()}
               </div>
               
               {/* Job Numbers */}
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                {dayData.tasks.slice(0, 3).map(task => {
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+                {dayData.tasks.slice(0, 6).map(task => {
                   const isOverdue = isPast && task.status !== 'DONE';
                   const jobNumber = task.job?.jobNumber || 'No Job';
                   
@@ -232,7 +218,7 @@ export default function TasksCalendar({ tasks }: TasksCalendarProps) {
                         fontWeight: 500,
                         color: isOverdue ? '#f56565' : '#4299e1',
                         textDecoration: 'none',
-                        padding: '2px 4px',
+                        padding: '3px 6px',
                         borderRadius: 4,
                         backgroundColor: isOverdue ? '#fed7d7' : '#e6f2ff',
                         overflow: 'hidden',
@@ -245,9 +231,9 @@ export default function TasksCalendar({ tasks }: TasksCalendarProps) {
                     </Link>
                   );
                 })}
-                {dayData.tasks.length > 3 && (
+                {dayData.tasks.length > 6 && (
                   <div style={{ fontSize: 10, color: '#a0aec0', padding: '2px 4px' }}>
-                    +{dayData.tasks.length - 3} more
+                    +{dayData.tasks.length - 6} more
                   </div>
                 )}
               </div>
