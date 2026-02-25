@@ -29,10 +29,27 @@ type TasksCalendarProps = {
 export default function TasksCalendar({ tasks }: TasksCalendarProps) {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
+  
+  // Helper function to get the Sunday of the week for a given date
+  const getSundayOfWeek = (date: Date) => {
+    const sunday = new Date(date);
+    const day = sunday.getDay(); // 0 = Sunday, 1 = Monday, etc.
+    sunday.setDate(sunday.getDate() - day); // Go back to Sunday
+    sunday.setHours(0, 0, 0, 0);
+    return sunday;
+  };
+  
   const [startDate, setStartDate] = useState(() => {
-    // Start from today
-    const date = new Date(today);
-    return date;
+    // Start from the Sunday of the week containing today
+    return getSundayOfWeek(today);
+  });
+
+  // Check if there are any overdue tasks (due date is before today and status is not DONE)
+  const hasOverdueTasks = tasks.some(task => {
+    if (!task.dueDate || task.status === 'DONE') return false;
+    const dueDate = task.dueDate instanceof Date ? task.dueDate : new Date(task.dueDate);
+    const normalizedDueDate = new Date(dueDate.getFullYear(), dueDate.getMonth(), dueDate.getDate());
+    return normalizedDueDate < today;
   });
 
   // Get tasks grouped by due date
@@ -85,18 +102,20 @@ export default function TasksCalendar({ tasks }: TasksCalendarProps) {
   const goToPreviousPeriod = () => {
     const newStartDate = new Date(startDate);
     newStartDate.setDate(startDate.getDate() - 14);
-    setStartDate(newStartDate);
+    // Ensure we start on a Sunday
+    setStartDate(getSundayOfWeek(newStartDate));
   };
 
   const goToNextPeriod = () => {
     const newStartDate = new Date(startDate);
     newStartDate.setDate(startDate.getDate() + 14);
-    setStartDate(newStartDate);
+    // Ensure we start on a Sunday
+    setStartDate(getSundayOfWeek(newStartDate));
   };
 
   const goToToday = () => {
-    const date = new Date(today);
-    setStartDate(date);
+    // Start from the Sunday of the week containing today
+    setStartDate(getSundayOfWeek(today));
   };
 
   return (
@@ -107,13 +126,14 @@ export default function TasksCalendar({ tasks }: TasksCalendarProps) {
           <button
             onClick={goToPreviousPeriod}
             style={{
-              background: 'none',
-              border: '1px solid #e2e8f0',
+              background: hasOverdueTasks ? '#fed7d7' : 'none',
+              border: `1px solid ${hasOverdueTasks ? '#f56565' : '#e2e8f0'}`,
               borderRadius: 6,
               padding: '6px 12px',
               cursor: 'pointer',
               fontSize: 14,
-              color: '#4a5568',
+              color: hasOverdueTasks ? '#742a2a' : '#4a5568',
+              fontWeight: hasOverdueTasks ? 600 : 400,
             }}
           >
             ←
