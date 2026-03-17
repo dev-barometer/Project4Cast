@@ -133,7 +133,7 @@ export default function TaskRow({
               width: isMobile ? 22 : 18,
               height: isMobile ? 22 : 18,
               cursor: 'pointer',
-              accentColor: '#14B8A6',
+              accentColor: 'var(--theme-500)',
               minWidth: isMobile ? 22 : 18,
               minHeight: isMobile ? 22 : 18,
             }}
@@ -158,7 +158,7 @@ export default function TaskRow({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            color: task.comments.length > 0 ? '#14B8A6' : '#cbd5e0',
+            color: task.comments.length > 0 ? 'var(--theme-500)' : '#cbd5e0',
           }}
           title={
             showComments 
@@ -184,7 +184,7 @@ export default function TaskRow({
             >
               <path
                 d="M6 4L10 8L6 12"
-                stroke="#14B8A6"
+                stroke="var(--theme-500)"
                 strokeWidth="2"
                 strokeLinecap="round"
                 strokeLinejoin="round"

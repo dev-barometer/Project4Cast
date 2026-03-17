@@ -267,7 +267,7 @@ export default function SignupPage() {
               padding: '12px 16px',
               borderRadius: 6,
               border: 'none',
-              background: isLoading ? '#a0aec0' : '#14B8A6',
+              background: isLoading ? '#a0aec0' : 'var(--theme-500)',
               color: 'white',
               fontSize: 14,
               fontWeight: 500,
@@ -290,7 +290,7 @@ export default function SignupPage() {
           <Link
             href="/login"
             style={{
-              color: '#14B8A6',
+              color: 'var(--theme-500)',
               textDecoration: 'none',
               fontWeight: 500,
             }}

@@ -153,7 +153,7 @@ export default function TaskForm({ jobId, allUsers, currentUserId, forceExpanded
                           style={{
                             padding: '6px 12px',
                             borderRadius: 4,
-                            border: `1px solid ${isSelected ? '#14B8A6' : '#cbd5e0'}`,
+                            border: `1px solid ${isSelected ? 'var(--theme-500)' : '#cbd5e0'}`,
                             background: isSelected ? '#cbfdee' : '#f7fdfc',
                             color: isSelected ? '#2d3748' : '#4a5568',
                             fontSize: 13,
@@ -211,7 +211,7 @@ export default function TaskForm({ jobId, allUsers, currentUserId, forceExpanded
                     padding: '8px 16px',
                     borderRadius: 6,
                     border: 'none',
-                    background: title.trim() ? '#14B8A6' : '#a0aec0',
+                    background: title.trim() ? 'var(--theme-500)' : '#a0aec0',
                     color: 'white',
                     fontSize: 14,
                     cursor: title.trim() ? 'pointer' : 'not-allowed',
@@ -231,7 +231,7 @@ export default function TaskForm({ jobId, allUsers, currentUserId, forceExpanded
           style={{
             background: 'none',
             border: 'none',
-            color: '#14B8A6',
+            color: 'var(--theme-500)',
             fontSize: 20,
             cursor: 'pointer',
             fontWeight: 500,

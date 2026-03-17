@@ -38,8 +38,8 @@ export default function Header({ user, unreadNotificationCount = 0 }: HeaderProp
     <header
       id="main-header"
       style={{
-        backgroundColor: '#f7fdfc',
-        borderBottom: '1px solid #e2e8f0',
+        backgroundColor: 'var(--bg-card)',
+        borderBottom: '1px solid var(--border-light)',
         padding: isMobile ? '12px 16px' : '12px 40px',
         display: 'flex',
         justifyContent: 'space-between',
@@ -55,13 +55,20 @@ export default function Header({ user, unreadNotificationCount = 0 }: HeaderProp
         <Link
           href="/"
           style={{
-            fontSize: isMobile ? 16 : 18,
-            fontWeight: 600,
-            color: '#2d3748',
+            display: 'flex',
+            alignItems: 'center',
             textDecoration: 'none',
           }}
         >
-          Project4cast
+          <img
+            src="/P4C_logo_A.svg"
+            alt="Project4cast"
+            style={{
+              height: isMobile ? 24 : 28,
+              width: 'auto',
+              display: 'block',
+            }}
+          />
         </Link>
       </div>
       <div style={{ display: 'flex', alignItems: 'center', gap: isMobile ? 8 : 20, flexWrap: 'wrap' }}>
@@ -80,10 +87,10 @@ export default function Header({ user, unreadNotificationCount = 0 }: HeaderProp
                 width: '100%',
                 padding: '8px 12px 8px 36px',
                 borderRadius: 12,
-                border: 'none',
-                backgroundColor: '#e5f8fa',
+                backgroundColor: 'var(--bg-input)',
+                border: '1px solid var(--border-light)',
                 fontSize: 14,
-                color: '#2d3748',
+                color: 'var(--text-primary)',
               }}
             />
             <span
@@ -92,7 +99,7 @@ export default function Header({ user, unreadNotificationCount = 0 }: HeaderProp
                 left: 12,
                 top: '50%',
                 transform: 'translateY(-50%)',
-                color: '#5a6579',
+                color: 'var(--text-muted)',
                 fontSize: 16,
               }}
             >
@@ -105,7 +112,7 @@ export default function Header({ user, unreadNotificationCount = 0 }: HeaderProp
             href="/my-tasks"
             style={{
               fontSize: 14,
-              color: '#5a6579',
+              color: 'var(--text-secondary)',
               textDecoration: 'none',
               fontWeight: 500,
               padding: '6px 12px',
@@ -119,7 +126,7 @@ export default function Header({ user, unreadNotificationCount = 0 }: HeaderProp
           onClick={handleRefresh}
           style={{
             fontSize: 14,
-            color: '#5a6579',
+            color: 'var(--text-secondary)',
             background: 'none',
             border: 'none',
             cursor: 'pointer',

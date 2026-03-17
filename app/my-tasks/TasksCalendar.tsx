@@ -159,7 +159,7 @@ export default function TasksCalendar({ tasks }: TasksCalendarProps) {
         <button
           onClick={goToToday}
           style={{
-            background: '#14B8A6',
+            background: 'var(--theme-500)',
             color: '#ffffff',
             border: 'none',
             borderRadius: 6,
@@ -204,7 +204,7 @@ export default function TasksCalendar({ tasks }: TasksCalendarProps) {
               key={index}
               style={{
                 minHeight: 140,
-                border: `1px solid ${isToday ? '#14B8A6' : '#e2e8f0'}`,
+                border: `1px solid ${isToday ? 'var(--theme-500)' : '#e2e8f0'}`,
                 borderRadius: 6,
                 padding: 8,
                 backgroundColor: isToday ? '#f0fdfa' : '#ffffff',
@@ -216,7 +216,7 @@ export default function TasksCalendar({ tasks }: TasksCalendarProps) {
                 style={{
                   fontSize: 14,
                   fontWeight: isToday ? 600 : 400,
-                  color: isToday ? '#14B8A6' : isPast ? '#a0aec0' : '#2d3748',
+                  color: isToday ? 'var(--theme-500)' : isPast ? '#a0aec0' : '#2d3748',
                   marginBottom: 6,
                 }}
               >

@@ -153,8 +153,8 @@ export default function AdminDashboardClient({
               padding: '12px 24px',
               background: 'none',
               border: 'none',
-              borderBottom: activeTab === tab ? '2px solid #14B8A6' : '2px solid transparent',
-              color: activeTab === tab ? '#14B8A6' : '#718096',
+              borderBottom: activeTab === tab ? '2px solid var(--theme-500)' : '2px solid transparent',
+              color: activeTab === tab ? 'var(--theme-500)' : '#718096',
               fontSize: 14,
               fontWeight: activeTab === tab ? 600 : 500,
               cursor: 'pointer',
@@ -323,7 +323,7 @@ export default function AdminDashboardClient({
                       dataKey="value"
                     >
                       {financialData.map((entry, index) => {
-                        const colors = ['#38a169', '#14B8A6', '#ed8936', '#9f7aea', '#f56565', '#48bb78', '#0D9488'];
+                        const colors = ['#38a169', 'var(--theme-500)', '#ed8936', '#9f7aea', '#f56565', '#48bb78', '#0D9488'];
                         return <Cell key={`cell-${index}`} fill={colors[index % colors.length]} />;
                       })}
                     </Pie>
@@ -933,7 +933,7 @@ function InviteUserButton() {
           borderRadius: '50%',
           border: '1px solid #cbd5e0',
           backgroundColor: '#f7fdfc',
-          color: '#14B8A6',
+          color: 'var(--theme-500)',
           cursor: 'pointer',
           fontSize: 18,
           lineHeight: 1,
@@ -1014,12 +1014,12 @@ function InviteUserButton() {
           <button
             type="submit"
             style={{
-              border: '1px solid #14B8A6',
+              border: '1px solid var(--theme-500)',
               borderRadius: 4,
               padding: '6px 12px',
               fontSize: 13,
               color: '#f7fdfc',
-              backgroundColor: '#14B8A6',
+              backgroundColor: 'var(--theme-500)',
               cursor: 'pointer',
               fontWeight: 500,
             }}
@@ -1184,7 +1184,7 @@ function TotalsRow({ clients }: { clients: Client[] }) {
       <td style={{ padding: '12px', color: '#2d3748', fontSize: 14 }}>
         {formatCurrency(totalEstimate)}
       </td>
-      <td style={{ padding: '12px', textAlign: 'center', color: '#14B8A6', fontSize: 14 }}>
+      <td style={{ padding: '12px', textAlign: 'center', color: 'var(--theme-500)', fontSize: 14 }}>
         {formatCurrency(totalBilled)}
       </td>
       <td style={{ padding: '12px', textAlign: 'center', color: '#38a169', fontSize: 14 }}>
@@ -1750,7 +1750,7 @@ function EmailVerificationStatus({ userId, emailVerified }: { userId: string; em
           style={{
             padding: '4px 8px',
             fontSize: 11,
-            backgroundColor: '#14B8A6',
+            backgroundColor: 'var(--theme-500)',
             color: 'white',
             border: 'none',
             borderRadius: 4,

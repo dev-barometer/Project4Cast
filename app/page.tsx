@@ -109,10 +109,10 @@ export default async function HomePage() {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          backgroundColor: '#f7fdfc',
+          backgroundColor: 'var(--bg-page)',
           padding: '40px 20px',
           minWidth: 0,
-          paddingTop: '64px', // Space for hamburger button on mobile
+          paddingTop: '64px',
         }}
         className="main-content-area"
       >
@@ -122,9 +122,10 @@ export default async function HomePage() {
               backgroundColor: '#fed7d7',
               color: '#742a2a',
               padding: '20px 24px',
-              borderRadius: 8,
+              borderRadius: 'var(--radius-lg)',
               fontSize: 14,
               maxWidth: 600,
+              border: '1px solid var(--error)',
             }}
           >
             <strong>Database Connection Error:</strong> {dbError}
@@ -133,8 +134,8 @@ export default async function HomePage() {
             </div>
           </div>
         ) : jobs.length === 0 ? (
-          <div style={{ textAlign: 'center', color: '#718096' }}>
-            <h2 style={{ fontSize: 20, fontWeight: 600, marginBottom: 8 }}>No jobs found</h2>
+          <div style={{ textAlign: 'center', color: 'var(--text-muted)' }}>
+            <h2 style={{ fontSize: 20, fontWeight: 600, marginBottom: 8, color: 'var(--text-primary)' }}>No jobs found</h2>
             <p style={{ fontSize: 14 }}>
               {isAdmin
                 ? 'Create your first job to get started.'
@@ -142,8 +143,8 @@ export default async function HomePage() {
             </p>
           </div>
         ) : (
-          <div style={{ textAlign: 'center', color: '#718096' }}>
-            <h2 style={{ fontSize: 20, fontWeight: 600, marginBottom: 8 }}>Select a job</h2>
+          <div style={{ textAlign: 'center', color: 'var(--text-muted)' }}>
+            <h2 style={{ fontSize: 20, fontWeight: 600, marginBottom: 8, color: 'var(--text-primary)' }}>Select a job</h2>
             <p style={{ fontSize: 14 }}>Choose a job from the sidebar to view details</p>
           </div>
         )}

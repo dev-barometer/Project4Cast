@@ -142,7 +142,7 @@ export default function EditableTaskRow({
               width: 18,
               height: 18,
               cursor: 'pointer',
-              accentColor: '#14B8A6',
+              accentColor: 'var(--theme-500)',
             }}
             title={isDone ? 'Mark as not done' : 'Mark as done'}
           />
@@ -165,7 +165,7 @@ export default function EditableTaskRow({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            color: comments.length > 0 ? '#14B8A6' : '#cbd5e0',
+            color: comments.length > 0 ? 'var(--theme-500)' : '#cbd5e0',
           }}
           title={
             showComments 
@@ -190,7 +190,7 @@ export default function EditableTaskRow({
             >
               <path
                 d="M6 4L10 8L6 12"
-                stroke="#14B8A6"
+                stroke="var(--theme-500)"
                 strokeWidth="2"
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -266,7 +266,7 @@ export default function EditableTaskRow({
             <>
               <Link
                 href={`/jobs/${task.jobId}`}
-                style={{ color: '#14B8A6', textDecoration: 'none' }}
+                style={{ color: 'var(--theme-500)', textDecoration: 'none' }}
               >
                 {task.job.jobNumber}
               </Link>
@@ -418,7 +418,7 @@ export default function EditableTaskRow({
             )}
             {jobId && (
               <div style={{ marginTop: 12, fontSize: 12, color: '#718096' }}>
-                <Link href={`/jobs/${jobId}`} style={{ color: '#14B8A6', textDecoration: 'none' }}>
+                <Link href={`/jobs/${jobId}`} style={{ color: 'var(--theme-500)', textDecoration: 'none' }}>
                   View in job → Add comment
                 </Link>
               </div>

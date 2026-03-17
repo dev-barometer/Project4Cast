@@ -67,9 +67,10 @@ export default function JobDetailsSection({
   return (
     <div
       style={{
-        backgroundColor: '#f7fdfc',
-        borderRadius: alwaysExpanded ? 0 : 8,
-        border: alwaysExpanded ? 'none' : '1px solid #e2e8f0',
+        backgroundColor: 'var(--bg-card)',
+        borderRadius: alwaysExpanded ? 0 : 'var(--radius-lg)',
+        border: alwaysExpanded ? 'none' : '1px solid var(--border-light)',
+        boxShadow: alwaysExpanded ? 'none' : 'var(--shadow-md)',
         overflow: 'hidden',
         position: 'relative',
         height: alwaysExpanded ? '100%' : 'auto',
@@ -77,7 +78,6 @@ export default function JobDetailsSection({
         flexDirection: 'column',
       }}
     >
-      {/* Header - only show if not always expanded */}
       {!alwaysExpanded && (
         <button
           onClick={toggleExpanded}
@@ -87,21 +87,19 @@ export default function JobDetailsSection({
             alignItems: 'center',
             justifyContent: 'space-between',
             padding: '16px 20px',
-            paddingRight: showToggleInTopRight ? '60px' : '20px', // Make room for top-right toggle
+            paddingRight: showToggleInTopRight ? '60px' : '20px',
             background: 'none',
             border: 'none',
             cursor: 'pointer',
-            backgroundColor: '#f7fdfc',
-            borderBottom: isExpanded ? '1px solid #e2e8f0' : 'none',
+            backgroundColor: 'var(--bg-card)',
           }}
         >
           <h3
             style={{
               fontSize: 16,
               fontWeight: 600,
-              color: '#2d3748',
+              color: 'var(--text-primary)',
               margin: 0,
-              
             }}
           >
             Job Details
@@ -110,7 +108,7 @@ export default function JobDetailsSection({
             <span
               style={{
                 fontSize: 14,
-                color: '#718096',
+                color: 'var(--text-muted)',
                 transform: isExpanded ? 'rotate(90deg)' : 'rotate(0deg)',
                 transition: 'transform 0.2s',
                 display: 'inline-block',

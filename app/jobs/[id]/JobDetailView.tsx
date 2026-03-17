@@ -150,14 +150,15 @@ export default function JobDetailView({
         display: 'flex',
         flexDirection: 'column',
         overflow: 'hidden',
-        backgroundColor: '#f7fdfc',
+        backgroundColor: 'var(--bg-page)',
       }}
     >
-      {/* Top Section: Job Title Area (Full Width) */}
+      {/* Top Section: Job Title Area – card-style bar */}
       <div
         style={{
           padding: isMobile ? '16px' : '32px 40px',
-          borderBottom: '1px solid #e2e8f0',
+          backgroundColor: 'var(--bg-card)',
+          borderBottom: '1px solid var(--border-light)',
         }}
       >
         <div
@@ -180,7 +181,7 @@ export default function JobDetailView({
               <span
                 style={{
                   fontSize: 14,
-                  color: '#718096',
+                  color: 'var(--text-muted)',
                   lineHeight: 1.3,
                 }}
               >
@@ -191,7 +192,7 @@ export default function JobDetailView({
               <span
                 style={{
                   fontSize: 14,
-                  color: '#718096',
+                  color: 'var(--text-muted)',
                   lineHeight: 1.3,
                 }}
               >
@@ -218,7 +219,7 @@ export default function JobDetailView({
             flex: 1,
             overflowY: 'auto',
             padding: isMobile ? '16px' : '32px 40px',
-            paddingTop: isMobile ? '64px' : undefined, // Space for hamburger button
+            paddingTop: isMobile ? '64px' : undefined,
             transition: isMobile ? 'none' : 'margin-right 0.3s ease-in-out',
             marginRight: isMobile ? '0' : (isRightPanelOpen ? '400px' : '0'),
             width: isMobile ? '100%' : 'auto',
@@ -238,9 +239,8 @@ export default function JobDetailView({
                 style={{
                   fontSize: 18,
                   fontWeight: 600,
-                  color: '#2d3748',
+                  color: 'var(--text-primary)',
                   margin: 0,
-                  
                 }}
               >
                 Tasks
@@ -252,10 +252,10 @@ export default function JobDetailView({
                   style={{
                     width: isMobile ? 40 : 32,
                     height: isMobile ? 40 : 32,
-                    borderRadius: 8,
-                    border: '1px solid #e2e8f0',
-                    background: '#f7fdfc',
-                    color: '#2d3748',
+                    borderRadius: 'var(--radius-md)',
+                    background: 'var(--bg-card)',
+                    border: '1px solid var(--border-light)',
+                    color: 'var(--text-primary)',
                     fontSize: isMobile ? 20 : 18,
                     lineHeight: 1,
                     cursor: 'pointer',
@@ -272,17 +272,16 @@ export default function JobDetailView({
                 </button>
               )}
             </div>
-            {/* Toggle Right Panel Button - All the way to the right */}
             <button
               type="button"
               onClick={() => setIsRightPanelOpen(!isRightPanelOpen)}
               style={{
                 width: isMobile ? 40 : 32,
                 height: isMobile ? 40 : 32,
-                borderRadius: 8,
-                border: '1px solid #e2e8f0',
-                background: isRightPanelOpen ? '#cbfdee' : '#f7fdfc',
-                color: '#2d3748',
+                borderRadius: 'var(--radius-md)',
+                background: isRightPanelOpen ? 'var(--theme-100)' : 'var(--bg-card)',
+                border: '1px solid var(--border-light)',
+                color: 'var(--text-primary)',
                 fontSize: isMobile ? 18 : 16,
                 lineHeight: 1,
                 cursor: 'pointer',
@@ -346,7 +345,7 @@ export default function JobDetailView({
             </div>
           )}
           {job.tasks.length === 0 ? (
-            <p style={{ color: '#a0aec0', fontSize: 14, fontStyle: 'italic' }}>
+            <p style={{ color: 'var(--text-muted)', fontSize: 14, fontStyle: 'italic' }}>
               No tasks yet. {canEdit && 'Add one above.'}
             </p>
           ) : (
@@ -366,7 +365,7 @@ export default function JobDetailView({
                 tableLayout: isMobile ? 'fixed' : 'auto',
               }}>
                 <thead>
-                  <tr style={{ borderBottom: '1px solid #e2e8f0' }}>
+                  <tr style={{ backgroundColor: 'var(--bg-input)', borderBottom: '1px solid var(--border-light)' }}>
                     <th
                       style={{
                         padding: isMobile ? '8px 4px' : '12px 16px',
@@ -374,7 +373,7 @@ export default function JobDetailView({
                         textAlign: 'left',
                         fontSize: isMobile ? 10 : 12,
                         fontWeight: 600,
-                        color: '#718096',
+                        color: 'var(--text-muted)',
                         textTransform: 'uppercase',
                       }}
                     >
@@ -387,7 +386,7 @@ export default function JobDetailView({
                         textAlign: 'left',
                         fontSize: isMobile ? 10 : 12,
                         fontWeight: 600,
-                        color: '#718096',
+                        color: 'var(--text-muted)',
                         textTransform: 'uppercase',
                       }}
                     >
@@ -400,7 +399,7 @@ export default function JobDetailView({
                         textAlign: 'left',
                         fontSize: isMobile ? 10 : 12,
                         fontWeight: 600,
-                        color: '#718096',
+                        color: 'var(--text-muted)',
                         textTransform: 'uppercase',
                       }}
                     >
@@ -412,7 +411,7 @@ export default function JobDetailView({
                         textAlign: 'left',
                         fontSize: isMobile ? 10 : 12,
                         fontWeight: 600,
-                        color: '#718096',
+                        color: 'var(--text-muted)',
                         textTransform: 'uppercase',
                       }}
                     >
@@ -426,7 +425,7 @@ export default function JobDetailView({
                             textAlign: 'left',
                             fontSize: 12,
                             fontWeight: 600,
-                            color: '#718096',
+                            color: 'var(--text-muted)',
                             textTransform: 'uppercase',
                           }}
                         >
@@ -438,7 +437,7 @@ export default function JobDetailView({
                             textAlign: 'left',
                             fontSize: 12,
                             fontWeight: 600,
-                            color: '#718096',
+                            color: 'var(--text-muted)',
                             textTransform: 'uppercase',
                           }}
                         >
@@ -494,15 +493,14 @@ export default function JobDetailView({
             display: 'flex',
             flexDirection: 'column',
             overflow: 'hidden',
-            backgroundColor: '#f7fdfc',
-            borderLeft: isMobile ? 'none' : '1px solid #e2e8f0',
+            backgroundColor: 'var(--bg-card)',
+            borderLeft: '1px solid var(--border-light)',
             transform: isRightPanelOpen ? 'translateX(0)' : 'translateX(100%)',
             transition: 'transform 0.3s ease-in-out',
             zIndex: isMobile ? 998 : 10,
-            boxShadow: isRightPanelOpen ? (isMobile ? '0 -2px 8px rgba(0, 0, 0, 0.2)' : '-2px 0 8px rgba(0, 0, 0, 0.1)') : 'none',
+            boxShadow: isRightPanelOpen && !isMobile ? 'var(--shadow-lg)' : 'none',
           }}
         >
-          {/* Job Details - Takes full space */}
           <div
             style={{
               flex: 1,
@@ -511,17 +509,16 @@ export default function JobDetailView({
             }}
             onClick={(e) => e.stopPropagation()}
           >
-            {/* Mobile close button */}
             {isMobile && (
-              <div style={{ padding: '16px', borderBottom: '1px solid #e2e8f0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <h3 style={{ fontSize: 18, fontWeight: 600, color: '#2d3748', margin: 0 }}>Job Details</h3>
+              <div style={{ padding: '16px', borderBottom: '1px solid var(--border-light)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <h3 style={{ fontSize: 18, fontWeight: 600, color: 'var(--text-primary)', margin: 0 }}>Job Details</h3>
                 <button
                   onClick={() => setIsRightPanelOpen(false)}
                   style={{
                     background: 'none',
                     border: 'none',
                     fontSize: 28,
-                    color: '#718096',
+                    color: 'var(--text-muted)',
                     cursor: 'pointer',
                     padding: '8px',
                     lineHeight: 1,

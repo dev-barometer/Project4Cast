@@ -231,7 +231,7 @@ export default function TaskMenu({ taskId, jobId, allJobs, canEdit }: TaskMenuPr
                   padding: '6px 12px',
                   borderRadius: 6,
                   border: 'none',
-                  background: '#14B8A6',
+                  background: 'var(--theme-500)',
                   color: '#fff',
                   fontSize: 13,
                   cursor: 'pointer',

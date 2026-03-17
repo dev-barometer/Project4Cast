@@ -122,7 +122,7 @@ export default async function MyTasksPage() {
 
       {/* Tasks view - list or calendar */}
       {activeTasks.length === 0 ? (
-        <div style={{ backgroundColor: '#f7fdfc', padding: 48, borderRadius: 8, boxShadow: '0 1px 3px rgba(0, 0, 0, 0.05)', textAlign: 'center' }}>
+        <div style={{ backgroundColor: 'var(--bg-surface)', padding: 48, borderRadius: 'var(--radius-lg)', border: '1px solid var(--border-light)', textAlign: 'center' }}>
           <p style={{ color: '#718096', fontSize: 16, marginBottom: 8 }}>No active tasks assigned to you.</p>
           <p style={{ color: '#a0aec0', fontSize: 14 }}>
             Create a task above or wait to be assigned to tasks on jobs.
@@ -152,16 +152,16 @@ export default async function MyTasksPage() {
       {/* Summary Stats - moved to bottom */}
       {tasks.length > 0 && (
         <div style={{ marginTop: 24, display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 16 }}>
-          <div style={{ backgroundColor: '#f7fdfc', padding: 16, borderRadius: 8, boxShadow: '0 1px 3px rgba(0, 0, 0, 0.05)' }}>
+          <div style={{ backgroundColor: 'var(--bg-surface)', padding: 16, borderRadius: 'var(--radius-lg)', border: '1px solid var(--border-light)' }}>
             <div style={{ fontSize: 24, fontWeight: 600, color: '#2d3748' }}>{notDoneTasks.length}</div>
             <div style={{ fontSize: 13, color: '#718096', marginTop: 4 }}>Not Done</div>
           </div>
-          <div style={{ backgroundColor: '#f7fdfc', padding: 16, borderRadius: 8, boxShadow: '0 1px 3px rgba(0, 0, 0, 0.05)' }}>
+          <div style={{ backgroundColor: 'var(--bg-surface)', padding: 16, borderRadius: 'var(--radius-lg)', border: '1px solid var(--border-light)' }}>
             <div style={{ fontSize: 24, fontWeight: 600, color: '#2d3748' }}>{doneTasks.length}</div>
             <div style={{ fontSize: 13, color: '#718096', marginTop: 4 }}>Done</div>
           </div>
           {overdueTasks.length > 0 && (
-            <div style={{ backgroundColor: '#fed7d7', padding: 16, borderRadius: 8, boxShadow: '0 1px 3px rgba(0, 0, 0, 0.05)' }}>
+            <div style={{ backgroundColor: '#fed7d7', padding: 16, borderRadius: 'var(--radius-lg)', border: '1px solid var(--error)' }}>
               <div style={{ fontSize: 24, fontWeight: 600, color: '#742a2a' }}>{overdueTasks.length}</div>
               <div style={{ fontSize: 13, color: '#742a2a', marginTop: 4 }}>Overdue</div>
             </div>

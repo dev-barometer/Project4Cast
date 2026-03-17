@@ -129,7 +129,7 @@ export default function EditableJobTitle({ jobId, initialJobNumber, initialTitle
                 padding: '8px 16px',
                 borderRadius: 6,
                 border: 'none',
-                background: isPending ? '#a0aec0' : '#14B8A6',
+                background: isPending ? '#a0aec0' : 'var(--theme-500)',
                 color: 'white',
                 fontSize: 13,
                 fontWeight: 500,
@@ -198,7 +198,7 @@ export default function EditableJobTitle({ jobId, initialJobNumber, initialTitle
               }}
               onMouseEnter={(e) => {
                 e.currentTarget.style.backgroundColor = '#e5f8fa';
-                e.currentTarget.style.borderColor = '#14B8A6';
+                e.currentTarget.style.borderColor = 'var(--theme-500)';
               }}
               onMouseLeave={(e) => {
                 e.currentTarget.style.backgroundColor = '#f7fdfc';

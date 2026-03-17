@@ -36,7 +36,7 @@ export default function NotificationBadge({ initialCount }: NotificationBadgePro
         href="/notifications"
         style={{
           fontSize: 14,
-          color: '#4a5568',
+          color: 'var(--text-secondary)',
           textDecoration: 'none',
           position: 'relative',
         }}
@@ -51,7 +51,7 @@ export default function NotificationBadge({ initialCount }: NotificationBadgePro
       href="/notifications"
       style={{
         fontSize: 14,
-        color: '#4a5568',
+        color: 'var(--text-secondary)',
         textDecoration: 'none',
         position: 'relative',
         fontWeight: 500,

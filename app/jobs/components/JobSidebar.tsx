@@ -235,14 +235,14 @@ export default function JobSidebar({ jobs, isAdmin, currentJobId }: JobSidebarPr
             zIndex: 1000,
             width: 40,
             height: 40,
-            borderRadius: 8,
-            border: '1px solid #e2e8f0',
-            background: '#fff',
+            borderRadius: 'var(--radius-md)',
+            background: 'var(--bg-card)',
+            border: '1px solid var(--border-light)',
+            boxShadow: 'var(--shadow-sm)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             cursor: 'pointer',
-            boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
           }}
         >
           <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
@@ -270,7 +270,7 @@ export default function JobSidebar({ jobs, isAdmin, currentJobId }: JobSidebarPr
       <div
         style={{
           width: isMobile ? '280px' : '320px',
-          backgroundColor: '#e5f8fa',
+          backgroundColor: 'var(--bg-sidebar)',
           display: 'flex',
           flexDirection: 'column',
           height: isMobile ? `calc(100vh - ${headerHeight}px)` : '100%',
@@ -281,18 +281,17 @@ export default function JobSidebar({ jobs, isAdmin, currentJobId }: JobSidebarPr
           bottom: 0,
           zIndex: 999,
           transition: 'left 0.3s ease-in-out',
-          boxShadow: isMobile && sidebarOpen ? '2px 0 8px rgba(0,0,0,0.1)' : 'none',
         }}
       >
       {/* Header */}
       <div
         style={{
           padding: '12px 16px',
-          backgroundColor: '#e5f8fa',
+          backgroundColor: 'var(--bg-sidebar)',
         }}
       >
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingLeft: 0 }}>
-          <h2 style={{ fontSize: 16, fontWeight: 600, color: '#5a6579', margin: 0, fontFamily: 'Inter, sans-serif' }}>Jobs</h2>
+          <h2 style={{ fontSize: 16, fontWeight: 600, color: 'var(--text-secondary)', margin: 0, fontFamily: 'Inter, sans-serif' }}>Jobs</h2>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             {isMobile && (
               <button
@@ -303,7 +302,7 @@ export default function JobSidebar({ jobs, isAdmin, currentJobId }: JobSidebarPr
                   cursor: 'pointer',
                   padding: '4px',
                   fontSize: 20,
-                  color: '#5a6579',
+                  color: 'var(--text-secondary)',
                 }}
               >
                 ×
@@ -328,9 +327,9 @@ export default function JobSidebar({ jobs, isAdmin, currentJobId }: JobSidebarPr
                   top: '100%',
                   right: 0,
                   marginTop: 8,
-                  backgroundColor: '#f7fdfc',
-                  borderRadius: 8,
-                  boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+                  backgroundColor: 'var(--bg-card)',
+                  borderRadius: 'var(--radius-md)',
+                  boxShadow: 'var(--shadow-lg)',
                   minWidth: 180,
                   zIndex: 1000,
                 }}
@@ -346,9 +345,8 @@ export default function JobSidebar({ jobs, isAdmin, currentJobId }: JobSidebarPr
                     padding: '10px 16px',
                     background: 'none',
                     border: 'none',
-                    color: groupBy === 'none' ? '#14B8A6' : '#5a6579',
+                    color: groupBy === 'none' ? 'var(--theme-600)' : 'var(--text-secondary)',
                     fontSize: 14,
-                    
                     cursor: 'pointer',
                     fontWeight: groupBy === 'none' ? 600 : 400,
                   }}
@@ -366,9 +364,8 @@ export default function JobSidebar({ jobs, isAdmin, currentJobId }: JobSidebarPr
                     padding: '10px 16px',
                     background: 'none',
                     border: 'none',
-                    color: groupBy === 'brand' ? '#14B8A6' : '#5a6579',
+                    color: groupBy === 'brand' ? 'var(--theme-600)' : 'var(--text-secondary)',
                     fontSize: 14,
-                    
                     cursor: 'pointer',
                     fontWeight: groupBy === 'brand' ? 600 : 400,
                   }}
@@ -386,9 +383,8 @@ export default function JobSidebar({ jobs, isAdmin, currentJobId }: JobSidebarPr
                     padding: '10px 16px',
                     background: 'none',
                     border: 'none',
-                    color: groupBy === 'client' ? '#14B8A6' : '#5a6579',
+                    color: groupBy === 'client' ? 'var(--theme-600)' : 'var(--text-secondary)',
                     fontSize: 14,
-                    
                     cursor: 'pointer',
                     fontWeight: groupBy === 'client' ? 600 : 400,
                   }}
@@ -408,9 +404,8 @@ export default function JobSidebar({ jobs, isAdmin, currentJobId }: JobSidebarPr
                         padding: '10px 16px',
                         background: 'none',
                         border: 'none',
-                        color: '#5a6579',
+                        color: 'var(--text-secondary)',
                         fontSize: 14,
-                        
                         cursor: 'pointer',
                         textDecoration: 'none',
                       }}
@@ -431,9 +426,8 @@ export default function JobSidebar({ jobs, isAdmin, currentJobId }: JobSidebarPr
                     padding: '10px 16px',
                     background: 'none',
                     border: 'none',
-                    color: '#5a6579',
+                    color: 'var(--text-secondary)',
                     fontSize: 14,
-                    
                     cursor: 'pointer',
                     display: 'flex',
                     alignItems: 'center',
@@ -475,10 +469,11 @@ export default function JobSidebar({ jobs, isAdmin, currentJobId }: JobSidebarPr
                         alignItems: 'center',
                         justifyContent: 'space-between',
                         padding: '6px 10px',
-                        backgroundColor: isActive ? '#cbfdee' : '#f7fdfc',
-                        borderRadius: 12,
+                        backgroundColor: isActive ? 'var(--theme-100)' : 'var(--bg-surface)',
+                        borderRadius: 'var(--radius-lg)',
                         transition: 'all 0.2s',
                         opacity: isInactive ? 0.6 : 1,
+                        boxShadow: isActive ? 'none' : 'var(--shadow-sm)',
                       }}
                     >
                         <Link
@@ -504,19 +499,18 @@ export default function JobSidebar({ jobs, isAdmin, currentJobId }: JobSidebarPr
                               overflow: 'hidden',
                               textOverflow: 'ellipsis',
                               whiteSpace: 'nowrap',
-                              
                               fontSize: 14,
                             }}
                           >
-                            <span style={{ fontWeight: 600, color: isActive ? '#14B8A6' : '#2d3748' }}>
+                            <span style={{ fontWeight: 600, color: isActive ? 'var(--theme-600)' : 'var(--text-primary)' }}>
                               {job.jobNumber}
                             </span>{' '}
-                            <span style={{ fontWeight: 400, color: '#5a6579' }}>
+                            <span style={{ fontWeight: 400, color: 'var(--text-secondary)' }}>
                               {job.title}
                             </span>
                           </div>
                         </div>
-                        {/* Status dot */}
+                        {/* Status dot – keep existing colors */}
                         <div
                           style={{
                             width: 10,
@@ -524,13 +518,13 @@ export default function JobSidebar({ jobs, isAdmin, currentJobId }: JobSidebarPr
                             borderRadius: '50%',
                             backgroundColor:
                               taskStatus === 'new'
-                                ? '#48bb78'
+                                ? 'var(--success)'
                                 : taskStatus === 'overdue'
-                                ? '#f56565'
+                                ? 'var(--error)'
                                 : 'transparent',
                             border:
                               taskStatus === 'none'
-                                ? '2px solid #cbd5e0'
+                                ? '2px solid var(--border-medium)'
                                 : 'none',
                             flexShrink: 0,
                             marginLeft: 8,
@@ -566,16 +560,16 @@ export default function JobSidebar({ jobs, isAdmin, currentJobId }: JobSidebarPr
                   width: '100%',
                   padding: '10px 12px',
                   textAlign: 'left',
-                  backgroundColor: hasActiveJob ? '#cbfdee' : 'transparent',
+                  backgroundColor: hasActiveJob ? 'var(--theme-100)' : 'transparent',
                   border: 'none',
-                  borderRadius: 6,
+                  borderRadius: 8,
                   cursor: 'pointer',
                   display: 'flex',
                   alignItems: 'center',
                   gap: 8,
                   fontSize: 13,
                   fontWeight: 600,
-                  color: hasActiveJob ? '#2d3748' : '#4a5568',
+                  color: hasActiveJob ? 'var(--text-primary)' : 'var(--text-secondary)',
                 }}
               >
                 <span
@@ -609,10 +603,11 @@ export default function JobSidebar({ jobs, isAdmin, currentJobId }: JobSidebarPr
                           alignItems: 'center',
                           justifyContent: 'space-between',
                           padding: '6px 10px',
-                          backgroundColor: isActive ? '#cbfdee' : '#f7fdfc',
-                          borderRadius: 12,
+                          backgroundColor: isActive ? 'var(--theme-100)' : 'var(--bg-surface)',
+                          borderRadius: 'var(--radius-lg)',
                           transition: 'all 0.2s',
                           opacity: isInactive ? 0.6 : 1,
+                          boxShadow: isActive ? 'none' : 'var(--shadow-sm)',
                         }}
                       >
                         <Link
@@ -638,19 +633,18 @@ export default function JobSidebar({ jobs, isAdmin, currentJobId }: JobSidebarPr
                                 overflow: 'hidden',
                                 textOverflow: 'ellipsis',
                                 whiteSpace: 'nowrap',
-                                
                                 fontSize: 14,
                               }}
                             >
-                              <span style={{ fontWeight: 600, color: '#2d3748' }}>
+                              <span style={{ fontWeight: 600, color: isActive ? 'var(--theme-600)' : 'var(--text-primary)' }}>
                                 {job.jobNumber}
                               </span>{' '}
-                              <span style={{ fontWeight: 400, color: '#5a6579' }}>
+                              <span style={{ fontWeight: 400, color: 'var(--text-secondary)' }}>
                                 {job.title}
                               </span>
                             </div>
                           </div>
-                          {/* Status dot */}
+                          {/* Status dot – keep existing colors */}
                           <div
                             style={{
                               width: 10,
@@ -658,13 +652,13 @@ export default function JobSidebar({ jobs, isAdmin, currentJobId }: JobSidebarPr
                               borderRadius: '50%',
                               backgroundColor:
                                 taskStatus === 'new'
-                                  ? '#48bb78'
+                                  ? 'var(--success)'
                                   : taskStatus === 'overdue'
-                                  ? '#f56565'
+                                  ? 'var(--error)'
                                   : 'transparent',
                               border:
                                 taskStatus === 'none'
-                                  ? '2px solid #cbd5e0'
+                                  ? '2px solid var(--border-medium)'
                                   : 'none',
                               flexShrink: 0,
                               marginLeft: 8,
@@ -695,7 +689,7 @@ export default function JobSidebar({ jobs, isAdmin, currentJobId }: JobSidebarPr
         <div
           style={{
             padding: '16px',
-            backgroundColor: '#e5f8fa',
+            backgroundColor: 'var(--bg-sidebar)',
           }}
         >
           <Link
@@ -705,10 +699,9 @@ export default function JobSidebar({ jobs, isAdmin, currentJobId }: JobSidebarPr
               alignItems: 'center',
               gap: 12,
               textDecoration: 'none',
-              color: '#5a6579',
+              color: 'var(--text-secondary)',
               fontSize: 14,
               fontWeight: 500,
-              
             }}
           >
             <Image

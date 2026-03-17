@@ -54,9 +54,9 @@ export default function ReadNotificationsAccordion({
           alignItems: 'center',
           justifyContent: 'space-between',
           padding: '12px 16px',
-          backgroundColor: '#f7fdfc',
-          border: '1px solid #e2e8f0',
-          borderRadius: 8,
+          backgroundColor: 'var(--bg-surface)',
+          border: '1px solid var(--border-light)',
+          borderRadius: 'var(--radius-md)',
           cursor: 'pointer',
           fontSize: 14,
           fontWeight: 500,
@@ -64,10 +64,10 @@ export default function ReadNotificationsAccordion({
           transition: 'all 0.2s',
         }}
         onMouseEnter={(e) => {
-          e.currentTarget.style.backgroundColor = '#f0f7ff';
+          e.currentTarget.style.backgroundColor = 'var(--theme-50)';
         }}
         onMouseLeave={(e) => {
-          e.currentTarget.style.backgroundColor = '#f7fdfc';
+          e.currentTarget.style.backgroundColor = 'var(--bg-surface)';
         }}
       >
         <span>Read Items ({notifications.length})</span>

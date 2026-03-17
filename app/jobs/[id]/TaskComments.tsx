@@ -163,7 +163,7 @@ export default function TaskComments({
           style={{
             background: 'none',
             border: 'none',
-            color: '#14B8A6',
+            color: 'var(--theme-500)',
             cursor: 'pointer',
             fontSize: 12,
             padding: '4px 0',
@@ -178,7 +178,7 @@ export default function TaskComments({
 
       {/* Comments section */}
       {shouldShowContent && (
-        <div style={{ marginTop: 12, padding: 12, backgroundColor: '#f7fdfc', borderRadius: 6 }}>
+        <div style={{ marginTop: 12, padding: 12, backgroundColor: 'var(--bg-surface)', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-light)' }}>
           {/* Error message */}
           {state?.error && (
             <div
@@ -207,7 +207,8 @@ export default function TaskComments({
                     style={{
                       marginBottom: 12,
                       paddingBottom: 12,
-                      borderBottom: '1px solid #e2e8f0',
+                      marginBottom: 12,
+                      borderBottom: '1px solid var(--border-light)',
                     }}
                   >
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 4 }}>
@@ -339,9 +340,9 @@ export default function TaskComments({
                             width: '100%',
                             padding: '8px 10px',
                             borderRadius: 4,
-                            border: '1px solid #cbd5e0',
+                            border: '1px solid var(--border-medium)',
                             fontSize: 13,
-                            backgroundColor: '#ffffff',
+                            backgroundColor: 'var(--bg-input)',
                             color: '#2d3748',
                             fontFamily: 'inherit',
                             resize: 'vertical',
@@ -357,8 +358,7 @@ export default function TaskComments({
                             style={{
                               padding: '6px 12px',
                               borderRadius: 4,
-                              border: '1px solid #cbd5e0',
-                              background: '#f7fdfc',
+                              background: 'var(--bg-input)',
                               color: '#4a5568',
                               fontSize: 12,
                               cursor: 'pointer',
@@ -372,7 +372,7 @@ export default function TaskComments({
                               padding: '6px 12px',
                               borderRadius: 4,
                               border: 'none',
-                              background: '#14B8A6',
+                              background: 'var(--theme-500)',
                               color: 'white',
                               fontSize: 12,
                               cursor: 'pointer',
@@ -402,12 +402,12 @@ export default function TaskComments({
                             alignItems: 'center',
                             gap: 6,
                             fontSize: 12,
-                            color: '#14B8A6',
+                            color: 'var(--theme-500)',
                             textDecoration: 'none',
                             padding: '4px 8px',
                             borderRadius: 4,
-                            backgroundColor: '#f0fdfa',
-                            border: '1px solid #ccfbf1',
+                            backgroundColor: 'var(--theme-50)',
+                            border: '1px solid var(--theme-100)',
                           }}
                         >
                           <span>📎</span>
@@ -474,7 +474,7 @@ export default function TaskComments({
                       gap: 4,
                       padding: '4px 8px',
                       borderRadius: 4,
-                      backgroundColor: '#e5f8fa',
+                      backgroundColor: 'var(--bg-input)',
                       fontSize: 11,
                       color: '#2d3748',
                     }}
@@ -520,9 +520,9 @@ export default function TaskComments({
                   padding: '8px 10px',
                   paddingRight: '40px',
                   borderRadius: 4,
-                  border: '1px solid #cbd5e0',
+                  border: '1px solid var(--border-medium)',
                   fontSize: 13,
-                  backgroundColor: '#f7fdfc',
+                  backgroundColor: 'var(--bg-input)',
                   color: '#2d3748',
                   fontFamily: 'inherit',
                   resize: 'vertical',
@@ -565,8 +565,7 @@ export default function TaskComments({
                   style={{
                     padding: '6px 12px',
                     borderRadius: 4,
-                    border: '1px solid #cbd5e0',
-                    background: '#f7fdfc',
+                    background: 'var(--bg-input)',
                     color: '#4a5568',
                     fontSize: 12,
                     cursor: 'pointer',
@@ -582,7 +581,7 @@ export default function TaskComments({
                   padding: '6px 12px',
                   borderRadius: 4,
                   border: 'none',
-                  background: isSubmitting ? '#a0aec0' : '#14B8A6',
+                  background: isSubmitting ? '#a0aec0' : 'var(--theme-500)',
                   color: 'white',
                   fontSize: 12,
                   cursor: isSubmitting ? 'not-allowed' : 'pointer',

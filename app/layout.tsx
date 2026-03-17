@@ -52,7 +52,7 @@ export default async function RootLayout({
     <html lang="en" className={GeistSans.className}>
       <head>
         <link rel="manifest" href="/manifest.json" />
-        <meta name="theme-color" content="#14B8A6" />
+        <meta name="theme-color" content="#14b8a6" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
         <meta name="apple-mobile-web-app-title" content="Project4Cast" />

@@ -145,9 +145,9 @@ export default function LoginPage() {
                 width: '100%',
                 padding: '10px 12px',
                 borderRadius: 6,
-                border: '1px solid #cbd5e0',
+                border: '1px solid var(--border-medium)',
                 fontSize: 14,
-                backgroundColor: '#f7fdfc',
+                backgroundColor: 'var(--bg-input)',
                 color: '#2d3748',
               }}
               placeholder="you@example.com"
@@ -177,9 +177,9 @@ export default function LoginPage() {
                 width: '100%',
                 padding: '10px 12px',
                 borderRadius: 6,
-                border: '1px solid #cbd5e0',
+                border: '1px solid var(--border-medium)',
                 fontSize: 14,
-                backgroundColor: '#f7fdfc',
+                backgroundColor: 'var(--bg-input)',
                 color: '#2d3748',
               }}
               placeholder="••••••••"
@@ -194,7 +194,7 @@ export default function LoginPage() {
               padding: '12px 16px',
               borderRadius: 6,
               border: 'none',
-              background: isLoading ? '#a0aec0' : '#14B8A6',
+              background: isLoading ? '#a0aec0' : 'var(--theme-500)',
               color: 'white',
               fontSize: 14,
               fontWeight: 500,
@@ -217,7 +217,7 @@ export default function LoginPage() {
           <Link
             href="/forgot-password"
             style={{
-              color: '#14B8A6',
+              color: 'var(--theme-500)',
               textDecoration: 'none',
               fontWeight: 500,
             }}
@@ -236,7 +236,7 @@ export default function LoginPage() {
           <Link
             href="/signup"
             style={{
-              color: '#14B8A6',
+              color: 'var(--theme-500)',
               textDecoration: 'none',
               fontWeight: 500,
             }}
