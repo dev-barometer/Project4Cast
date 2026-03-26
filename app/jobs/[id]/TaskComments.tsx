@@ -207,7 +207,6 @@ export default function TaskComments({
                     style={{
                       marginBottom: 12,
                       paddingBottom: 12,
-                      marginBottom: 12,
                       borderBottom: '1px solid var(--border-light)',
                     }}
                   >
