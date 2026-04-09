@@ -423,9 +423,9 @@ export async function inviteCollaboratorByEmail(prevState: any, formData: FormDa
 
     revalidatePath(`/jobs/${jobId}`);
     return { success: true, error: null };
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error inviting collaborator:', error);
-    return { success: false, error: error.message || 'Failed to send invitation' };
+    return { success: false, error: error instanceof Error ? error.message : 'Failed to send invitation' };
   }
 }
 
@@ -642,9 +642,9 @@ export async function addTask(prevState: any, formData: FormData) {
     revalidatePath('/');
     
     return { success: true, error: null };
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error creating task:', error);
-    return { success: false, error: error.message || 'Failed to create task' };
+    return { success: false, error: error instanceof Error ? error.message : 'Failed to create task' };
   }
 }
 
@@ -776,9 +776,9 @@ export async function addTaskComment(prevState: any, formData: FormData) {
 
     revalidatePath(`/jobs/${jobId}`);
     return { success: true, error: null };
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error adding comment:', error);
-    return { error: error.message || 'Failed to add comment', success: false };
+    return { error: error instanceof Error ? error.message : 'Failed to add comment', success: false };
   }
 }
 
@@ -821,9 +821,9 @@ export async function editTaskComment(prevState: any, formData: FormData) {
       revalidatePath(`/jobs/${finalJobId}`);
     }
     return { success: true, error: null };
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error editing comment:', error);
-    return { error: error.message || 'Failed to edit comment', success: false };
+    return { error: error instanceof Error ? error.message : 'Failed to edit comment', success: false };
   }
 }
 
@@ -864,9 +864,9 @@ export async function deleteTaskComment(prevState: any, formData: FormData) {
       revalidatePath(`/jobs/${finalJobId}`);
     }
     return { success: true, error: null };
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error deleting comment:', error);
-    return { error: error.message || 'Failed to delete comment', success: false };
+    return { error: error instanceof Error ? error.message : 'Failed to delete comment', success: false };
   }
 }
 
@@ -914,9 +914,9 @@ export async function uploadJobAttachment(prevState: any, formData: FormData) {
 
     revalidatePath(`/jobs/${jobId}`);
     return { success: true, error: null };
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error uploading attachment:', error);
-    return { error: error.message || 'Failed to upload attachment', success: false };
+    return { error: error instanceof Error ? error.message : 'Failed to upload attachment', success: false };
   }
 }
 
@@ -966,9 +966,9 @@ export async function uploadTaskAttachment(prevState: any, formData: FormData) {
 
     revalidatePath(`/jobs/${jobId}`);
     return { success: true, error: null };
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error uploading attachment:', error);
-    return { error: error.message || 'Failed to upload attachment', success: false };
+    return { error: error instanceof Error ? error.message : 'Failed to upload attachment', success: false };
   }
 }
 
@@ -1005,7 +1005,7 @@ export async function deleteAttachment(formData: FormData) {
     });
 
     revalidatePath(`/jobs/${jobId}`);
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error deleting attachment:', error);
   }
 }
@@ -1056,9 +1056,9 @@ export async function updateJobBrief(formData: FormData) {
 
     revalidatePath(`/jobs/${jobId}`);
     return { success: true, error: null };
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error updating job brief:', error);
-    return { success: false, error: error.message || 'Failed to update brief' };
+    return { success: false, error: error instanceof Error ? error.message : 'Failed to update brief' };
   }
 }
 
@@ -1128,9 +1128,9 @@ export async function updateJobNumberAndTitle(formData: FormData) {
 
     revalidatePath(`/jobs/${jobId}`);
     return { success: true, error: null };
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error updating job number and title:', error);
-    return { success: false, error: error.message || 'Failed to update job' };
+    return { success: false, error: error instanceof Error ? error.message : 'Failed to update job' };
   }
 }
 
@@ -1180,9 +1180,9 @@ export async function updateJobResources(formData: FormData) {
 
     revalidatePath(`/jobs/${jobId}`);
     return { success: true, error: null };
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error updating job resources URL:', error);
-    return { success: false, error: error.message || 'Failed to update resources link' };
+    return { success: false, error: error instanceof Error ? error.message : 'Failed to update resources link' };
   }
 }
 
@@ -1281,9 +1281,9 @@ export async function moveTask(formData: FormData) {
     revalidatePath(`/jobs/${currentJobId}`);
     revalidatePath(`/jobs/${newJobId}`);
     return { success: true, error: null };
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error moving task:', error);
-    return { success: false, error: error.message || 'Failed to move task' };
+    return { success: false, error: error instanceof Error ? error.message : 'Failed to move task' };
   }
 }
 
@@ -1333,9 +1333,9 @@ export async function deleteTask(formData: FormData) {
 
     revalidatePath(`/jobs/${jobId}`);
     return { success: true, error: null };
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error deleting task:', error);
-    return { success: false, error: error.message || 'Failed to delete task' };
+    return { success: false, error: error instanceof Error ? error.message : 'Failed to delete task' };
   }
 }
 

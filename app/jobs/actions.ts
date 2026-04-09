@@ -48,9 +48,9 @@ export async function markJobInactive(formData: FormData) {
     revalidatePath('/');
     revalidatePath(`/jobs/${jobId}`);
     return { success: true, error: null };
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error marking job as inactive:', error);
-    return { success: false, error: error.message || 'Failed to mark job as inactive' };
+    return { success: false, error: error instanceof Error ? error.message : 'Failed to mark job as inactive' };
   }
 }
 
@@ -105,8 +105,8 @@ export async function markJobActive(formData: FormData) {
     revalidatePath('/');
     revalidatePath(`/jobs/${jobId}`);
     return { success: true, error: null };
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error marking job as active:', error);
-    return { success: false, error: error.message || 'Failed to mark job as active' };
+    return { success: false, error: error instanceof Error ? error.message : 'Failed to mark job as active' };
   }
 }

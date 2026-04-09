@@ -23,12 +23,12 @@ export async function GET(request: Request) {
       userCount,
       timestamp: new Date().toISOString(),
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Keep-alive error:', error);
     return NextResponse.json(
       {
         success: false,
-        error: error.message || 'Database connection failed',
+        error: error instanceof Error ? error.message : 'Database connection failed',
         timestamp: new Date().toISOString(),
       },
       { status: 500 }

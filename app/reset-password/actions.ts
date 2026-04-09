@@ -71,7 +71,7 @@ export async function requestPasswordReset(prevState: any, formData: FormData) {
     }
 
     return { success: true, message: 'If an account exists, a password reset link has been sent.' };
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error requesting password reset:', error);
     return { success: false, error: 'Something went wrong. Please try again later.' };
   }
@@ -134,7 +134,7 @@ export async function resetPassword(prevState: any, formData: FormData) {
     ]);
 
     return { success: true, message: 'Password has been reset successfully. You can now sign in.' };
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error resetting password:', error);
     return { success: false, error: 'Something went wrong. Please try again later.' };
   }
@@ -163,7 +163,7 @@ export async function verifyResetToken(token: string) {
     }
 
     return { valid: true };
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error verifying reset token:', error);
     return { valid: false, error: 'Something went wrong' };
   }

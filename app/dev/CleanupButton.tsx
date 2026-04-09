@@ -28,10 +28,10 @@ export default function CleanupButton() {
           window.location.reload();
         }, 2000);
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       setResult({
         success: false,
-        error: error.message || 'Failed to cleanup database',
+        error: error instanceof Error ? error.message : 'Failed to cleanup database',
       });
     } finally {
       setLoading(false);

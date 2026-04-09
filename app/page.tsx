@@ -89,9 +89,9 @@ export default async function HomePage() {
         },
       });
     }
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Database error:', error);
-    dbError = error.message || 'Failed to connect to database';
+    dbError = error instanceof Error ? error.message : 'Failed to connect to database';
     jobs = [];
   }
 

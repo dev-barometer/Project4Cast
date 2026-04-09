@@ -298,9 +298,9 @@ export default async function JobDetailPage({ params }: JobPageProps) {
         .filter(n => n.taskId && jobTaskIds.includes(n.taskId))
         .map(n => n.taskId!)
     );
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Database error:', error);
-    dbError = error.message || 'Failed to connect to database';
+    dbError = error instanceof Error ? error.message : 'Failed to connect to database';
     job = null;
     allUsers = [];
     allJobs = [];

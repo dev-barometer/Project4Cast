@@ -33,7 +33,7 @@ export async function createInvitation(prevState: any, formData: FormData) {
   // Require email verification for admins
   try {
     await requireEmailVerification(session.user.id);
-  } catch (error: any) {
+  } catch (error: unknown) {
     if (error.message === 'EMAIL_NOT_VERIFIED') {
       return { success: false, error: 'Please verify your email address before sending invitations' };
     }
@@ -121,9 +121,9 @@ export async function createInvitation(prevState: any, formData: FormData) {
     revalidatePath('/invitations');
     revalidatePath('/admin');
     return { success: true, error: null };
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error creating invitation:', error);
-    return { success: false, error: error.message || 'Failed to create invitation' };
+    return { success: false, error: error instanceof Error ? error.message : 'Failed to create invitation' };
   }
 }
 
@@ -157,7 +157,7 @@ export async function cancelInvitation(formData: FormData) {
     });
 
     revalidatePath('/invitations');
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error cancelling invitation:', error);
   }
 }
@@ -221,9 +221,9 @@ export async function resendInvitation(formData: FormData) {
     revalidatePath('/invitations');
     revalidatePath('/admin');
     return { success: true, error: null };
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error resending invitation:', error);
-    return { success: false, error: error.message || 'Failed to resend invitation' };
+    return { success: false, error: error instanceof Error ? error.message : 'Failed to resend invitation' };
   }
 }
 

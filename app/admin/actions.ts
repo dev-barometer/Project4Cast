@@ -95,8 +95,8 @@ export async function updateJobFinancials(prevState: any, formData: FormData) {
     revalidatePath(`/jobs/${jobId}`);
 
     return { success: true, error: null };
-  } catch (error: any) {
-    return { success: false, error: error.message || 'Failed to update financials' };
+  } catch (error: unknown) {
+    return { success: false, error: error instanceof Error ? error.message : 'Failed to update financials' };
   }
 }
 
@@ -201,9 +201,9 @@ export async function deleteUser(prevState: any, formData: FormData) {
     revalidatePath('/my-tasks');
     
     return { success: true, error: null };
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error deleting user:', error);
-    return { success: false, error: error.message || 'Failed to delete user' };
+    return { success: false, error: error instanceof Error ? error.message : 'Failed to delete user' };
   }
 }
 
@@ -233,8 +233,8 @@ export async function toggleUserPause(prevState: any, formData: FormData) {
 
     revalidatePath('/admin');
     return { success: true, error: null };
-  } catch (error: any) {
-    return { success: false, error: error.message || 'Failed to toggle user pause status' };
+  } catch (error: unknown) {
+    return { success: false, error: error instanceof Error ? error.message : 'Failed to toggle user pause status' };
   }
 }
 
@@ -262,8 +262,8 @@ export async function changeUserPassword(prevState: any, formData: FormData) {
 
     revalidatePath('/admin');
     return { success: true, error: null };
-  } catch (error: any) {
-    return { success: false, error: error.message || 'Failed to change password' };
+  } catch (error: unknown) {
+    return { success: false, error: error instanceof Error ? error.message : 'Failed to change password' };
   }
 }
 
@@ -323,8 +323,8 @@ export async function sendPasswordResetLink(prevState: any, formData: FormData) 
     });
 
     return { success: true, error: null };
-  } catch (error: any) {
-    return { success: false, error: error.message || 'Failed to send password reset link' };
+  } catch (error: unknown) {
+    return { success: false, error: error instanceof Error ? error.message : 'Failed to send password reset link' };
   }
 }
 
@@ -363,8 +363,8 @@ export async function assignAdminRole(prevState: any, formData: FormData) {
 
     revalidatePath('/admin');
     return { success: true, error: null };
-  } catch (error: any) {
-    return { success: false, error: error.message || 'Failed to assign admin role' };
+  } catch (error: unknown) {
+    return { success: false, error: error instanceof Error ? error.message : 'Failed to assign admin role' };
   }
 }
 
@@ -411,8 +411,8 @@ export async function removeAdminRole(prevState: any, formData: FormData) {
 
     revalidatePath('/admin');
     return { success: true, error: null };
-  } catch (error: any) {
-    return { success: false, error: error.message || 'Failed to remove admin role' };
+  } catch (error: unknown) {
+    return { success: false, error: error instanceof Error ? error.message : 'Failed to remove admin role' };
   }
 }
 
@@ -445,8 +445,8 @@ export async function assignUserToTeams(prevState: any, formData: FormData) {
 
     revalidatePath('/admin');
     return { success: true, error: null };
-  } catch (error: any) {
-    return { success: false, error: error.message || 'Failed to assign teams' };
+  } catch (error: unknown) {
+    return { success: false, error: error instanceof Error ? error.message : 'Failed to assign teams' };
   }
 }
 
@@ -472,11 +472,11 @@ export async function createTeam(prevState: any, formData: FormData) {
 
     revalidatePath('/admin');
     return { success: true, error: null };
-  } catch (error: any) {
-    if (error.code === 'P2002') {
+  } catch (error: unknown) {
+    if (error instanceof Error && 'code' in error && (error as NodeJS.ErrnoException).code === 'P2002') {
       return { success: false, error: 'A team with this name already exists' };
     }
-    return { success: false, error: error.message || 'Failed to create team' };
+    return { success: false, error: error instanceof Error ? error.message : 'Failed to create team' };
   }
 }
 
@@ -499,8 +499,8 @@ export async function archiveJob(prevState: any, formData: FormData) {
     revalidatePath('/admin');
     revalidatePath(`/jobs/${jobId}`);
     return { success: true, error: null };
-  } catch (error: any) {
-    return { success: false, error: error.message || 'Failed to archive job' };
+  } catch (error: unknown) {
+    return { success: false, error: error instanceof Error ? error.message : 'Failed to archive job' };
   }
 }
 
@@ -521,8 +521,8 @@ export async function unarchiveJob(prevState: any, formData: FormData) {
     revalidatePath('/admin');
     revalidatePath(`/jobs/${jobId}`);
     return { success: true, error: null };
-  } catch (error: any) {
-    return { success: false, error: error.message || 'Failed to unarchive job' };
+  } catch (error: unknown) {
+    return { success: false, error: error instanceof Error ? error.message : 'Failed to unarchive job' };
   }
 }
 
@@ -630,9 +630,9 @@ export async function deleteJob(prevState: any, formData: FormData) {
 
     revalidatePath('/admin');
     return { success: true, error: null };
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error deleting job:', error);
-    return { success: false, error: error.message || 'Failed to delete job' };
+    return { success: false, error: error instanceof Error ? error.message : 'Failed to delete job' };
   }
 }
 
@@ -652,8 +652,8 @@ export async function archiveBrand(prevState: any, formData: FormData) {
 
     revalidatePath('/admin');
     return { success: true, error: null };
-  } catch (error: any) {
-    return { success: false, error: error.message || 'Failed to archive brand' };
+  } catch (error: unknown) {
+    return { success: false, error: error instanceof Error ? error.message : 'Failed to archive brand' };
   }
 }
 
@@ -673,8 +673,8 @@ export async function unarchiveBrand(prevState: any, formData: FormData) {
 
     revalidatePath('/admin');
     return { success: true, error: null };
-  } catch (error: any) {
-    return { success: false, error: error.message || 'Failed to unarchive brand' };
+  } catch (error: unknown) {
+    return { success: false, error: error instanceof Error ? error.message : 'Failed to unarchive brand' };
   }
 }
 
@@ -703,8 +703,8 @@ export async function deleteBrand(prevState: any, formData: FormData) {
 
     revalidatePath('/admin');
     return { success: true, error: null };
-  } catch (error: any) {
-    return { success: false, error: error.message || 'Failed to delete brand' };
+  } catch (error: unknown) {
+    return { success: false, error: error instanceof Error ? error.message : 'Failed to delete brand' };
   }
 }
 
@@ -724,8 +724,8 @@ export async function archiveClient(prevState: any, formData: FormData) {
 
     revalidatePath('/admin');
     return { success: true, error: null };
-  } catch (error: any) {
-    return { success: false, error: error.message || 'Failed to archive client' };
+  } catch (error: unknown) {
+    return { success: false, error: error instanceof Error ? error.message : 'Failed to archive client' };
   }
 }
 
@@ -745,8 +745,8 @@ export async function unarchiveClient(prevState: any, formData: FormData) {
 
     revalidatePath('/admin');
     return { success: true, error: null };
-  } catch (error: any) {
-    return { success: false, error: error.message || 'Failed to unarchive client' };
+  } catch (error: unknown) {
+    return { success: false, error: error instanceof Error ? error.message : 'Failed to unarchive client' };
   }
 }
 
@@ -775,8 +775,8 @@ export async function deleteClient(prevState: any, formData: FormData) {
 
     revalidatePath('/admin');
     return { success: true, error: null };
-  } catch (error: any) {
-    return { success: false, error: error.message || 'Failed to delete client' };
+  } catch (error: unknown) {
+    return { success: false, error: error instanceof Error ? error.message : 'Failed to delete client' };
   }
 }
 
@@ -817,8 +817,8 @@ export async function verifyUserEmail(prevState: any, formData: FormData) {
 
     revalidatePath('/admin');
     return { success: true, error: null };
-  } catch (error: any) {
-    return { success: false, error: error.message || 'Failed to verify email' };
+  } catch (error: unknown) {
+    return { success: false, error: error instanceof Error ? error.message : 'Failed to verify email' };
   }
 }
 
@@ -840,8 +840,8 @@ export async function resendUserVerificationEmail(prevState: any, formData: Form
     }
     
     return result;
-  } catch (error: any) {
-    return { success: false, error: error.message || 'Failed to resend verification email' };
+  } catch (error: unknown) {
+    return { success: false, error: error instanceof Error ? error.message : 'Failed to resend verification email' };
   }
 }
 

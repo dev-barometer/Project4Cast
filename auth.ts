@@ -25,7 +25,7 @@ export const { auth, signIn, signOut, handlers } = NextAuth({
           user = await prisma.user.findUnique({
             where: { email },
           });
-        } catch (error: any) {
+        } catch (error: unknown) {
           // Database connection error
           console.error('Database connection error during login:', error);
           throw new Error('Database connection failed. Please try again later.');

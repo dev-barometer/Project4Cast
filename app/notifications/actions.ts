@@ -49,13 +49,8 @@ export async function createNotification({
     });
     console.log('[createNotification] Notification created successfully:', notification.id);
     return notification;
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('[createNotification] Error creating notification:', error);
-    console.error('[createNotification] Error details:', {
-      message: error.message,
-      code: error.code,
-      meta: error.meta,
-    });
     // Re-throw the error so callers know it failed
     throw error;
   }

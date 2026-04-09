@@ -93,19 +93,17 @@ export default async function NotificationsPage() {
       ...n,
       comment: n.commentId ? commentMap.get(n.commentId) || null : null,
     }));
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error fetching notifications:', error);
+    const typedError = error as { message?: string; code?: string; meta?: unknown; stack?: string; name?: string };
     errorDetails = {
-      message: error.message,
-      code: error.code,
-      meta: error.meta,
-      stack: error.stack,
-      name: error.name,
+      message: typedError.message,
+      code: typedError.code,
+      meta: typedError.meta,
+      stack: typedError.stack,
+      name: typedError.name,
     };
-    
-    // Log full error details for debugging
-    console.error('Full error details:', JSON.stringify(errorDetails, null, 2));
-    
+
     return (
       <main style={{ padding: 40, maxWidth: 800, margin: '0 auto' }}>
         <div
@@ -117,10 +115,10 @@ export default async function NotificationsPage() {
             fontSize: 14,
           }}
         >
-          <strong>Error loading notifications:</strong> {error.message || 'Failed to load notifications'}
-          {error.code && (
+          <strong>Error loading notifications:</strong> {error instanceof Error ? error.message : 'Failed to load notifications'}
+          {typedError.code && (
             <div style={{ marginTop: 8, fontSize: 12, fontFamily: 'monospace' }}>
-              Error Code: {error.code}
+              Error Code: {typedError.code}
             </div>
           )}
           {process.env.NODE_ENV === 'development' && errorDetails && (

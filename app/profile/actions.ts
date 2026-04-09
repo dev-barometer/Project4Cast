@@ -43,9 +43,9 @@ export async function updateProfile(prevState: any, formData: FormData) {
 
     revalidatePath('/profile');
     return { success: true, error: null };
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error updating profile:', error);
-    return { success: false, error: error.message || 'Failed to update profile' };
+    return { success: false, error: error instanceof Error ? error.message : 'Failed to update profile' };
   }
 }
 
@@ -109,9 +109,9 @@ export async function changePassword(prevState: any, formData: FormData) {
 
     revalidatePath('/profile');
     return { success: true, error: null };
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error changing password:', error);
-    return { success: false, error: error.message || 'Failed to change password' };
+    return { success: false, error: error instanceof Error ? error.message : 'Failed to change password' };
   }
 }
 
@@ -145,9 +145,9 @@ export async function updateTeams(prevState: any, formData: FormData) {
 
     revalidatePath('/profile');
     return { success: true, error: null };
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error updating teams:', error);
-    return { success: false, error: error.message || 'Failed to update teams' };
+    return { success: false, error: error instanceof Error ? error.message : 'Failed to update teams' };
   }
 }
 
@@ -186,9 +186,9 @@ export async function updateNotificationPreferences(prevState: any, formData: Fo
 
     revalidatePath('/profile');
     return { success: true, error: null };
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error updating notification preferences:', error);
-    return { success: false, error: error.message || 'Failed to update notification preferences' };
+    return { success: false, error: error instanceof Error ? error.message : 'Failed to update notification preferences' };
   }
 }
 
@@ -247,9 +247,9 @@ export async function deleteAccount(prevState: any, formData: FormData) {
     });
 
     return { success: true, error: null };
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error deleting account:', error);
-    return { success: false, error: error.message || 'Failed to delete account' };
+    return { success: false, error: error instanceof Error ? error.message : 'Failed to delete account' };
   }
 }
 
@@ -307,9 +307,9 @@ export async function assignAdmin(prevState: any, formData: FormData) {
 
     revalidatePath('/profile');
     return { success: true, error: null };
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error assigning admin:', error);
-    return { success: false, error: error.message || 'Failed to assign admin privileges' };
+    return { success: false, error: error instanceof Error ? error.message : 'Failed to assign admin privileges' };
   }
 }
 
@@ -373,8 +373,8 @@ export async function removeAdmin(prevState: any, formData: FormData) {
 
     revalidatePath('/profile');
     return { success: true, error: null };
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error removing admin:', error);
-    return { success: false, error: error.message || 'Failed to remove admin privileges' };
+    return { success: false, error: error instanceof Error ? error.message : 'Failed to remove admin privileges' };
   }
 }

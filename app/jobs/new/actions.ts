@@ -36,7 +36,7 @@ export async function createJob(prevState: any, formData: FormData) {
 
   try {
     await requireEmailVerification(session.user.id);
-  } catch (error: any) {
+  } catch (error: unknown) {
     if (error.message === 'EMAIL_NOT_VERIFIED') {
       return { error: 'Please verify your email address before creating jobs' };
     }
@@ -73,9 +73,9 @@ export async function createJob(prevState: any, formData: FormData) {
 
     // Return success with job ID - client will handle redirect
     return { success: true, jobId: job.id, error: null };
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error creating job:', error);
-    return { error: error.message || 'Failed to create job' };
+    return { error: error instanceof Error ? error.message : 'Failed to create job' };
   }
 }
 

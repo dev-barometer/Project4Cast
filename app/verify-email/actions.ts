@@ -41,7 +41,7 @@ export async function verifyEmail(token: string) {
     ]);
 
     return { success: true, message: 'Email verified successfully!' };
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error verifying email:', error);
     return { success: false, error: 'Something went wrong. Please try again later.' };
   }
@@ -101,11 +101,11 @@ export async function resendVerificationEmail(userId: string) {
     }
 
     return { success: true, message: 'Verification email sent!' };
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error resending verification email:', error);
     // Provide more specific error message in development
     const errorMessage = process.env.NODE_ENV === 'development' 
-      ? error.message || 'Something went wrong. Please try again later.'
+      ? error instanceof Error ? error.message : 'Something went wrong. Please try again later.'
       : 'Something went wrong. Please try again later.';
     
     // Check for common errors

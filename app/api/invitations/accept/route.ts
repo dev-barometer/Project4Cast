@@ -140,10 +140,10 @@ export async function POST(request: NextRequest) {
     });
 
     return NextResponse.json({ success: true });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error accepting invitation:', error);
     return NextResponse.json(
-      { error: error.message || 'Failed to accept invitation' },
+      { error: error instanceof Error ? error.message : 'Failed to accept invitation' },
       { status: 500 }
     );
   }

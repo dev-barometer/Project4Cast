@@ -30,10 +30,10 @@ export async function POST(request: NextRequest) {
     });
 
     return NextResponse.json({ success: true });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error making user admin:', error);
     return NextResponse.json(
-      { error: error.message || 'Failed to make user admin' },
+      { error: error instanceof Error ? error.message : 'Failed to make user admin' },
       { status: 500 }
     );
   }

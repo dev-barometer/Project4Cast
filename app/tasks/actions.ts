@@ -28,7 +28,7 @@ export async function createStandaloneTask(prevState: any, formData: FormData) {
   if (session?.user?.id) {
     try {
       await requireEmailVerification(session.user.id);
-    } catch (error: any) {
+    } catch (error: unknown) {
       if (error.message === 'EMAIL_NOT_VERIFIED') {
         return { success: false, error: 'Please verify your email address before creating tasks' };
       }
@@ -164,9 +164,9 @@ export async function createStandaloneTask(prevState: any, formData: FormData) {
     }
 
     return { success: true, error: null };
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error creating task:', error);
-    return { success: false, error: error.message || 'Failed to create task' };
+    return { success: false, error: error instanceof Error ? error.message : 'Failed to create task' };
   }
 }
 

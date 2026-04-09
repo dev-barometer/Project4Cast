@@ -90,7 +90,7 @@ export async function POST(request: Request) {
         name: user.name,
       },
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Signup error:', error);
     
     // Check if it's a database connection error
@@ -104,7 +104,7 @@ export async function POST(request: Request) {
     }
     
     return NextResponse.json(
-      { error: error.message || 'Failed to create account' },
+      { error: error instanceof Error ? error.message : 'Failed to create account' },
       { status: 500 }
     );
   }

@@ -69,7 +69,7 @@ export async function removeUserFromAllJobs(formData: FormData) {
     for (const jobId of jobIds) {
       revalidatePath(`/jobs/${jobId}`);
     }
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error removing user from all jobs:', error);
   }
 }

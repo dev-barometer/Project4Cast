@@ -73,11 +73,11 @@ This invitation will expire in 7 days. If you didn't expect this invitation, you
 
     if (error) {
       console.error('Error sending invitation email:', error);
-      throw new Error(`Failed to send email: ${error.message}`);
+      throw new Error(`Failed to send email: ${error instanceof Error ? error.message : String(error)}`);
     }
 
     return { success: true, data };
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error sending invitation email:', error);
     throw error;
   }
@@ -150,11 +150,11 @@ View the task: ${taskUrl}
 
     if (error) {
       console.error('Error sending task assignment email:', error);
-      throw new Error(`Failed to send email: ${error.message}`);
+      throw new Error(`Failed to send email: ${error instanceof Error ? error.message : String(error)}`);
     }
 
     return { success: true, data };
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error sending task assignment email:', error);
     throw error;
   }
@@ -227,11 +227,11 @@ View the job: ${jobUrl}
 
     if (error) {
       console.error('Error sending job assignment email:', error);
-      throw new Error(`Failed to send email: ${error.message}`);
+      throw new Error(`Failed to send email: ${error instanceof Error ? error.message : String(error)}`);
     }
 
     return { success: true, data };
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error sending job assignment email:', error);
     throw error;
   }
@@ -302,11 +302,11 @@ This link will expire in 1 hour. If you didn't request a password reset, you can
 
     if (error) {
       console.error('Error sending password reset email:', error);
-      throw new Error(`Failed to send email: ${error.message}`);
+      throw new Error(`Failed to send email: ${error instanceof Error ? error.message : String(error)}`);
     }
 
     return { success: true, data };
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error sending password reset email:', error);
     throw error;
   }
@@ -493,11 +493,11 @@ ${recentComments.length > 0 ? `\n\nRecent Comments:\n${recentComments.map(c => {
 
     if (error) {
       console.error('Error sending comment mention email:', error);
-      throw new Error(`Failed to send email: ${error.message}`);
+      throw new Error(`Failed to send email: ${error instanceof Error ? error.message : String(error)}`);
     }
 
     return { success: true, data };
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error sending comment mention email:', error);
     throw error;
   }
@@ -568,11 +568,11 @@ This link will expire in 24 hours. If you didn't create an account, you can safe
 
     if (error) {
       console.error('Error sending verification email:', error);
-      throw new Error(`Failed to send email: ${error.message}`);
+      throw new Error(`Failed to send email: ${error instanceof Error ? error.message : String(error)}`);
     }
 
     return { success: true, data };
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error sending verification email:', error);
     throw error;
   }

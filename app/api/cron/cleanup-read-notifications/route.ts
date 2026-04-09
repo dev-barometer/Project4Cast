@@ -34,12 +34,12 @@ export async function GET(request: Request) {
       cutoffDate: thirtyDaysAgo.toISOString(),
       timestamp: new Date().toISOString(),
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Cleanup read notifications error:', error);
     return NextResponse.json(
       {
         success: false,
-        error: error.message || 'Cleanup failed',
+        error: error instanceof Error ? error.message : 'Cleanup failed',
         timestamp: new Date().toISOString(),
       },
       { status: 500 }

@@ -130,8 +130,8 @@ export default function AttachmentManager({
         
         // Mark this file as uploaded
         setUploadProgress(prev => ({ ...prev, [file.name]: true }));
-      } catch (error: any) {
-        setFileError(`Failed to upload ${file.name}: ${error.message}`);
+      } catch (error: unknown) {
+        setFileError(`Failed to upload ${file.name}: ${error instanceof Error ? error.message : String(error)}`);
         setIsUploading(false);
         return;
       }
