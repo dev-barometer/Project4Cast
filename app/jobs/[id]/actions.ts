@@ -11,6 +11,7 @@ import { auth } from '@/auth';
 import { notifyJobAssignment, notifyTaskAssignment } from '@/lib/notifications';
 import { sendJobAssignmentEmail, sendTaskAssignmentEmail } from '@/lib/email';
 import { parseMentions, findUsersByMention, notifyCommentMention } from '@/lib/notifications';
+import { logActivity } from '@/lib/activity';
 
 // Server action to update a task
 export async function updateTask(formData: FormData) {
@@ -912,6 +913,7 @@ export async function uploadJobAttachment(prevState: any, formData: FormData) {
       },
     });
 
+    await logActivity(uploadedById, 'UPLOADED_FILE', { filename, jobId });
     revalidatePath(`/jobs/${jobId}`);
     return { success: true, error: null };
   } catch (error: unknown) {
@@ -964,6 +966,7 @@ export async function uploadTaskAttachment(prevState: any, formData: FormData) {
       },
     });
 
+    await logActivity(uploadedById, 'UPLOADED_FILE', { filename, jobId, taskId });
     revalidatePath(`/jobs/${jobId}`);
     return { success: true, error: null };
   } catch (error: unknown) {

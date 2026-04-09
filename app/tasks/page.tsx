@@ -33,8 +33,9 @@ export default async function TasksPage() {
       },
       orderBy: [
         { priority: 'desc' }, // Urgent first
-        { status: 'asc' },    // Then by status
+        { status: 'asc' },    // Then by status (DONE sorts last alphabetically)
       ],
+      take: 200,
     }),
     prisma.user.findMany({
       orderBy: { email: 'asc' },

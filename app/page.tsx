@@ -46,6 +46,7 @@ export default async function HomePage() {
     // If admin, show all jobs. Otherwise, only show jobs where user is a collaborator
     if (isAdmin) {
       jobs = await prisma.job.findMany({
+        where: { isArchived: false },
         orderBy: { jobNumber: 'asc' },
         include: {
           brand: {
@@ -66,6 +67,7 @@ export default async function HomePage() {
       // Only show jobs where the user is a collaborator
       jobs = await prisma.job.findMany({
         where: {
+          isArchived: false,
           collaborators: {
             some: {
               userId: currentUserId,

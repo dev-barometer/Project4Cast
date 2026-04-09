@@ -9,6 +9,7 @@ import { auth } from '@/auth';
 import { notifyTaskAssignment } from '@/lib/notifications';
 import { sendTaskAssignmentEmail } from '@/lib/email';
 import { requireEmailVerification } from '@/lib/security';
+import { logActivity } from '@/lib/activity';
 
 // Server action to create a standalone task (no job required)
 // When used with useFormState, the signature is (prevState, formData)
@@ -29,7 +30,7 @@ export async function createStandaloneTask(prevState: any, formData: FormData) {
     try {
       await requireEmailVerification(session.user.id);
     } catch (error: unknown) {
-      if (error.message === 'EMAIL_NOT_VERIFIED') {
+      if (error instanceof Error && error.message === 'EMAIL_NOT_VERIFIED') {
         return { success: false, error: 'Please verify your email address before creating tasks' };
       }
       throw error;
@@ -156,6 +157,12 @@ export async function createStandaloneTask(prevState: any, formData: FormData) {
       }
     }
 
+    // Log activity
+    const actorId = session?.user?.id;
+    if (actorId) {
+      await logActivity(actorId, 'CREATED_TASK', { taskId: task.id, title, jobId });
+    }
+
     // Revalidate both task pages
     revalidatePath('/tasks');
     revalidatePath('/my-tasks');
@@ -226,6 +233,15 @@ export async function updateTask(formData: FormData) {
     where: { id: taskId },
     data: updateData,
   });
+
+  // Log activity when task is completed
+  if (isCompleting) {
+    const session = await auth();
+    const actorId = session?.user?.id;
+    if (actorId) {
+      await logActivity(actorId, 'MARKED_TASK_COMPLETE', { taskId, jobId });
+    }
+  }
 
   // If task was just completed, mark all related notifications as read for the current user
   if (isCompleting) {
