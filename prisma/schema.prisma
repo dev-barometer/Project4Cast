@@ -293,15 +293,19 @@ model Notification {
   @@index([jobId])
 }
 
+// TEAMS — schema is intentionally complete, UI not yet built.
+// Intent: admins can create named teams, assign users to teams, and optionally
+// associate a Job with a team (Job.teamId). When built, add admin UI for
+// team management and surface team context on the jobs list.
 model Team {
   id          String   @id @default(cuid())
   name        String
   description String?
   createdAt   DateTime @default(now())
-  
+
   members     UserTeam[]
   jobs        Job[]    // Jobs associated with this team
-  
+
   @@unique([name])
 }
 
@@ -310,10 +314,10 @@ model UserTeam {
   userId    String
   teamId    String
   joinedAt  DateTime @default(now())
-  
+
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   team      Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
-  
+
   @@unique([userId, teamId])
   @@index([userId])
   @@index([teamId])
