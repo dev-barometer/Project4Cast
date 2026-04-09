@@ -105,11 +105,11 @@ export default function ProfilePageClient({ user, allTeams, admins, allUsers }: 
   const isAdmin = user.role === 'ADMIN' || user.role === 'OWNER';
   const canManageAdmins = isOwner || isAdmin;
 
-  const [profileState, profileAction] = useFormState(updateProfile, { success: false, error: null });
-  const [passwordState, passwordAction] = useFormState(changePassword, { success: false, error: null });
-  const [teamsState, teamsAction] = useFormState(updateTeams, { success: false, error: null });
-  const [notificationsState, notificationsAction] = useFormState(updateNotificationPreferences, { success: false, error: null });
-  const [deleteState, deleteAction] = useFormState(deleteAccount, { success: false, error: null });
+  const [profileState, profileAction] = useFormState(updateProfile, { success: false, error: undefined });
+  const [passwordState, passwordAction] = useFormState(changePassword, { success: false, error: undefined });
+  const [teamsState, teamsAction] = useFormState(updateTeams, { success: false, error: undefined });
+  const [notificationsState, notificationsAction] = useFormState(updateNotificationPreferences, { success: false, error: undefined });
+  const [deleteState, deleteAction] = useFormState(deleteAccount, { success: false, error: undefined });
 
   // Handle account deletion success - sign out and redirect
   useEffect(() => {
@@ -995,7 +995,7 @@ export default function ProfilePageClient({ user, allTeams, admins, allUsers }: 
 
 // Admin Assign Form Component
 function AdminAssignForm({ userId, userEmail }: { userId: string; userEmail: string }) {
-  const [state, formAction] = useFormState(assignAdmin, { success: false, error: null });
+  const [state, formAction] = useFormState(assignAdmin, { success: false, error: undefined });
 
   useEffect(() => {
     if (state?.success) {
@@ -1030,7 +1030,7 @@ function AdminAssignForm({ userId, userEmail }: { userId: string; userEmail: str
 
 // Admin Remove Form Component
 function AdminRemoveForm({ userId, userEmail }: { userId: string; userEmail: string }) {
-  const [state, formAction] = useFormState(removeAdmin, { success: false, error: null });
+  const [state, formAction] = useFormState(removeAdmin, { success: false, error: undefined });
 
   useEffect(() => {
     if (state?.success) {

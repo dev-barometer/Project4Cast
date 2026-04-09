@@ -60,7 +60,7 @@ export default function TaskComments({
   attachments = [],
 }: TaskCommentsProps) {
   const [isExpanded, setIsExpanded] = useState(alwaysExpanded);
-  const [state, formAction] = useFormState(addTaskComment, { success: false, error: null });
+  const [state, formAction] = useFormState(addTaskComment, { success: false, error: undefined });
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);

@@ -31,7 +31,7 @@ export default function StandaloneTaskForm({ allUsers, allJobs, currentUserId }:
   const [dueDate, setDueDate] = useState('');
   const [selectedJobId, setSelectedJobId] = useState('');
   const formRef = useRef<HTMLFormElement>(null);
-  const [state, formAction] = useFormState(createStandaloneTask, { success: false, error: null });
+  const [state, formAction] = useFormState(createStandaloneTask, { success: false, error: undefined });
 
   // Reset form on successful submission
   useEffect(() => {

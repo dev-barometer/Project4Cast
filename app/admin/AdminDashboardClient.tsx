@@ -344,8 +344,8 @@ export default function AdminDashboardClient({
 
 // Role Dropdown Component
 function RoleDropdown({ userId, currentRole }: { userId: string; currentRole: 'ADMIN' | 'USER' }) {
-  const [assignState, assignAction] = useFormState(assignAdminRole, { success: false, error: null });
-  const [removeState, removeAction] = useFormState(removeAdminRole, { success: false, error: null });
+  const [assignState, assignAction] = useFormState(assignAdminRole, { success: false, error: undefined });
+  const [removeState, removeAction] = useFormState(removeAdminRole, { success: false, error: undefined });
 
   useEffect(() => {
     if (assignState?.success || removeState?.success) {
@@ -394,7 +394,7 @@ function RoleDropdown({ userId, currentRole }: { userId: string; currentRole: 'A
 // Delete User Button Component
 function DeleteUserButton({ userId, userEmail }: { userId: string; userEmail: string }) {
   const [showConfirm, setShowConfirm] = useState(false);
-  const [state, formAction] = useFormState(deleteUser, { success: false, error: null });
+  const [state, formAction] = useFormState(deleteUser, { success: false, error: undefined });
 
   useEffect(() => {
     if (state?.success) {
@@ -484,7 +484,7 @@ function DeleteUserButton({ userId, userEmail }: { userId: string; userEmail: st
 // Delete Client Button Component
 function DeleteClientButton({ clientId, clientName }: { clientId: string; clientName: string }) {
   const [showConfirm, setShowConfirm] = useState(false);
-  const [state, formAction] = useFormState(deleteClient, { success: false, error: null });
+  const [state, formAction] = useFormState(deleteClient, { success: false, error: undefined });
 
   useEffect(() => {
     if (state?.success) {
@@ -560,7 +560,7 @@ function DeleteClientButton({ clientId, clientName }: { clientId: string; client
 // Invite User Button Component
 function InviteUserButton() {
   const [showInviteForm, setShowInviteForm] = useState(false);
-  const [inviteState, inviteAction] = useFormState(createInvitation, { success: false, error: null });
+  const [inviteState, inviteAction] = useFormState(createInvitation, { success: false, error: undefined });
 
   useEffect(() => {
     if (inviteState?.success) {
@@ -697,7 +697,7 @@ function InviteUserButton() {
 // Delete Brand Button Component
 function DeleteBrandButton({ brandId, brandName }: { brandId: string; brandName: string }) {
   const [showConfirm, setShowConfirm] = useState(false);
-  const [state, formAction] = useFormState(deleteBrand, { success: false, error: null });
+  const [state, formAction] = useFormState(deleteBrand, { success: false, error: undefined });
 
   useEffect(() => {
     if (state?.success) {
@@ -886,7 +886,7 @@ function JobRow({ job }: {
 
 // Job Edit Form Component
 function JobEditForm({ job, onCancel }: { job: { id: string; jobNumber: string; title: string; estimate: number | null; billedAmount: number | null; paidAmount: number | null; purchaseOrder: string | null }; onCancel: () => void }) {
-  const [state, formAction] = useFormState(updateJobFinancials, { success: false, error: null });
+  const [state, formAction] = useFormState(updateJobFinancials, { success: false, error: undefined });
 
   useEffect(() => {
     if (state?.success) {
@@ -995,7 +995,7 @@ function JobEditForm({ job, onCancel }: { job: { id: string; jobNumber: string; 
 function ActiveToggle({ jobId, isActive }: { jobId: string; isActive: boolean }) {
   const [state, formAction] = useFormState(
     isActive ? archiveJob : unarchiveJob,
-    { success: false, error: null }
+    { success: false, error: undefined }
   );
 
   useEffect(() => {
@@ -1026,7 +1026,7 @@ function ActiveToggle({ jobId, isActive }: { jobId: string; isActive: boolean })
 // Purchase Order Field Component
 function PurchaseOrderField({ jobId, purchaseOrder }: { jobId: string; purchaseOrder: string | null }) {
   const [value, setValue] = useState(purchaseOrder || '');
-  const [state, formAction] = useFormState(updateJobFinancials, { success: false, error: null });
+  const [state, formAction] = useFormState(updateJobFinancials, { success: false, error: undefined });
 
   useEffect(() => {
     if (state?.success) {
@@ -1064,7 +1064,7 @@ function PurchaseOrderField({ jobId, purchaseOrder }: { jobId: string; purchaseO
 // Estimate Field Component
 function EstimateField({ jobId, estimate, isLocked }: { jobId: string; estimate: number | null; isLocked: boolean }) {
   const [value, setValue] = useState(estimate?.toString() || '');
-  const [state, formAction] = useFormState(updateJobFinancials, { success: false, error: null });
+  const [state, formAction] = useFormState(updateJobFinancials, { success: false, error: undefined });
 
   useEffect(() => {
     if (state?.success) {
@@ -1108,7 +1108,7 @@ function EstimateField({ jobId, estimate, isLocked }: { jobId: string; estimate:
 // Billed Amount Field Component
 function BilledAmountField({ jobId, billedAmount, isLocked }: { jobId: string; billedAmount: number | null; isLocked: boolean }) {
   const [value, setValue] = useState(billedAmount?.toString() || '');
-  const [state, formAction] = useFormState(updateJobFinancials, { success: false, error: null });
+  const [state, formAction] = useFormState(updateJobFinancials, { success: false, error: undefined });
 
   useEffect(() => {
     if (state?.success) {
@@ -1151,7 +1151,7 @@ function BilledAmountField({ jobId, billedAmount, isLocked }: { jobId: string; b
 
 // Billed Checkbox Component
 function BilledCheckbox({ jobId, isBilled, billedAmount }: { jobId: string; isBilled: boolean; billedAmount: number | null }) {
-  const [state, formAction] = useFormState(updateJobFinancials, { success: false, error: null });
+  const [state, formAction] = useFormState(updateJobFinancials, { success: false, error: undefined });
 
   useEffect(() => {
     if (state?.success) {
@@ -1190,7 +1190,7 @@ function BilledCheckbox({ jobId, isBilled, billedAmount }: { jobId: string; isBi
 // Paid Amount Field Component
 function PaidAmountField({ jobId, paidAmount, billedAmount, isPaid }: { jobId: string; paidAmount: number | null; billedAmount: number | null; isPaid: boolean }) {
   const [value, setValue] = useState(paidAmount?.toString() || '');
-  const [state, formAction] = useFormState(updateJobFinancials, { success: false, error: null });
+  const [state, formAction] = useFormState(updateJobFinancials, { success: false, error: undefined });
 
   useEffect(() => {
     if (state?.success) {
@@ -1233,7 +1233,7 @@ function PaidAmountField({ jobId, paidAmount, billedAmount, isPaid }: { jobId: s
 
 // Paid Checkbox Component
 function PaidCheckbox({ jobId, isPaid, billedAmount }: { jobId: string; isPaid: boolean; billedAmount: number | null }) {
-  const [state, formAction] = useFormState(updateJobFinancials, { success: false, error: null });
+  const [state, formAction] = useFormState(updateJobFinancials, { success: false, error: undefined });
 
   useEffect(() => {
     if (state?.success) {
@@ -1271,7 +1271,7 @@ function PaidCheckbox({ jobId, isPaid, billedAmount }: { jobId: string; isPaid: 
 // Delete Job Button Component
 function DeleteJobButton({ jobId, jobNumber }: { jobId: string; jobNumber: string }) {
   const [showConfirm, setShowConfirm] = useState(false);
-  const [state, formAction] = useFormState(deleteJob, { success: false, error: null });
+  const [state, formAction] = useFormState(deleteJob, { success: false, error: undefined });
 
   useEffect(() => {
     if (state?.success) {
@@ -1345,8 +1345,8 @@ function DeleteJobButton({ jobId, jobNumber }: { jobId: string; jobNumber: strin
 
 // Email Verification Status Component
 function EmailVerificationStatus({ userId, emailVerified }: { userId: string; emailVerified: Date | null }) {
-  const [verifyState, verifyAction] = useFormState(verifyUserEmail, { success: false, error: null });
-  const [resendState, resendAction] = useFormState(resendUserVerificationEmail, { success: false, error: null });
+  const [verifyState, verifyAction] = useFormState(verifyUserEmail, { success: false, error: undefined });
+  const [resendState, resendAction] = useFormState(resendUserVerificationEmail, { success: false, error: undefined });
   const [isVerifying, setIsVerifying] = useState(false);
   const [isResending, setIsResending] = useState(false);
 
