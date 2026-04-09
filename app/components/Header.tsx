@@ -5,7 +5,6 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import NotificationBadge from './NotificationBadge';
 import UserMenu from './UserMenu';
-import { saveScrollPosition } from './AutoRefresh';
 
 type HeaderProps = {
   user?: {
@@ -30,7 +29,10 @@ export default function Header({ user, unreadNotificationCount = 0 }: HeaderProp
   }, []);
 
   const handleRefresh = () => {
-    saveScrollPosition();
+    const sidebar = document.querySelector('[data-sidebar-scroll]') as HTMLElement;
+    if (sidebar) {
+      sessionStorage.setItem('sidebar-scroll', sidebar.scrollTop.toString());
+    }
     router.refresh();
   };
 

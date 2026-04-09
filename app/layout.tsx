@@ -6,7 +6,6 @@ import Header from './components/Header';
 import { prisma } from '@/lib/prisma';
 import EmailVerificationWrapper from './components/EmailVerificationWrapper';
 import ServiceWorkerRegistration from './sw-register';
-import AutoRefresh from './components/AutoRefresh';
 
 export const metadata: Metadata = {
   title: "Project4Cast",
@@ -61,7 +60,6 @@ export default async function RootLayout({
       <body>
         <ServiceWorkerRegistration />
         {session?.user && <Header user={session.user} unreadNotificationCount={unreadNotificationCount} />}
-        {session?.user && <AutoRefresh enabled={true} />}
         <EmailVerificationWrapper>
           {children}
         </EmailVerificationWrapper>
