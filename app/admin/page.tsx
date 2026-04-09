@@ -27,7 +27,7 @@ export default async function AdminPage() {
   }
 
   // Fetch all data for admin dashboard
-  const [allUsers, allClients, allTeams] = await Promise.all([
+  const [allUsers, allClients] = await Promise.all([
     // Users
     prisma.user.findMany({
       select: {
@@ -37,14 +37,6 @@ export default async function AdminPage() {
         role: true,
         isPaused: true,
         emailVerified: true,
-        teamMemberships: {
-          select: {
-            id: true,
-            team: {
-              select: { id: true, name: true },
-            },
-          },
-        },
       },
       orderBy: { email: 'asc' },
     }),
@@ -78,21 +70,12 @@ export default async function AdminPage() {
       },
       orderBy: { name: 'asc' },
     }),
-    // Teams
-    prisma.team.findMany({
-      select: {
-        id: true,
-        name: true,
-      },
-      orderBy: { name: 'asc' },
-    }),
   ]);
 
   return (
     <AdminDashboardClient
       users={allUsers}
       clients={allClients}
-      teams={allTeams}
     />
   );
 }

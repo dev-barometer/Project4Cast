@@ -12,8 +12,6 @@ import {
   deleteUser,
   assignAdminRole,
   removeAdminRole,
-  assignUserToTeams,
-  createTeam,
   updateJobFinancials,
   archiveJob,
   unarchiveJob,
@@ -32,13 +30,6 @@ type User = {
   role: 'OWNER' | 'ADMIN' | 'USER';
   isPaused: boolean;
   emailVerified: Date | null;
-  teamMemberships: Array<{
-    id: string;
-    team: {
-      id: string;
-      name: string;
-    };
-  }>;
 };
 
 type Client = {
@@ -62,21 +53,14 @@ type Client = {
   }>;
 };
 
-type Team = {
-  id: string;
-  name: string;
-};
-
 type AdminDashboardClientProps = {
   users: User[];
   clients: Client[];
-  teams: Team[];
 };
 
 export default function AdminDashboardClient({
   users,
   clients,
-  teams,
 }: AdminDashboardClientProps) {
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -101,8 +85,8 @@ export default function AdminDashboardClient({
 
   // Debug: Log data to console
   useEffect(() => {
-    console.log('Admin Dashboard Data:', { users: users.length, clients: clients.length, teams: teams.length });
-  }, [users, clients, teams]);
+    console.log('Admin Dashboard Data:', { users: users.length, clients: clients.length });
+  }, [users, clients]);
 
   const formatCurrency = (amount: number | null | undefined) => {
     if (amount === null || amount === undefined) return '$0.00';
@@ -189,9 +173,6 @@ export default function AdminDashboardClient({
                     <th style={{ textAlign: 'left', padding: '12px 16px', borderBottom: '1px solid #e2e8f0', color: '#4a5568', fontWeight: 600, fontSize: 13 }}>
                       Role
                     </th>
-                    <th style={{ textAlign: 'left', padding: '12px 16px', borderBottom: '1px solid #e2e8f0', color: '#4a5568', fontWeight: 600, fontSize: 13, minWidth: 200 }}>
-                      Teams
-                    </th>
                     <th style={{ textAlign: 'left', padding: '12px 16px', borderBottom: '1px solid #e2e8f0', color: '#4a5568', fontWeight: 600, fontSize: 13 }}>
                       Email Verified
                     </th>
@@ -212,9 +193,6 @@ export default function AdminDashboardClient({
                       ) : (
                         <RoleDropdown userId={user.id} currentRole={user.role} />
                       )}
-                    </td>
-                    <td style={{ padding: '12px 16px', fontSize: 13 }}>
-                      <UserTeamsList userId={user.id} teams={user.teamMemberships.map(tm => tm.team)} allTeams={teams} />
                     </td>
                     <td style={{ padding: '12px 16px', fontSize: 13 }}>
                       <EmailVerificationStatus userId={user.id} emailVerified={user.emailVerified} />
@@ -413,337 +391,6 @@ function RoleDropdown({ userId, currentRole }: { userId: string; currentRole: 'A
     </div>
   );
 }
-
-// User Teams List Component
-function UserTeamsList({ userId, teams, allTeams }: { userId: string; teams: Array<{ id: string; name: string }>; allTeams: Team[] }) {
-  const [showPopup, setShowPopup] = useState(false);
-  const [state, formAction] = useFormState(assignUserToTeams, { success: false, error: null });
-
-  useEffect(() => {
-    if (state?.success) {
-      window.location.reload();
-    }
-  }, [state?.success]);
-
-  const removeTeam = (teamId: string) => {
-    const currentTeamIds = teams.map(t => t.id).filter(id => id !== teamId);
-    const formData = new FormData();
-    formData.append('userId', userId);
-    currentTeamIds.forEach(id => formData.append('teamIds', id));
-    formAction(formData);
-  };
-
-  return (
-    <div style={{ position: 'relative' }}>
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, alignItems: 'center' }}>
-        {teams.length === 0 ? (
-          <span style={{ color: '#a0aec0', fontSize: 12 }}>No teams</span>
-        ) : (
-          teams.map((team) => (
-            <span
-              key={team.id}
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: 4,
-                padding: '4px 8px',
-                backgroundColor: '#cbfdee',
-                borderRadius: 4,
-                fontSize: 12,
-                color: '#2c5282',
-              }}
-            >
-              {team.name}
-              <button
-                onClick={() => removeTeam(team.id)}
-                style={{
-                  width: 16,
-                  height: 16,
-                  borderRadius: '50%',
-                  border: 'none',
-                  backgroundColor: '#cbd5e0',
-                  color: '#4a5568',
-                  cursor: 'pointer',
-                  fontSize: 12,
-                  lineHeight: 1,
-                  padding: 0,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                }}
-                type="button"
-              >
-                –
-              </button>
-            </span>
-          ))
-        )}
-        <button
-          onClick={() => setShowPopup(true)}
-          style={{
-            width: 20,
-            height: 20,
-            borderRadius: '50%',
-            border: '1px solid #cbd5e0',
-            backgroundColor: '#f7fdfc',
-            color: '#4a5568',
-            cursor: 'pointer',
-            fontSize: 14,
-            lineHeight: 1,
-            padding: 0,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
-          type="button"
-        >
-          +
-        </button>
-      </div>
-      {showPopup && (
-        <TeamManagementPopup
-          userId={userId}
-          currentTeams={teams.map(t => t.id)}
-          allTeams={allTeams}
-          onClose={() => setShowPopup(false)}
-        />
-      )}
-    </div>
-  );
-}
-
-// Team Management Popup Component
-function TeamManagementPopup({ userId, currentTeams, allTeams, onClose }: { userId: string; currentTeams: string[]; allTeams: Team[]; onClose: () => void }) {
-  const [showCreateForm, setShowCreateForm] = useState(false);
-  const [state, formAction] = useFormState(assignUserToTeams, { success: false, error: null });
-  const [createState, createAction] = useFormState(createTeam, { success: false, error: null });
-
-  useEffect(() => {
-    if (state?.success || createState?.success) {
-      window.location.reload();
-    }
-  }, [state?.success, createState?.success]);
-
-  const handleTeamToggle = (teamId: string, checked: boolean) => {
-    const newTeamIds = checked
-      ? [...currentTeams, teamId]
-      : currentTeams.filter(id => id !== teamId);
-    
-    const formData = new FormData();
-    formData.append('userId', userId);
-    newTeamIds.forEach(id => formData.append('teamIds', id));
-    formAction(formData);
-  };
-
-  return (
-    <div
-      style={{
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        backgroundColor: 'rgba(0, 0, 0, 0.5)',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        zIndex: 1000,
-      }}
-      onClick={onClose}
-    >
-      <div
-        style={{
-          backgroundColor: '#f7fdfc',
-          borderRadius: 8,
-          padding: 24,
-          maxWidth: 500,
-          width: '90%',
-          maxHeight: '80vh',
-          overflowY: 'auto',
-        }}
-        onClick={(e) => e.stopPropagation()}
-      >
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
-          <h3 style={{ fontSize: 18, fontWeight: 600, color: '#2d3748' }}>Manage Teams</h3>
-          <button
-            onClick={onClose}
-            style={{
-              background: 'none',
-              border: 'none',
-              fontSize: 24,
-              color: '#718096',
-              cursor: 'pointer',
-              padding: 0,
-              width: 24,
-              height: 24,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
-            type="button"
-          >
-            ×
-          </button>
-        </div>
-
-        {!showCreateForm ? (
-          <>
-            <div style={{ marginBottom: 16 }}>
-              <button
-                onClick={() => setShowCreateForm(true)}
-                style={{
-                  padding: '8px 16px',
-                  backgroundColor: '#38a169',
-                  color: '#f7fdfc',
-                  border: 'none',
-                  borderRadius: 6,
-                  fontSize: 13,
-                  fontWeight: 500,
-                  cursor: 'pointer',
-                }}
-                type="button"
-              >
-                + Create New Team
-              </button>
-            </div>
-
-            <div style={{ maxHeight: 300, overflowY: 'auto', border: '1px solid #e2e8f0', borderRadius: 6, padding: 12 }}>
-              {allTeams.length === 0 ? (
-                <p style={{ fontSize: 13, color: '#718096', textAlign: 'center', padding: 20 }}>
-                  No teams available. Create one to get started.
-                </p>
-              ) : (
-                allTeams.map(team => (
-                  <label
-                    key={team.id}
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: 8,
-                      padding: '8px 0',
-                      cursor: 'pointer',
-                    }}
-                  >
-                    <input
-                      type="checkbox"
-                      checked={currentTeams.includes(team.id)}
-                      onChange={(e) => handleTeamToggle(team.id, e.target.checked)}
-                      style={{ cursor: 'pointer' }}
-                    />
-                    <span style={{ fontSize: 14, color: '#2d3748' }}>{team.name}</span>
-                  </label>
-                ))
-              )}
-            </div>
-          </>
-        ) : (
-          <CreateTeamFormInline
-            onCancel={() => setShowCreateForm(false)}
-            onCreateSuccess={() => {
-              setShowCreateForm(false);
-              window.location.reload();
-            }}
-          />
-        )}
-
-        {state?.error && (
-          <div style={{ marginTop: 12, padding: '8px 12px', backgroundColor: '#fed7d7', color: '#742a2a', borderRadius: 6, fontSize: 13 }}>
-            {state.error}
-          </div>
-        )}
-      </div>
-    </div>
-  );
-}
-
-// Inline Create Team Form Component
-function CreateTeamFormInline({ onCancel, onCreateSuccess }: { onCancel: () => void; onCreateSuccess: () => void }) {
-  const [state, formAction] = useFormState(createTeam, { success: false, error: null });
-
-  useEffect(() => {
-    if (state?.success) {
-      onCreateSuccess();
-    }
-  }, [state?.success, onCreateSuccess]);
-
-  return (
-    <form action={formAction} style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-      <h4 style={{ fontSize: 16, fontWeight: 600, color: '#2d3748', marginBottom: 8 }}>Create New Team</h4>
-      {state?.error && (
-        <div style={{ backgroundColor: '#fed7d7', color: '#742a2a', padding: '8px 12px', borderRadius: 6, fontSize: 13 }}>
-          {state.error}
-        </div>
-      )}
-      <div>
-        <label style={{ display: 'block', fontSize: 13, fontWeight: 500, color: '#4a5568', marginBottom: 6 }}>
-          Team Name *
-        </label>
-        <input
-          type="text"
-          name="name"
-          required
-          style={{
-            width: '100%',
-            padding: '8px 12px',
-            border: '1px solid #cbd5e0',
-            borderRadius: 6,
-            fontSize: 14,
-          }}
-        />
-      </div>
-      <div>
-        <label style={{ display: 'block', fontSize: 13, fontWeight: 500, color: '#4a5568', marginBottom: 6 }}>
-          Description
-        </label>
-        <input
-          type="text"
-          name="description"
-          style={{
-            width: '100%',
-            padding: '8px 12px',
-            border: '1px solid #cbd5e0',
-            borderRadius: 6,
-            fontSize: 14,
-          }}
-        />
-      </div>
-      <div style={{ display: 'flex', gap: 8 }}>
-        <button
-          type="submit"
-          style={{
-            padding: '8px 16px',
-            backgroundColor: '#38a169',
-            color: '#f7fdfc',
-            border: 'none',
-            borderRadius: 6,
-            fontSize: 13,
-            fontWeight: 500,
-            cursor: 'pointer',
-          }}
-        >
-          Create Team
-        </button>
-        <button
-          type="button"
-          onClick={onCancel}
-          style={{
-            padding: '8px 16px',
-            backgroundColor: '#cbd5e0',
-            color: '#4a5568',
-            border: 'none',
-            borderRadius: 6,
-            fontSize: 13,
-            fontWeight: 500,
-            cursor: 'pointer',
-          }}
-        >
-          Cancel
-        </button>
-      </div>
-    </form>
-  );
-}
-
 // Delete User Button Component
 function DeleteUserButton({ userId, userEmail }: { userId: string; userEmail: string }) {
   const [showConfirm, setShowConfirm] = useState(false);
