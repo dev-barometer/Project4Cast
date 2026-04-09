@@ -8,7 +8,7 @@ export default function InvitationForm() {
   const [isExpanded, setIsExpanded] = useState(false);
   const [email, setEmail] = useState('');
   const [role, setRole] = useState('USER');
-  const [state, formAction] = useFormState(createInvitation, { success: false, error: undefined });
+  const [state, formAction] = useFormState(createInvitation, { success: false, error: null });
 
   // Reset form on successful submission
   useEffect(() => {

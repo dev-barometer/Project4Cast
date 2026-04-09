@@ -762,20 +762,20 @@ export async function verifyUserEmail(prevState: any, formData: FormData) {
 export async function resendUserVerificationEmail(prevState: any, formData: FormData) {
   try {
     await requireAdminOrOwner();
-    
+
     const userId = formData.get('userId') as string;
     if (!userId) {
       return { success: false, error: 'User ID is required' };
     }
 
-    // Use the existing resendVerificationEmail function
     const result = await resendVerificationEmail(userId);
-    
+
     if (result.success) {
       revalidatePath('/admin');
+      return { success: true, error: null };
     }
-    
-    return result;
+
+    return { success: false, error: result.error };
   } catch (error: unknown) {
     return { success: false, error: error instanceof Error ? error.message : 'Failed to resend verification email' };
   }

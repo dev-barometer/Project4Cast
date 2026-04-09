@@ -54,7 +54,7 @@ export default function TaskDetailPanel({
   canEdit,
   allUsers = [],
 }: TaskDetailPanelProps) {
-  const [state, formAction] = useFormState(addTaskComment, { success: false, error: undefined });
+  const [state, formAction] = useFormState(addTaskComment, { success: false, error: null });
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const commentsContainerRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);

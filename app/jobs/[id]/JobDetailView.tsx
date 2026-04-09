@@ -125,7 +125,7 @@ export default function JobDetailView({
   }, []);
   
   // Use useFormState for better error handling
-  const [state, formAction] = useFormState(addTask, { success: false, error: undefined });
+  const [state, formAction] = useFormState(addTask, { success: false, error: null });
   
   // Hide form and refresh page when task is successfully created
   useEffect(() => {

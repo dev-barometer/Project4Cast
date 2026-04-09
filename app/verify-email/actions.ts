@@ -26,7 +26,7 @@ export async function verifyEmail(token: string) {
 
     // Check if email is already verified
     if (verificationToken.user.emailVerified) {
-      return { success: true, message: 'Email is already verified' };
+      return { success: true, error: null, message: 'Email is already verified' };
     }
 
     // Mark email as verified and delete token
@@ -40,7 +40,7 @@ export async function verifyEmail(token: string) {
       }),
     ]);
 
-    return { success: true, message: 'Email verified successfully!' };
+    return { success: true, error: null, message: 'Email verified successfully!' };
   } catch (error: unknown) {
     console.error('Error verifying email:', error);
     return { success: false, error: 'Something went wrong. Please try again later.' };
@@ -100,7 +100,7 @@ export async function resendVerificationEmail(userId: string) {
       return { success: false, error: 'Failed to send email. Please try again later.' };
     }
 
-    return { success: true, message: 'Verification email sent!' };
+    return { success: true, error: null, message: 'Verification email sent!' };
   } catch (error: unknown) {
     console.error('Error resending verification email:', error);
     // Provide more specific error message in development
@@ -109,10 +109,11 @@ export async function resendVerificationEmail(userId: string) {
       : 'Something went wrong. Please try again later.';
     
     // Check for common errors
-    if (error.message?.includes('emailVerificationToken') || error.message?.includes('does not exist')) {
+    const errorMsg = error instanceof Error ? error.message : '';
+    if (errorMsg.includes('emailVerificationToken') || errorMsg.includes('does not exist')) {
       return { success: false, error: 'Database error: The verification system may need to be set up. Please contact support.' };
     }
-    if (error.message?.includes('Unique constraint')) {
+    if (errorMsg.includes('Unique constraint')) {
       return { success: false, error: 'A verification email was already sent. Please check your inbox.' };
     }
     

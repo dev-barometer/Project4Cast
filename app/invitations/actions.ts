@@ -34,7 +34,7 @@ export async function createInvitation(prevState: any, formData: FormData) {
   try {
     await requireEmailVerification(session.user.id);
   } catch (error: unknown) {
-    if (error.message === 'EMAIL_NOT_VERIFIED') {
+    if (error instanceof Error && error.message === 'EMAIL_NOT_VERIFIED') {
       return { success: false, error: 'Please verify your email address before sending invitations' };
     }
     throw error;

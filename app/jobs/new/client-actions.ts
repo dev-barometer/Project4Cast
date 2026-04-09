@@ -21,7 +21,7 @@ export async function createClient(formData: FormData) {
     try {
       await requireEmailVerification(session.user.id);
     } catch (error: unknown) {
-      if (error.message === 'EMAIL_NOT_VERIFIED') {
+      if (error instanceof Error && error.message === 'EMAIL_NOT_VERIFIED') {
         return { success: false, error: 'Please verify your email address', clientId: null };
       }
       throw error;
@@ -55,7 +55,7 @@ export async function createBrand(formData: FormData) {
     try {
       await requireEmailVerification(session.user.id);
     } catch (error: unknown) {
-      if (error.message === 'EMAIL_NOT_VERIFIED') {
+      if (error instanceof Error && error.message === 'EMAIL_NOT_VERIFIED') {
         return { success: false, error: 'Please verify your email address', brandId: null };
       }
       throw error;

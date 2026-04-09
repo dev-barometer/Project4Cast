@@ -37,7 +37,7 @@ export async function createJob(prevState: any, formData: FormData) {
   try {
     await requireEmailVerification(session.user.id);
   } catch (error: unknown) {
-    if (error.message === 'EMAIL_NOT_VERIFIED') {
+    if (error instanceof Error && error.message === 'EMAIL_NOT_VERIFIED') {
       return { error: 'Please verify your email address before creating jobs' };
     }
     throw error;

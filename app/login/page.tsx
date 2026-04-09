@@ -44,7 +44,7 @@ export default function LoginPage() {
         router.refresh();
       }
     } catch (error: unknown) {
-      setError(error?.message || 'Something went wrong. Please try again.');
+      setError(error instanceof Error ? error.message : 'Something went wrong. Please try again.');
     } finally {
       setIsLoading(false);
     }

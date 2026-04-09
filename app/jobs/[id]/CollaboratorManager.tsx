@@ -36,7 +36,7 @@ export default function CollaboratorManager({
   jobId,
 }: CollaboratorManagerProps) {
   const [showInviteForm, setShowInviteForm] = useState(false);
-  const [inviteState, inviteAction] = useFormState(inviteCollaboratorByEmail, { success: false, error: undefined });
+  const [inviteState, inviteAction] = useFormState(inviteCollaboratorByEmail, { success: false, error: null });
 
   // Get list of user IDs already assigned as collaborators
   const assignedUserIds = collaborators.map((c) => c.userId);

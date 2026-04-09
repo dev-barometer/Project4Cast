@@ -94,7 +94,7 @@ export async function POST(request: Request) {
     console.error('Signup error:', error);
     
     // Check if it's a database connection error
-    if (error.message?.includes("Can't reach database server") || error.message?.includes("Connection")) {
+    if (error instanceof Error && (error.message.includes("Can't reach database server") || error.message.includes("Connection"))) {
       return NextResponse.json(
         { 
           error: 'Database connection failed. Please check your database connection and try again. If using Supabase, make sure your database is not paused.' 
