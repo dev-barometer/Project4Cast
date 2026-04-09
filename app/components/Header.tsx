@@ -95,18 +95,23 @@ export default function Header({ user, unreadNotificationCount = 0 }: HeaderProp
                 color: 'var(--text-primary)',
               }}
             />
-            <span
+            <svg
+              width="14"
+              height="14"
+              viewBox="0 0 14 14"
+              fill="none"
               style={{
                 position: 'absolute',
                 left: 12,
                 top: '50%',
                 transform: 'translateY(-50%)',
                 color: 'var(--text-muted)',
-                fontSize: 16,
+                pointerEvents: 'none',
               }}
             >
-              🔍
-            </span>
+              <circle cx="6" cy="6" r="4.5" stroke="currentColor" strokeWidth="1.5"/>
+              <path d="M10 10L12.5 12.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+            </svg>
           </div>
         )}
         {!isMobile && (

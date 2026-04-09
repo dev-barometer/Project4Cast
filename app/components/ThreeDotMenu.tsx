@@ -11,9 +11,9 @@ export function ThreeDotMenu({ style }: { style?: React.CSSProperties }) {
         ...style,
       }}
     >
-      <div style={{ width: 4, height: 4, borderRadius: '50%', backgroundColor: '#5a6579' }} />
-      <div style={{ width: 4, height: 4, borderRadius: '50%', backgroundColor: '#5a6579' }} />
-      <div style={{ width: 4, height: 4, borderRadius: '50%', backgroundColor: '#5a6579' }} />
+      <div style={{ width: 3, height: 3, borderRadius: '50%', backgroundColor: 'var(--border-medium)' }} />
+      <div style={{ width: 3, height: 3, borderRadius: '50%', backgroundColor: 'var(--border-medium)' }} />
+      <div style={{ width: 3, height: 3, borderRadius: '50%', backgroundColor: 'var(--border-medium)' }} />
     </div>
   );
 }
@@ -29,9 +29,9 @@ export function ThreeDotMenuHorizontal({ style }: { style?: React.CSSProperties 
         ...style,
       }}
     >
-      <div style={{ width: 4, height: 4, borderRadius: '50%', backgroundColor: '#5a6579' }} />
-      <div style={{ width: 4, height: 4, borderRadius: '50%', backgroundColor: '#5a6579' }} />
-      <div style={{ width: 4, height: 4, borderRadius: '50%', backgroundColor: '#5a6579' }} />
+      <div style={{ width: 3, height: 3, borderRadius: '50%', backgroundColor: 'var(--border-medium)' }} />
+      <div style={{ width: 3, height: 3, borderRadius: '50%', backgroundColor: 'var(--border-medium)' }} />
+      <div style={{ width: 3, height: 3, borderRadius: '50%', backgroundColor: 'var(--border-medium)' }} />
     </div>
   );
 }

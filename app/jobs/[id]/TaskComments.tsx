@@ -178,7 +178,7 @@ export default function TaskComments({
 
       {/* Comments section */}
       {shouldShowContent && (
-        <div style={{ marginTop: 12, padding: 12, backgroundColor: 'var(--bg-surface)', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-light)' }}>
+        <div style={{ marginTop: 8 }}>
           {/* Error message */}
           {state?.error && (
             <div

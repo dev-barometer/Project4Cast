@@ -518,7 +518,7 @@ export default function JobSidebar({ jobs, isAdmin, currentJobId }: JobSidebarPr
                             borderRadius: '50%',
                             backgroundColor:
                               taskStatus === 'new'
-                                ? 'var(--success)'
+                                ? 'var(--accent)'
                                 : taskStatus === 'overdue'
                                 ? 'var(--error)'
                                 : 'transparent',

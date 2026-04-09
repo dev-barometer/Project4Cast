@@ -88,17 +88,17 @@ export default function EditableJobTitle({ jobId, initialJobNumber, initialTitle
               onChange={(e) => setJobNumber(e.target.value.toUpperCase())}
               placeholder="XXX-000"
               style={{
-                fontSize: '2.5rem',
+                fontSize: 'var(--text-lg)',
                 fontWeight: 700,
-                color: '#2d3748',
+                color: 'var(--text-primary)',
                 padding: '4px 8px',
-                borderRadius: 6,
-                border: '1px solid #cbd5e0',
-                backgroundColor: '#f7fdfc',
+                borderRadius: 'var(--radius-md)',
+                border: '1px solid var(--border-medium)',
+                backgroundColor: 'var(--bg-input)',
                 width: 'auto',
-                minWidth: 150,
-                letterSpacing: '-0.02em',
-                lineHeight: 1.1,
+                minWidth: 120,
+                letterSpacing: '-0.01em',
+                lineHeight: 1.3,
               }}
               autoFocus
             />
@@ -108,13 +108,13 @@ export default function EditableJobTitle({ jobId, initialJobNumber, initialTitle
               onChange={(e) => setTitle(e.target.value)}
               placeholder="Job title"
               style={{
-                fontSize: '1.25rem',
-                fontWeight: 600,
-                color: '#2d3748',
+                fontSize: 'var(--text-md)',
+                fontWeight: 500,
+                color: 'var(--text-primary)',
                 padding: '4px 8px',
-                borderRadius: 6,
-                border: '1px solid #cbd5e0',
-                backgroundColor: '#f7fdfc',
+                borderRadius: 'var(--radius-md)',
+                border: '1px solid var(--border-medium)',
+                backgroundColor: 'var(--bg-input)',
                 flex: 1,
                 minWidth: 200,
                 lineHeight: 1.3,
@@ -126,12 +126,12 @@ export default function EditableJobTitle({ jobId, initialJobNumber, initialTitle
               onClick={handleSave}
               disabled={isPending}
               style={{
-                padding: '8px 16px',
-                borderRadius: 6,
+                padding: '6px 14px',
+                borderRadius: 'var(--radius-md)',
                 border: 'none',
-                background: isPending ? '#a0aec0' : 'var(--theme-500)',
+                background: isPending ? 'var(--border-medium)' : 'var(--theme-500)',
                 color: 'white',
-                fontSize: 13,
+                fontSize: 'var(--text-sm)',
                 fontWeight: 500,
                 cursor: isPending ? 'not-allowed' : 'pointer',
               }}
@@ -142,12 +142,12 @@ export default function EditableJobTitle({ jobId, initialJobNumber, initialTitle
               onClick={handleCancel}
               disabled={isPending}
               style={{
-                padding: '8px 16px',
-                borderRadius: 6,
-                border: '1px solid #cbd5e0',
-                background: '#f7fdfc',
-                color: '#4a5568',
-                fontSize: 13,
+                padding: '6px 14px',
+                borderRadius: 'var(--radius-md)',
+                border: '1px solid var(--border-medium)',
+                background: 'var(--bg-input)',
+                color: 'var(--text-secondary)',
+                fontSize: 'var(--text-sm)',
                 cursor: isPending ? 'not-allowed' : 'pointer',
               }}
             >
@@ -159,20 +159,20 @@ export default function EditableJobTitle({ jobId, initialJobNumber, initialTitle
         <>
           <span
             style={{
-              fontSize: '2.5rem',
+              fontSize: 'var(--text-lg)',
               fontWeight: 700,
-              color: '#2d3748',
-              letterSpacing: '-0.02em',
-              lineHeight: 1.1,
+              color: 'var(--text-primary)',
+              letterSpacing: '-0.01em',
+              lineHeight: 1.3,
             }}
           >
             {jobNumber}
           </span>
           <span
             style={{
-              fontSize: '1.25rem',
-              fontWeight: 600,
-              color: '#2d3748',
+              fontSize: 'var(--text-md)',
+              fontWeight: 500,
+              color: 'var(--text-secondary)',
               lineHeight: 1.3,
             }}
           >
@@ -182,31 +182,23 @@ export default function EditableJobTitle({ jobId, initialJobNumber, initialTitle
             <button
               onClick={() => setIsEditing(true)}
               style={{
-                width: 32,
-                height: 32,
-                borderRadius: '50%',
-                border: '1px solid #cbd5e0',
-                background: '#f7fdfc',
-                color: '#4a5568',
+                background: 'none',
+                border: 'none',
+                color: 'var(--text-muted)',
                 fontSize: 14,
                 cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                padding: 0,
-                transition: 'all 0.2s',
+                padding: '2px 4px',
+                opacity: 0.6,
+                lineHeight: 1,
+                transition: 'opacity 0.15s',
               }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = '#e5f8fa';
-                e.currentTarget.style.borderColor = 'var(--theme-500)';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = '#f7fdfc';
-                e.currentTarget.style.borderColor = '#cbd5e0';
-              }}
+              onMouseEnter={(e) => { e.currentTarget.style.opacity = '1'; }}
+              onMouseLeave={(e) => { e.currentTarget.style.opacity = '0.6'; }}
               title="Edit job number and title"
             >
-              ✏️
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                <path d="M9.5 2.5L11.5 4.5L4.5 11.5H2.5V9.5L9.5 2.5Z" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
             </button>
           )}
         </>
