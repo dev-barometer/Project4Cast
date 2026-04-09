@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { useFormState } from 'react-dom';
 import TaskRow from './TaskRow';
+import MobileTaskCard from './MobileTaskCard';
 import TaskForm from './TaskForm';
 import JobDetailsSection from './components/JobDetailsSection';
 import EditableJobTitle from './EditableJobTitle';
@@ -156,7 +157,7 @@ export default function JobDetailView({
       {/* Top Section: Job Title Area – card-style bar */}
       <div
         style={{
-          padding: isMobile ? '16px' : '32px 40px',
+          padding: isMobile ? '12px 16px 12px 64px' : '32px 40px',
           backgroundColor: 'var(--bg-card)',
           borderBottom: '1px solid var(--border-light)',
         }}
@@ -348,30 +349,34 @@ export default function JobDetailView({
             <p style={{ color: 'var(--text-muted)', fontSize: 14, fontStyle: 'italic' }}>
               No tasks yet. {canEdit && 'Add one above.'}
             </p>
+          ) : isMobile ? (
+            /* Mobile: card list */
+            <div style={{ paddingTop: 4 }}>
+              {job.tasks.map((task) => (
+                <MobileTaskCard
+                  key={task.id}
+                  task={task}
+                  jobId={job.id}
+                  allUsers={allUsers}
+                  currentUserId={currentUserId}
+                  hasUnreadComments={tasksWithUnreadComments.has(task.id)}
+                  allJobs={allJobs}
+                  canEdit={canEdit}
+                />
+              ))}
+            </div>
           ) : (
-            <div style={{ 
-              overflowX: 'auto', 
-              width: '100%', 
-              WebkitOverflowScrolling: 'touch',
-              marginLeft: isMobile ? '-16px' : 0,
-              marginRight: isMobile ? '-16px' : 0,
-              paddingLeft: isMobile ? '16px' : 0,
-              paddingRight: isMobile ? '16px' : 0,
-            }}>
-              <table style={{ 
-                width: '100%', 
-                borderCollapse: 'collapse', 
-                minWidth: isMobile ? '600px' : 'auto',
-                tableLayout: isMobile ? 'fixed' : 'auto',
-              }}>
+            /* Desktop: table */
+            <div style={{ overflowX: 'auto', width: '100%' }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                 <thead>
                   <tr style={{ backgroundColor: 'var(--bg-input)', borderBottom: '1px solid var(--border-light)' }}>
                     <th
                       style={{
-                        padding: isMobile ? '8px 4px' : '12px 16px',
-                        width: isMobile ? 32 : 40,
+                        padding: '12px 16px',
+                        width: 40,
                         textAlign: 'left',
-                        fontSize: isMobile ? 10 : 12,
+                        fontSize: 12,
                         fontWeight: 600,
                         color: 'var(--text-muted)',
                         textTransform: 'uppercase',
@@ -381,10 +386,10 @@ export default function JobDetailView({
                     </th>
                     <th
                       style={{
-                        padding: isMobile ? '8px 4px' : '12px 16px',
-                        width: isMobile ? 32 : 40,
+                        padding: '12px 16px',
+                        width: 40,
                         textAlign: 'left',
-                        fontSize: isMobile ? 10 : 12,
+                        fontSize: 12,
                         fontWeight: 600,
                         color: 'var(--text-muted)',
                         textTransform: 'uppercase',
@@ -394,10 +399,10 @@ export default function JobDetailView({
                     </th>
                     <th
                       style={{
-                        padding: isMobile ? '8px 4px' : '12px 16px',
-                        width: isMobile ? 32 : 40,
+                        padding: '12px 16px',
+                        width: 40,
                         textAlign: 'left',
-                        fontSize: isMobile ? 10 : 12,
+                        fontSize: 12,
                         fontWeight: 600,
                         color: 'var(--text-muted)',
                         textTransform: 'uppercase',
@@ -407,9 +412,9 @@ export default function JobDetailView({
                     </th>
                     <th
                       style={{
-                        padding: isMobile ? '8px 4px' : '12px 16px',
+                        padding: '12px 16px',
                         textAlign: 'left',
-                        fontSize: isMobile ? 10 : 12,
+                        fontSize: 12,
                         fontWeight: 600,
                         color: 'var(--text-muted)',
                         textTransform: 'uppercase',
