@@ -154,12 +154,11 @@ export default function JobDetailView({
         backgroundColor: 'var(--bg-page)',
       }}
     >
-      {/* Top Section: Job Title Area – card-style bar */}
+      {/* Top Section: Job Title Area */}
       <div
         style={{
-          padding: isMobile ? '12px 16px 12px 64px' : '32px 40px',
+          padding: isMobile ? '12px 16px 12px 64px' : '16px 24px',
           backgroundColor: 'var(--bg-card)',
-          borderBottom: '1px solid var(--border-light)',
         }}
       >
         <div
@@ -219,7 +218,7 @@ export default function JobDetailView({
           style={{
             flex: 1,
             overflowY: 'auto',
-            padding: isMobile ? '16px' : '32px 40px',
+            padding: isMobile ? '16px' : '20px 24px',
             paddingTop: isMobile ? '64px' : undefined,
             transition: isMobile ? 'none' : 'margin-right 0.3s ease-in-out',
             marginRight: isMobile ? '0' : (isRightPanelOpen ? '400px' : '0'),

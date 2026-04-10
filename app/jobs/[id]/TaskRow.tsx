@@ -98,7 +98,7 @@ export default function TaskRow({
     <>
     <tr
       style={{
-        borderBottom: '1px solid #f0f4f8',
+        borderBottom: '1px solid var(--border-light)',
         backgroundColor: 'transparent',
       }}
     >

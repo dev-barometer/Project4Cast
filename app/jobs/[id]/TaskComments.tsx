@@ -183,8 +183,8 @@ export default function TaskComments({
           {state?.error && (
             <div
               style={{
-                backgroundColor: '#fed7d7',
-                color: '#742a2a',
+                backgroundColor: 'rgba(241,108,105,0.1)',
+                color: 'var(--error)',
                 padding: '8px 12px',
                 borderRadius: 4,
                 marginBottom: 12,
@@ -211,7 +211,7 @@ export default function TaskComments({
                     }}
                   >
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 4 }}>
-                      <div style={{ fontSize: 12, color: '#4a5568' }}>
+                      <div style={{ fontSize: 'var(--text-xs)', color: 'var(--text-muted)' }}>
                         <strong>
                           {comment.author?.name || comment.author?.email || 'Unknown'}
                         </strong>
@@ -238,7 +238,7 @@ export default function TaskComments({
                             style={{
                               background: 'none',
                               border: 'none',
-                              color: '#4299e1',
+                              color: 'var(--text-muted)',
                               cursor: 'pointer',
                               fontSize: 11,
                               padding: '2px 4px',
@@ -265,7 +265,7 @@ export default function TaskComments({
                                   }
                                 }}
                                 style={{
-                                  background: '#e53e3e',
+                                  background: 'var(--error)',
                                   border: 'none',
                                   color: 'white',
                                   cursor: 'pointer',
@@ -282,7 +282,7 @@ export default function TaskComments({
                                 style={{
                                   background: 'none',
                                   border: 'none',
-                                  color: '#718096',
+                                  color: 'var(--text-muted)',
                                   cursor: 'pointer',
                                   fontSize: 11,
                                   padding: '2px 4px',
@@ -298,7 +298,7 @@ export default function TaskComments({
                               style={{
                                 background: 'none',
                                 border: 'none',
-                                color: '#e53e3e',
+                                color: 'var(--error)',
                                 cursor: 'pointer',
                                 fontSize: 11,
                                 padding: '2px 4px',
@@ -342,7 +342,7 @@ export default function TaskComments({
                             border: '1px solid var(--border-medium)',
                             fontSize: 13,
                             backgroundColor: 'var(--bg-input)',
-                            color: '#2d3748',
+                            color: 'var(--text-primary)',
                             fontFamily: 'inherit',
                             resize: 'vertical',
                           }}
@@ -358,8 +358,8 @@ export default function TaskComments({
                               padding: '6px 12px',
                               borderRadius: 4,
                               background: 'var(--bg-input)',
-                              color: '#4a5568',
-                              fontSize: 12,
+                              color: 'var(--text-secondary)',
+                              fontSize: 'var(--text-xs)',
                               cursor: 'pointer',
                             }}
                           >
@@ -383,7 +383,7 @@ export default function TaskComments({
                         </div>
                       </form>
                     ) : (
-                      <div style={{ fontSize: 13, color: '#2d3748', lineHeight: 1.6 }}>
+                      <div style={{ fontSize: 'var(--text-sm)', color: 'var(--text-secondary)', lineHeight: 1.6 }}>
                         {comment.body}
                       </div>
                     )}
@@ -475,7 +475,7 @@ export default function TaskComments({
                       borderRadius: 4,
                       backgroundColor: 'var(--bg-input)',
                       fontSize: 11,
-                      color: '#2d3748',
+                      color: 'var(--text-primary)',
                     }}
                   >
                     <span>📎</span>
@@ -494,7 +494,7 @@ export default function TaskComments({
                       style={{
                         background: 'none',
                         border: 'none',
-                        color: '#e53e3e',
+                        color: 'var(--error)',
                         cursor: 'pointer',
                         fontSize: 12,
                         padding: 0,
@@ -538,7 +538,7 @@ export default function TaskComments({
                   border: 'none',
                   cursor: 'pointer',
                   fontSize: 16,
-                  color: '#718096',
+                  color: 'var(--text-muted)',
                   padding: 4,
                   display: 'flex',
                   alignItems: 'center',
@@ -565,7 +565,7 @@ export default function TaskComments({
                     padding: '6px 12px',
                     borderRadius: 4,
                     background: 'var(--bg-input)',
-                    color: '#4a5568',
+                    color: 'var(--text-secondary)',
                     fontSize: 12,
                     cursor: 'pointer',
                   }}
@@ -580,7 +580,7 @@ export default function TaskComments({
                   padding: '6px 12px',
                   borderRadius: 4,
                   border: 'none',
-                  background: isSubmitting ? '#a0aec0' : 'var(--theme-500)',
+                  background: isSubmitting ? 'var(--border-medium)' : 'var(--theme-500)',
                   color: 'white',
                   fontSize: 12,
                   cursor: isSubmitting ? 'not-allowed' : 'pointer',

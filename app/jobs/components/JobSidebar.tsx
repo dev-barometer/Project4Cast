@@ -602,12 +602,11 @@ export default function JobSidebar({ jobs, isAdmin, currentJobId }: JobSidebarPr
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'space-between',
-                          padding: '6px 10px',
-                          backgroundColor: isActive ? 'var(--theme-100)' : 'var(--bg-surface)',
-                          borderRadius: 'var(--radius-lg)',
-                          transition: 'all 0.2s',
-                          opacity: isInactive ? 0.6 : 1,
-                          boxShadow: isActive ? 'none' : 'var(--shadow-sm)',
+                          padding: '6px 8px',
+                          backgroundColor: isActive ? 'var(--theme-100)' : 'transparent',
+                          borderRadius: 'var(--radius-md)',
+                          transition: 'background-color 0.15s',
+                          opacity: isInactive ? 0.5 : 1,
                         }}
                       >
                         <Link
