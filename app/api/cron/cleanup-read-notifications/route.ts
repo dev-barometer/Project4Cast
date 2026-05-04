@@ -13,25 +13,33 @@ export async function GET(request: Request) {
   }
 
   try {
-    // Calculate date 30 days ago
     const thirtyDaysAgo = new Date();
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
+    const ninetyDaysAgo = new Date();
+    ninetyDaysAgo.setDate(ninetyDaysAgo.getDate() - 90);
+
     // Delete read notifications older than 30 days
-    const result = await prisma.notification.deleteMany({
+    const readResult = await prisma.notification.deleteMany({
       where: {
         read: true,
-        createdAt: {
-          lt: thirtyDaysAgo,
-        },
+        createdAt: { lt: thirtyDaysAgo },
       },
     });
-    
+
+    // Delete unread notifications older than 90 days (stale, no longer actionable)
+    const unreadResult = await prisma.notification.deleteMany({
+      where: {
+        read: false,
+        createdAt: { lt: ninetyDaysAgo },
+      },
+    });
+
     return NextResponse.json({
       success: true,
-      message: 'Read notifications cleanup successful',
-      deletedCount: result.count,
-      cutoffDate: thirtyDaysAgo.toISOString(),
+      message: 'Notification cleanup successful',
+      deletedRead: readResult.count,
+      deletedStaleUnread: unreadResult.count,
       timestamp: new Date().toISOString(),
     });
   } catch (error: unknown) {

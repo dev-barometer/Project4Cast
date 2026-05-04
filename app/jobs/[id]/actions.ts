@@ -714,9 +714,6 @@ export async function addTaskComment(prevState: any, formData: FormData) {
     // Parse @mentions and send notifications
     try {
       const mentions = parseMentions(body);
-      console.log('[addTaskComment] Comment body:', body);
-      console.log('[addTaskComment] Parsed mentions:', mentions);
-      
       if (mentions.length > 0) {
         const author = await prisma.user.findUnique({
           where: { id: authorId },
@@ -724,24 +721,16 @@ export async function addTaskComment(prevState: any, formData: FormData) {
 
         const task = await prisma.task.findUnique({
           where: { id: taskId },
-          include: {
-            job: true,
-          },
+          include: { job: true },
         });
 
-        // Find users mentioned
         const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
         const taskUrl = jobId ? `${baseUrl}/jobs/${jobId}` : `${baseUrl}/tasks`;
-        
+
         for (const mention of mentions) {
-          console.log('[addTaskComment] Processing mention:', mention);
           const userIds = await findUsersByMention(mention);
-          console.log('[addTaskComment] Found user IDs for mention:', userIds);
-          
           for (const mentionedUserId of userIds) {
-            // Don't notify the author
             if (mentionedUserId !== authorId) {
-              console.log('[addTaskComment] Creating notification for user:', mentionedUserId);
               await notifyCommentMention({
                 userId: mentionedUserId,
                 commentId: comment.id,
@@ -754,25 +743,13 @@ export async function addTaskComment(prevState: any, formData: FormData) {
                 actorEmail: author?.email || null,
                 taskUrl,
               });
-              console.log('[addTaskComment] Notification created successfully');
-            } else {
-              console.log('[addTaskComment] Skipping notification - user is the author');
             }
           }
         }
-      } else {
-        console.log('[addTaskComment] No mentions found in comment');
       }
-    } catch (mentionError: any) {
-      console.error('[addTaskComment] Error processing mentions:', mentionError);
-      console.error('[addTaskComment] Error stack:', mentionError instanceof Error ? mentionError.stack : 'No stack trace');
-      console.error('[addTaskComment] Error details:', {
-        message: mentionError.message,
-        code: mentionError.code,
-        meta: mentionError.meta,
-      });
-      // Don't fail the comment creation if mention processing fails
-      // But log it so we can debug
+    } catch (mentionError: unknown) {
+      console.error('Error processing mentions:', mentionError);
+      // Don't fail comment creation if mention processing fails
     }
 
     revalidatePath(`/jobs/${jobId}`);
@@ -896,6 +873,12 @@ export async function uploadJobAttachment(prevState: any, formData: FormData) {
       return { error: 'File size too large. Maximum: 10MB', success: false };
     }
 
+    // Enforce per-job file count limit
+    const existingCount = await prisma.attachment.count({ where: { jobId } });
+    if (existingCount >= 20) {
+      return { error: 'Job has reached the maximum of 20 attachments. Delete existing files to upload more.', success: false };
+    }
+
     // Save file to disk
     const { filename, path } = await saveFile(file, jobId);
 
@@ -948,6 +931,12 @@ export async function uploadTaskAttachment(prevState: any, formData: FormData) {
       return { error: 'File size too large. Maximum: 10MB', success: false };
     }
 
+    // Enforce per-job file count limit (counts all attachments on the job, including tasks)
+    const existingCount = await prisma.attachment.count({ where: { jobId } });
+    if (existingCount >= 20) {
+      return { error: 'Job has reached the maximum of 20 attachments. Delete existing files to upload more.', success: false };
+    }
+
     // Save file to disk
     const { filename, path } = await saveFile(file, jobId, taskId);
 
@@ -976,40 +965,39 @@ export async function uploadTaskAttachment(prevState: any, formData: FormData) {
 }
 
 // Server action to delete an attachment
-export async function deleteAttachment(formData: FormData) {
+export async function deleteAttachment(formData: FormData): Promise<{ success: boolean; error: string | null }> {
   try {
     const attachmentId = formData.get('attachmentId')?.toString();
     const jobId = formData.get('jobId')?.toString();
 
     if (!attachmentId || !jobId) {
-      return;
+      return { success: false, error: 'Missing required fields' };
     }
 
-    // Get attachment to get file path
     const attachment = await prisma.attachment.findUnique({
       where: { id: attachmentId },
     });
 
     if (!attachment) {
-      return;
+      return { success: false, error: 'Attachment not found' };
     }
 
     // Delete file from Vercel Blob
     try {
       await deleteFile(attachment.url);
     } catch (fileError) {
-      // File might not exist, that's okay
       console.warn('Error deleting file from Vercel Blob:', fileError);
     }
 
-    // Delete attachment from database
     await prisma.attachment.delete({
       where: { id: attachmentId },
     });
 
     revalidatePath(`/jobs/${jobId}`);
+    return { success: true, error: null };
   } catch (error: unknown) {
     console.error('Error deleting attachment:', error);
+    return { success: false, error: error instanceof Error ? error.message : 'Failed to delete attachment' };
   }
 }
 

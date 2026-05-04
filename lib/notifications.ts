@@ -9,17 +9,12 @@ export async function findUsersByMention(mentionText: string): Promise<string[]>
   // Remove @ symbol and trim
   let searchTerm = mentionText.replace('@', '').trim();
 
-  console.log('[findUsersByMention] Searching for mention:', mentionText, '-> searchTerm:', searchTerm);
-
   if (!searchTerm) {
-    console.log('[findUsersByMention] Empty search term, returning empty array');
     return [];
   }
 
   // Check if it looks like an email address
   const isEmail = searchTerm.includes('@') && searchTerm.includes('.');
-  
-  console.log('[findUsersByMention] Is email?', isEmail);
   
   // If it's an email, search for exact match first, then contains
   // If it's not an email, search by name or email contains
@@ -41,8 +36,6 @@ export async function findUsersByMention(mentionText: string): Promise<string[]>
         },
     select: { id: true, name: true, email: true },
   });
-
-  console.log('[findUsersByMention] Found users:', users.map(u => ({ id: u.id, name: u.name, email: u.email })));
 
   return users.map((u) => u.id);
 }
@@ -142,9 +135,6 @@ export function parseMentions(text: string): string[] {
     // Move past this mention
     i = atIndex + 1;
   }
-  
-  console.log('[parseMentions] Text:', text);
-  console.log('[parseMentions] Found mentions:', mentions);
   
   // Return unique mentions
   return Array.from(new Set(mentions));
@@ -291,7 +281,6 @@ export async function notifyCommentMention({
       contextMessage = 'on a task';
     }
     
-    console.log('[notifyCommentMention] Creating in-app notification for user:', userId, 'actor:', actor);
     try {
       await createNotification({
         userId,
@@ -303,18 +292,10 @@ export async function notifyCommentMention({
         commentId,
         actorId: actorId || null,
       });
-      console.log('[notifyCommentMention] In-app notification created successfully');
-    } catch (notifError: any) {
+    } catch (notifError: unknown) {
       console.error('[notifyCommentMention] Failed to create notification:', notifError);
-      console.error('[notifyCommentMention] Error details:', {
-        message: notifError.message,
-        code: notifError.code,
-        meta: notifError.meta,
-      });
       // Don't throw - we still want to try sending email even if in-app fails
     }
-  } else {
-    console.log('[notifyCommentMention] In-app notifications disabled for user:', userId);
   }
 
   // Send email notification if enabled

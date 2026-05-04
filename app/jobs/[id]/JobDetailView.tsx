@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { useFormState } from 'react-dom';
+import { useRouter } from 'next/navigation';
 import TaskRow from './TaskRow';
 import MobileTaskCard from './MobileTaskCard';
 import TaskForm from './TaskForm';
@@ -110,9 +111,11 @@ export default function JobDetailView({
 }: JobDetailViewProps) {
   // User can edit if they're admin/owner OR if they're a collaborator (not VIEWER)
   const canEdit = isAdmin || job.collaborators.some(c => c.userId === currentUserId && c.role !== 'VIEWER');
+  const router = useRouter();
   const [showTaskForm, setShowTaskForm] = useState(false);
   const [isRightPanelOpen, setIsRightPanelOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const [handledSuccess, setHandledSuccess] = useState(false);
   const formRef = useRef<HTMLFormElement>(null);
 
   // Check if mobile
@@ -124,16 +127,21 @@ export default function JobDetailView({
     window.addEventListener('resize', checkMobile);
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
-  
+
   // Use useFormState for better error handling
   const [state, formAction] = useFormState(addTask, { success: false, error: null });
-  
-  // Hide form and refresh page when task is successfully created
+
+  // Hide form and refresh data when task is successfully created.
+  // Guard with handledSuccess so re-renders don't re-fire the refresh —
+  // useFormState holds success=true until the next submission.
   useEffect(() => {
-    if (state?.success) {
+    if (state?.success && !handledSuccess) {
+      setHandledSuccess(true);
       setShowTaskForm(false);
-      // Refresh the page to show the new task
-      window.location.reload();
+      router.refresh();
+    }
+    if (!state?.success) {
+      setHandledSuccess(false);
     }
   }, [state?.success]);
 

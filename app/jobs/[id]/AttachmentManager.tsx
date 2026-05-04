@@ -4,6 +4,7 @@
 
 import { uploadJobAttachment, uploadTaskAttachment, deleteAttachment } from './actions';
 import { useState, useRef, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { getFileUrl } from '@/lib/file-url-utils';
 import { MAX_FILE_SIZE, isValidFileType } from '@/lib/file-upload';
 
@@ -33,6 +34,7 @@ export default function AttachmentManager({
   attachments,
   currentUserId,
 }: AttachmentManagerProps) {
+  const router = useRouter();
   const [isExpanded, setIsExpanded] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [fileError, setFileError] = useState<string | null>(null);
@@ -56,15 +58,17 @@ export default function AttachmentManager({
     }
   }, [selectedFiles, uploadProgress]);
 
-  const handleDelete = (attachmentId: string) => {
+  const handleDelete = async (attachmentId: string) => {
     if (confirm('Are you sure you want to delete this file?')) {
       const formData = new FormData();
       formData.append('attachmentId', attachmentId);
       formData.append('jobId', jobId);
-      deleteAttachment(formData).then(() => {
-        // Refresh the page to show updated attachments
-        window.location.reload();
-      });
+      const result = await deleteAttachment(formData);
+      if (result?.error) {
+        setFileError(`Failed to delete file: ${result.error}`);
+      } else {
+        router.refresh();
+      }
     }
   };
 
@@ -137,8 +141,8 @@ export default function AttachmentManager({
       }
     }
     
-    // All files uploaded successfully, refresh the page
-    window.location.reload();
+    // All files uploaded successfully, refresh data
+    router.refresh();
   };
 
   const removeSelectedFile = (index: number) => {
