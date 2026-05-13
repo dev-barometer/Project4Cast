@@ -472,7 +472,6 @@ export default function JobSidebar({ jobs, isAdmin, currentJobId }: JobSidebarPr
                         backgroundColor: isActive ? 'var(--theme-100)' : 'var(--bg-surface)',
                         borderRadius: 'var(--radius-lg)',
                         transition: 'all 0.2s',
-                        opacity: isInactive ? 0.6 : 1,
                         boxShadow: isActive ? 'none' : 'var(--shadow-sm)',
                       }}
                     >
@@ -491,6 +490,7 @@ export default function JobSidebar({ jobs, isAdmin, currentJobId }: JobSidebarPr
                             minWidth: 0,
                             textDecoration: 'none',
                             gap: 8,
+                            opacity: isInactive ? 0.5 : 1,
                           }}
                         >
                         <div style={{ flex: 1, minWidth: 0 }}>
@@ -606,7 +606,6 @@ export default function JobSidebar({ jobs, isAdmin, currentJobId }: JobSidebarPr
                           backgroundColor: isActive ? 'var(--theme-100)' : 'transparent',
                           borderRadius: 'var(--radius-md)',
                           transition: 'background-color 0.15s',
-                          opacity: isInactive ? 0.5 : 1,
                         }}
                       >
                         <Link
@@ -624,6 +623,7 @@ export default function JobSidebar({ jobs, isAdmin, currentJobId }: JobSidebarPr
                             minWidth: 0,
                             textDecoration: 'none',
                             gap: 8,
+                            opacity: isInactive ? 0.5 : 1,
                           }}
                         >
                           <div style={{ flex: 1, minWidth: 0 }}>
