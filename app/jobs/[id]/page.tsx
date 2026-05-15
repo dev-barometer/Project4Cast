@@ -211,6 +211,7 @@ export default async function JobDetailPage({ params }: JobPageProps) {
         },
       }),
       prisma.user.findMany({
+        where: { jobs: { some: { jobId: params.id } } },
         orderBy: { email: 'asc' },
       }),
       // Fetch all jobs for sidebar
