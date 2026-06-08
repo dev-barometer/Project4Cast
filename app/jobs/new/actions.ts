@@ -52,6 +52,9 @@ export async function createJob(prevState: any, formData: FormData) {
     return { error: 'Job number already exists' };
   }
 
+  const collaboratorIds = formData.getAll('collaboratorIds').map(String).filter(Boolean);
+  const teamId = formData.get('teamId')?.toString() || null;
+
   // Create the job
   try {
     const job = await prisma.job.create({
@@ -61,12 +64,15 @@ export async function createJob(prevState: any, formData: FormData) {
         brandId,
         status: 'PLANNING',
         brief: null,
-        // Automatically add the creator as a collaborator with OWNER role
+        ...(teamId ? { teamId } : {}),
         collaborators: {
-          create: {
-            userId: session.user.id,
-            role: 'OWNER',
-          },
+          create: [
+            { userId: session.user.id, role: 'OWNER' },
+            // Add team members, skipping the creator to avoid duplicate
+            ...collaboratorIds
+              .filter((id) => id !== session.user.id)
+              .map((id) => ({ userId: id, role: 'COLLABORATOR' as const })),
+          ],
         },
       },
     });

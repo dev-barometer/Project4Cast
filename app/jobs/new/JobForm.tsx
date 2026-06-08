@@ -19,21 +19,39 @@ type Client = {
   }>;
 };
 
-type JobFormProps = {
-  clients: Client[];
+type TeamMember = {
+  user: {
+    id: string;
+    name: string | null;
+    email: string;
+  };
 };
 
-export default function JobForm({ clients }: JobFormProps) {
+type Team = {
+  id: string;
+  name: string;
+  members: TeamMember[];
+};
+
+type JobFormProps = {
+  clients: Client[];
+  teams: Team[];
+};
+
+export default function JobForm({ clients, teams }: JobFormProps) {
   const [state, formAction] = useFormState(createJob, { error: null, success: false, jobId: '' });
   const router = useRouter();
   const [jobNumber, setJobNumber] = useState('');
   const [selectedClientId, setSelectedClientId] = useState<string>('');
   const [selectedBrandId, setSelectedBrandId] = useState<string>('');
+  const [selectedTeamId, setSelectedTeamId] = useState<string>('');
   const [showCreateClient, setShowCreateClient] = useState(false);
   const [showCreateBrand, setShowCreateBrand] = useState(false);
   const [newClientName, setNewClientName] = useState('');
   const [newBrandName, setNewBrandName] = useState('');
   const [clientsList, setClientsList] = useState(clients);
+
+  const selectedTeam = teams.find((t) => t.id === selectedTeamId) ?? null;
 
   // Format job number as user types: XXX-000
   const handleJobNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -322,6 +340,66 @@ export default function JobForm({ clients }: JobFormProps) {
             </select>
           </div>
 
+
+          {/* Team */}
+          <div>
+            <label
+              htmlFor="teamId"
+              style={{
+                display: 'block',
+                fontSize: 14,
+                fontWeight: 600,
+                color: '#2d3748',
+                marginBottom: 8,
+              }}
+            >
+              Team
+            </label>
+            <select
+              id="teamId"
+              name="teamId"
+              value={selectedTeamId}
+              onChange={(e) => setSelectedTeamId(e.target.value)}
+              style={{
+                width: '100%',
+                padding: '10px 12px',
+                borderRadius: 6,
+                border: '1px solid #cbd5e0',
+                fontSize: 14,
+                color: '#4a5568',
+                backgroundColor: '#f7fdfc',
+                cursor: 'pointer',
+              }}
+            >
+              <option value="">No team</option>
+              {teams.map((team) => (
+                <option key={team.id} value={team.id}>
+                  {team.name}
+                </option>
+              ))}
+            </select>
+
+            {/* Show team members when a team is selected */}
+            {selectedTeam && (
+              <div style={{ marginTop: 8, padding: '8px 12px', backgroundColor: 'rgba(53, 169, 137, 0.06)', borderRadius: 6, border: '1px solid rgba(53, 169, 137, 0.2)' }}>
+                <p style={{ fontSize: 12, color: '#4a5568', marginBottom: 4, fontWeight: 500 }}>Members added:</p>
+                {selectedTeam.members.map((m) => (
+                  <div key={m.user.id} style={{ fontSize: 13, color: '#2d3748', paddingTop: 2 }}>
+                    {m.user.name || m.user.email}
+                    {m.user.name && <span style={{ color: '#718096', marginLeft: 6, fontSize: 12 }}>{m.user.email}</span>}
+                  </div>
+                ))}
+                {/* Hidden inputs so createJob receives collaboratorIds for team members */}
+                {selectedTeam.members.map((m) => (
+                  <input key={m.user.id} type="hidden" name="collaboratorIds" value={m.user.id} />
+                ))}
+              </div>
+            )}
+
+            <p style={{ fontSize: 12, color: '#718096', marginTop: 4 }}>
+              You will be added as owner automatically.
+            </p>
+          </div>
 
           {/* Submit Button */}
           <div style={{ display: 'flex', gap: 12, marginTop: 8 }}>
