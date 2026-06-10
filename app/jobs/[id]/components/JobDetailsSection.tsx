@@ -37,6 +37,11 @@ type JobDetailsSectionProps = {
     email: string;
     name: string | null;
   }>;
+  assignableUsers: Array<{
+    id: string;
+    email: string;
+    name: string | null;
+  }>;
   currentUserId: string;
   canEdit: boolean;
   showToggleInTopRight?: boolean;
@@ -50,6 +55,7 @@ export default function JobDetailsSection({
   collaborators,
   allAttachments,
   allUsers,
+  assignableUsers,
   currentUserId,
   canEdit,
   showToggleInTopRight = false,
@@ -138,7 +144,7 @@ export default function JobDetailsSection({
             <CollaboratorManager
               jobId={jobId}
               collaborators={collaborators}
-              allUsers={allUsers}
+              allUsers={assignableUsers}
             />
           </div>
 

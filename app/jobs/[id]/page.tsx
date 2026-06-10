@@ -129,6 +129,7 @@ export default async function JobDetailPage({ params }: JobPageProps) {
 
   let job: JobWithRelations | null = null;
   let allUsers: User[] = [];
+  let assignableUsers: User[] = [];
   let allJobs: Array<{
     id: string;
     jobNumber: string;
@@ -268,9 +269,17 @@ export default async function JobDetailPage({ params }: JobPageProps) {
           taskId: true,
         },
       }),
+      // Fetch all active users — used to populate the "add collaborator" picker.
+      // (allUsers / result[1] is intentionally job-members-only, for task-assignee pickers.)
+      prisma.user.findMany({
+        where: { isPaused: false },
+        select: { id: true, email: true, name: true },
+        orderBy: { email: 'asc' },
+      }),
     ]);
     job = result[0] as JobWithRelations | null;
     allUsers = result[1];
+    assignableUsers = result[4] as User[];
     allJobs = result[2] as Array<{
       id: string;
       jobNumber: string;
@@ -304,6 +313,7 @@ export default async function JobDetailPage({ params }: JobPageProps) {
     dbError = error instanceof Error ? error.message : 'Failed to connect to database';
     job = null;
     allUsers = [];
+    assignableUsers = [];
     allJobs = [];
     tasksWithUnreadComments = new Set<string>(); // Reset to empty Set on error
   }
@@ -378,6 +388,7 @@ export default async function JobDetailPage({ params }: JobPageProps) {
       <JobDetailView
         job={job}
         allUsers={allUsers}
+        assignableUsers={assignableUsers}
         currentUserId={currentUserId}
         isAdmin={isAdmin}
         tasksWithUnreadComments={tasksWithUnreadComments}

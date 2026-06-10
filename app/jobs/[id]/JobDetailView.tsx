@@ -91,6 +91,11 @@ type JobDetailViewProps = {
     email: string;
     name: string | null;
   }>;
+  assignableUsers: Array<{
+    id: string;
+    email: string;
+    name: string | null;
+  }>;
   currentUserId: string;
   isAdmin: boolean;
   tasksWithUnreadComments?: Set<string>; // Task IDs with unread comment notifications
@@ -104,6 +109,7 @@ type JobDetailViewProps = {
 export default function JobDetailView({
   job,
   allUsers,
+  assignableUsers,
   currentUserId,
   isAdmin,
   tasksWithUnreadComments = new Set(),
@@ -552,6 +558,7 @@ export default function JobDetailView({
               collaborators={job.collaborators}
               allAttachments={allAttachments}
               allUsers={allUsers}
+              assignableUsers={assignableUsers}
               currentUserId={currentUserId}
               canEdit={canEdit}
               showToggleInTopRight={false}
